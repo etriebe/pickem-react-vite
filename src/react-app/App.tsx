@@ -5,7 +5,13 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import cloudflareLogo from "./assets/Cloudflare_Logo.svg";
 import honoLogo from "./assets/hono.svg";
+import ButtonUsage from "./components/Button";
 import "./App.css";
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import CssBaseline from '@mui/material/CssBaseline';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -13,7 +19,9 @@ function App() {
 
   return (
     <>
-      <div>
+      <CssBaseline />
+      <ButtonUsage />
+      {/* <div>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
@@ -58,7 +66,7 @@ function App() {
           Edit <code>worker/index.ts</code> to change the name
         </p>
       </div>
-      <p className="read-the-docs">Click on the logos to learn more</p>
+      <p className="read-the-docs">Click on the logos to learn more</p> */}
     </>
   );
 }
