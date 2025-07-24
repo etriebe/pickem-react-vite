@@ -17,6 +17,7 @@ import AppTheme from '../theme/AppTheme';
 import { FacebookIcon, GoogleIcon } from './CustomIcons';
 import ForgotPassword from './ForgotPassword';
 import SiteLogo from './SiteLogo';
+import AuthenticationService from '../services/AuthenticationService';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -75,7 +76,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     setOpen(false);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     if (emailError || passwordError) {
       event.preventDefault();
       return;
@@ -85,6 +86,27 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       email: data.get('email'),
       password: data.get('password'),
     });
+    event.preventDefault(); // Prevent default form submission
+    const email = data.get('email') as string;
+    const requestURL = `${import.meta.env.VITE_PICKEM_API_URL}/login?useCookies=true&useSessionCookies=true`;
+    try {
+      const authResult = await AuthenticationService.login(email, data.get('password') as string);
+      if (authResult.ok) {
+        // Redirect to My Leagues page on successful login
+        localStorage.setItem('isLoggedIn', 'true')
+        localStorage.setItem('email', email)
+        console.log('Login successful:', authResult);
+        window.location.href = '/myleagues';
+      } else {
+        localStorage.setItem('isLoggedIn', 'false')
+        localStorage.setItem('email', '')
+        setPasswordError(true);
+        setPasswordErrorMessage(`Failed to login: ${authResult.statusText}`);
+      }
+    }
+    catch (error) {
+      console.error('Error during login:', error);
+    }
   };
 
   const validateInputs = () => {
@@ -123,6 +145,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
           <Box
             component="form"
             onSubmit={handleSubmit}
+            method='post'
             noValidate
             sx={{
               display: 'flex',
@@ -158,7 +181,6 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
                 type="password"
                 id="password"
                 autoComplete="current-password"
-                autoFocus
                 required
                 fullWidth
                 variant="outlined"

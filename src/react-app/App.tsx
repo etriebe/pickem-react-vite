@@ -23,7 +23,20 @@ import AppTheme from "./theme/AppTheme";
 function App() {
   const [count, setCount] = useState(0);
   const [name, setName] = useState("unknown");
-
+  // Example: Replace this with your actual authentication logic
+  const authenticated = false; // Set to true if the user is authenticated
+  console.log(import.meta.env.VITE_PICKEM_API_URL);
+  console.log(`import.meta.env.PROD: ${import.meta.env.PROD}`);
+  console.log(`import.meta.env.DEV: ${import.meta.env.DEV}`);
+  function requireAuth(nextState: { location: { pathname: any; }; }, replace: (arg0: { pathname: string; state: { nextPathname: any; }; }) => void, next: () => void) {
+    if (!authenticated) {
+      replace({
+        pathname: "/signin",
+        state: { nextPathname: nextState.location.pathname }
+      });
+    }
+    next();
+  }
   return (
     <>
       <AppTheme>
