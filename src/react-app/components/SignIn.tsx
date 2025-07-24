@@ -18,6 +18,7 @@ import AppTheme from '../theme/AppTheme';
 import ColorModeSelect from '../theme/ColorModeSelect';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './CustomIcons';
 import siteLogo from '../assets/logo.png';
+import SiteLogo from './SiteLogo';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -121,18 +122,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       <SignInContainer direction="column" justifyContent="space-between">
         <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
         <Card variant="outlined">
-          <img
-            src={siteLogo}
-            alt="Site Logo"
-            style={{ width: 64, height: 64, alignSelf: 'center', marginBottom: 8 }}
-          />
-          <Typography
-            component="h1"
-            variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-          >
-            Sign in
-          </Typography>
+          <SiteLogo />
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -222,7 +212,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}
               <Link
-                href="/material-ui/getting-started/templates/sign-in/"
+                href="/signup"
                 variant="body2"
                 sx={{ alignSelf: 'center' }}
               >
