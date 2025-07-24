@@ -26,7 +26,7 @@ function App() {
     <>
       <AppTheme>
 
-        <CssBaseline />
+        <CssBaseline enableColorScheme />
         <Box sx={{ display: 'flex' }}>
           <SideMenu />
           <AppNavbar />
@@ -50,12 +50,11 @@ function App() {
                 mt: { xs: 8, md: 0 },
               }}
             >
+              <Header />
+              <MainGrid />
             </Stack>
-            <Header />
-            <MainGrid />
           </Box>
         </Box>
-        <ButtonUsage />
       </AppTheme>
     </>
   );
