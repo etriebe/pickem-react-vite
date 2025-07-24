@@ -14,7 +14,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import AppTheme from '../theme/AppTheme';
-import { FacebookIcon, GoogleIcon, SitemarkIcon } from './CustomIcons';
+import { FacebookIcon, GoogleIcon } from './CustomIcons';
 import ForgotPassword from './ForgotPassword';
 import SiteLogo from './SiteLogo';
 
