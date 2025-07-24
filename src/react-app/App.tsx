@@ -1,11 +1,12 @@
 // src/App.tsx
 
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import cloudflareLogo from "./assets/Cloudflare_Logo.svg";
-import honoLogo from "./assets/hono.svg";
+import { alpha } from '@mui/material/styles';
 import ButtonUsage from "./components/Button";
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import SideMenu
+  from "./components/SideMenu";
 import "./App.css";
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -20,6 +21,31 @@ function App() {
   return (
     <>
       <CssBaseline />
+      <Box sx={{ display: 'flex' }}>
+        <SideMenu />
+        {/* Main content */}
+        <Box
+          component="main"
+          sx={(theme) => ({
+            flexGrow: 1,
+            backgroundColor: theme.vars
+              ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
+              : alpha(theme.palette.background.default, 1),
+            overflow: 'auto',
+          })}
+        >
+          <Stack
+            spacing={2}
+            sx={{
+              alignItems: 'center',
+              mx: 3,
+              pb: 5,
+              mt: { xs: 8, md: 0 },
+            }}
+          >
+          </Stack>
+        </Box>
+      </Box>
       <ButtonUsage />
       {/* <div>
         <a href="https://vite.dev" target="_blank">
