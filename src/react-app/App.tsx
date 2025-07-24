@@ -1,22 +1,24 @@
 // src/App.tsx
 
-import { useState } from "react";
-import { alpha } from '@mui/material/styles';
-import ButtonUsage from "./components/Button";
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import SideMenu
-  from "./components/SideMenu";
-import AppNavbar from "./components/AppNavbar";
-import Header from "./components/Header";
-import CssBaseline from '@mui/material/CssBaseline';
-import AppTheme from "./theme/AppTheme";
-import MainGrid from "./components/MainGrid";
-import "./App.css";
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import Stack from '@mui/material/Stack';
+import { alpha } from '@mui/material/styles';
+import { useState } from "react";
+import { Route, Routes } from "react-router";
+import "./App.css";
+import AppNavbar from "./components/AppNavbar";
+import ButtonUsage from "./components/Button";
+import Header from "./components/Header";
+import MainGrid from "./components/MainGrid";
+import SideMenu from "./components/SideMenu";
+import SignIn from "./components/SignIn";
+import SignUp from "./components/SignUp";
+import AppTheme from "./theme/AppTheme";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -25,7 +27,6 @@ function App() {
   return (
     <>
       <AppTheme>
-
         <CssBaseline enableColorScheme />
         <Box sx={{ display: 'flex' }}>
           <SideMenu />
@@ -51,7 +52,12 @@ function App() {
               }}
             >
               <Header />
-              <MainGrid />
+
+              <Routes>
+                <Route path="/" element={<MainGrid />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
+              </Routes>
             </Stack>
           </Box>
         </Box>
