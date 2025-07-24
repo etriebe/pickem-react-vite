@@ -17,6 +17,7 @@ import ForgotPassword from './ForgotPassword';
 import AppTheme from '../theme/AppTheme';
 import ColorModeSelect from '../theme/ColorModeSelect';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './CustomIcons';
+import siteLogo from '../assets/logo.png';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -120,7 +121,11 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       <SignInContainer direction="column" justifyContent="space-between">
         <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
         <Card variant="outlined">
-          <SitemarkIcon />
+          <img
+            src={siteLogo}
+            alt="Site Logo"
+            style={{ width: 64, height: 64, alignSelf: 'center', marginBottom: 8 }}
+          />
           <Typography
             component="h1"
             variant="h4"
