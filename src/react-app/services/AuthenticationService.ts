@@ -2,6 +2,11 @@ const baseURL = import.meta.env.VITE_PICKEM_API_URL;
 
 class AuthenticationService {
   
+  static isLoggedIn(): boolean {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    return isLoggedIn === 'true';
+  }
+
   static async login(email: string, password: string): Promise<Response> {
     const requestURL = `${baseURL}/login?useCookies=true&useSessionCookies=true`;
     try{

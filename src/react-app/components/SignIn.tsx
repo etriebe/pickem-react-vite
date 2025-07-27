@@ -88,7 +88,6 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     });
     event.preventDefault(); // Prevent default form submission
     const email = data.get('email') as string;
-    const requestURL = `${import.meta.env.VITE_PICKEM_API_URL}/login?useCookies=true&useSessionCookies=true`;
     try {
       const authResult = await AuthenticationService.login(email, data.get('password') as string);
       if (authResult.ok) {
