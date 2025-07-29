@@ -18,6 +18,7 @@ import { FacebookIcon, GoogleIcon } from './CustomIcons';
 import ForgotPassword from './ForgotPassword';
 import SiteLogo from './SiteLogo';
 import AuthenticationService from '../services/AuthenticationService';
+import { AuthenticationUtilities, ApiResponse } from '../utilities/AuthenticationUtilities';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -89,18 +90,16 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     event.preventDefault(); // Prevent default form submission
     const email = data.get('email') as string;
     try {
-      const authResult = await AuthenticationService.login(email, data.get('password') as string);
-      if (authResult.ok) {
+      const loginResult = await AuthenticationUtilities.login(email, data.get('password') as string);
+      
+      if (loginResult.result) {
         // Redirect to My Leagues page on successful login
-        localStorage.setItem('isLoggedIn', 'true')
-        localStorage.setItem('email', email)
-        console.log('Login successful:', authResult);
+        console.log('Login successful:', JSON.stringify(loginResult));
         window.location.href = '/myleagues';
-      } else {
-        localStorage.setItem('isLoggedIn', 'false')
-        localStorage.setItem('email', '')
+      } else {        
+        console.log('Login failed:', JSON.stringify(loginResult));
         setPasswordError(true);
-        setPasswordErrorMessage(`Failed to login: ${authResult.statusText}`);
+        setPasswordErrorMessage(`Failed to login: ${loginResult.message}`);
       }
     }
     catch (error) {
