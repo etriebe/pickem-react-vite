@@ -1,6 +1,6 @@
 import * as React from 'react';
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
-import { LoginRequest } from "../services/PickemApiClient";
+import { LoginRequest, UserInfo } from "../services/PickemApiClient";
 
 export class AuthenticationUtilities {
   static async isAuthenticated(): Promise<boolean> {
@@ -10,13 +10,9 @@ export class AuthenticationUtilities {
         return true;
     }
     catch {
+      // AuthenticationUtilities.clearLocalStorage();
       return false;
     }
-  }
-
-  static clearAuthenticationStorage(): void {
-    localStorage.setItem('isLoggedIn', 'false');
-    localStorage.setItem('email', '');
   }
 
   static async login(email: string, password: string): Promise<ApiResponse> {
@@ -28,7 +24,8 @@ export class AuthenticationUtilities {
     const useSessionCookies = true;
     try
     {
-        const requestObject = await pickemClient.login(useCookies, useSessionCookies, requestInfo);
+        const responseToken = await pickemClient.login(useCookies, useSessionCookies, requestInfo);
+        console.log(JSON.stringify(responseToken));
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('email', email);
         return new ApiResponse(true, "");
@@ -36,8 +33,7 @@ export class AuthenticationUtilities {
     catch (err)
     {
         console.error(`Failed to login: ${err}`);
-        localStorage.setItem('isLoggedIn', 'false');
-        localStorage.setItem('email', "");
+        AuthenticationUtilities.clearLocalStorage();
         let message: string;
         if (typeof err === "string") {
             // TypeScript should know it's a string here
@@ -50,6 +46,40 @@ export class AuthenticationUtilities {
         }
         return new ApiResponse(false, message);
     }
+  }
+
+  private static clearLocalStorage(): void {
+    localStorage.setItem('isLoggedIn', 'false');
+    localStorage.setItem('email', "");
+    localStorage.setItem('username', "");
+    localStorage.setItem('userid', "");
+  }
+
+  static getUserInfoFromLocalStorage(): UserInfo {
+    const email = localStorage.getItem('email');
+    const username = localStorage.getItem('username');
+    const userid = localStorage.getItem('userid');
+    
+    const currentUserInfo = <UserInfo>({
+      email: email,
+      userName: username,
+      id: userid,
+    });
+    return currentUserInfo;
+  }
+
+  static async getUserInfo(): Promise<UserInfo> {
+    const pickemClient = PickemApiClientFactory.createClient();
+    const userInfo = await pickemClient.getUserInfo();
+    if (userInfo.userName)
+    {
+      localStorage.setItem('username', userInfo.userName);
+    }
+    if (userInfo.id)
+    {
+      localStorage.setItem('userid', userInfo.id);
+    }
+    return userInfo;
   }
 }
 

@@ -84,6 +84,8 @@ export class Client {
         let options_: RequestInit = {
             body: content_,
             method: "POST",
+            mode: 'cors',
+            credentials: 'include',
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -714,7 +716,9 @@ export class Client {
             method: "GET",
             headers: {
                 "Accept": "text/plain"
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -755,7 +759,9 @@ export class Client {
         let options_: RequestInit = {
             method: "POST",
             headers: {
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -794,7 +800,9 @@ export class Client {
             method: "GET",
             headers: {
                 "Accept": "text/plain"
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -843,7 +851,9 @@ export class Client {
             method: "GET",
             headers: {
                 "Accept": "text/plain"
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -884,7 +894,9 @@ export class Client {
         let options_: RequestInit = {
             method: "GET",
             headers: {
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -922,7 +934,9 @@ export class Client {
         let options_: RequestInit = {
             method: "GET",
             headers: {
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -965,7 +979,9 @@ export class Client {
         let options_: RequestInit = {
             method: "POST",
             headers: {
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1008,7 +1024,9 @@ export class Client {
         let options_: RequestInit = {
             method: "POST",
             headers: {
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1051,7 +1069,9 @@ export class Client {
         let options_: RequestInit = {
             method: "POST",
             headers: {
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1099,7 +1119,9 @@ export class Client {
         let options_: RequestInit = {
             method: "POST",
             headers: {
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1152,7 +1174,9 @@ export class Client {
         let options_: RequestInit = {
             method: "POST",
             headers: {
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1191,7 +1215,9 @@ export class Client {
             method: "GET",
             headers: {
                 "Accept": "text/plain"
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1240,7 +1266,9 @@ export class Client {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1277,7 +1305,9 @@ export class Client {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1314,7 +1344,9 @@ export class Client {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1352,7 +1384,9 @@ export class Client {
         let options_: RequestInit = {
             method: "POST",
             headers: {
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1450,7 +1484,9 @@ export class Client {
             method: "GET",
             headers: {
                 "Accept": "text/plain"
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1496,7 +1532,9 @@ export class Client {
         let options_: RequestInit = {
             method: "GET",
             headers: {
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1533,7 +1571,9 @@ export class Client {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1567,7 +1607,9 @@ export class Client {
             method: "GET",
             headers: {
                 "Accept": "text/plain"
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1605,7 +1647,9 @@ export class Client {
             method: "GET",
             headers: {
                 "Accept": "text/plain"
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1642,7 +1686,9 @@ export class Client {
             method: "GET",
             headers: {
                 "Accept": "text/plain"
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1682,7 +1728,9 @@ export class Client {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1725,7 +1773,9 @@ export class Client {
         let options_: RequestInit = {
             method: "GET",
             headers: {
-            }
+            },
+            mode: 'cors',
+            credentials: 'include',
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {

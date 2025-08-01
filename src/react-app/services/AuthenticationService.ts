@@ -16,7 +16,8 @@ class AuthenticationService {
           method: 'POST',
           mode: 'cors',
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
+            "Accept": "application/json"
           },
           credentials: 'include',
           body: JSON.stringify({
@@ -32,6 +33,28 @@ class AuthenticationService {
     catch (error) {
       console.error('Error during login:', error);
       return new Response(null, { status: 500, statusText: 'Internal Server Error' });
+    }
+  }
+
+  static async isAuthorized(): Promise<Response> {
+    const requestURL = `${baseURL}/api/user/IsAuthorized`;
+    try{
+      const authResult = await fetch(
+        requestURL,
+        {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        },
+      );
+      return authResult;
+    }
+    catch (error) {
+      console.error('Error during running isAuthorized call:', error);
+      return new Response(null, { status: 401, statusText: 'Unauthorized' });
     }
   }
 

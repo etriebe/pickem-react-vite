@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
 import SiteLogo from './SiteLogo';
+import { Button, Link } from '@mui/material';
 const drawerWidth = 240;
 
 const Drawer = styled(MuiDrawer)({
@@ -22,7 +23,15 @@ const Drawer = styled(MuiDrawer)({
   },
 });
 
-export default function SideMenu() {
+interface SideMenuProps {
+  isAuthenticated: boolean,
+  username?: string,
+  email?: string,
+}
+
+
+export default function SideMenu({ isAuthenticated, username, email } : SideMenuProps ) {
+  console.log(`${isAuthenticated}, ${username}, ${email}`);
   return (
     <Drawer
       variant="permanent"
@@ -65,17 +74,30 @@ export default function SideMenu() {
       >
         <Avatar
           sizes="small"
-          alt="User Name"
+          alt={username}
           src="/static/images/avatar/7.jpg"
           sx={{ width: 36, height: 36 }}
         />
         <Box sx={{ mr: 'auto' }}>
-          <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
-            User Name
-          </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            foo@gmail.com
-          </Typography>
+          {
+            isAuthenticated ?
+            <>
+            <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
+              {username}
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              {email}
+            </Typography>
+            </>
+            :
+            <Link
+              href="/signin"
+              variant="body2"
+              sx={{ alignSelf: 'center' }}
+            >
+              Sign in
+            </Link>
+          }
         </Box>
         <OptionsMenu />
       </Stack>

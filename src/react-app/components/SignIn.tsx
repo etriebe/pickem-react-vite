@@ -89,7 +89,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     });
     event.preventDefault(); // Prevent default form submission
     const email = data.get('email') as string;
-    try {
+    try {      
       const loginResult = await AuthenticationUtilities.login(email, data.get('password') as string);
       
       if (loginResult.result) {
