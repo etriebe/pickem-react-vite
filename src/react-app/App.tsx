@@ -60,8 +60,6 @@ function App() {
   console.log(`import.meta.env.PROD: ${import.meta.env.PROD}`);
   console.log(`import.meta.env.DEV: ${import.meta.env.DEV}`);
 
-
-
   return (
     <>
       <AppTheme>
