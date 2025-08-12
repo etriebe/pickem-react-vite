@@ -1553,7 +1553,7 @@ export class Client {
      * @param weekNumber (optional) 
      * @return OK
      */
-    getAllSpreadWeekPicks(leagueId: string | undefined, weekNumber: number | undefined): Promise<SpreadWeekPickDTO> {
+    getAllSpreadWeekPicks(leagueId: string | undefined, weekNumber: number | undefined): Promise<SpreadWeekPickDTO[]> {
         let url_ = this.baseUrl + "/api/picks/GetAllSpreadWeekPicksAsync?";
         if (leagueId === null)
             throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
@@ -1579,7 +1579,63 @@ export class Client {
         });
     }
 
-    protected processGetAllSpreadWeekPicks(response: Response): Promise<SpreadWeekPickDTO> {
+    protected processGetAllSpreadWeekPicks(response: Response): Promise<SpreadWeekPickDTO[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(SpreadWeekPickDTO.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SpreadWeekPickDTO[]>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @param weekNumber (optional) 
+     * @return OK
+     */
+    getSpreadWeekPicksForUser(leagueId: string | undefined, weekNumber: number | undefined): Promise<SpreadWeekPickDTO> {
+        let url_ = this.baseUrl + "/api/picks/GetSpreadWeekPicksForUserAsync?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        if (weekNumber === null)
+            throw new globalThis.Error("The parameter 'weekNumber' cannot be null.");
+        else if (weekNumber !== undefined)
+            url_ += "weekNumber=" + encodeURIComponent("" + weekNumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetSpreadWeekPicksForUser(_response);
+        });
+    }
+
+    protected processGetSpreadWeekPicksForUser(response: Response): Promise<SpreadWeekPickDTO> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
