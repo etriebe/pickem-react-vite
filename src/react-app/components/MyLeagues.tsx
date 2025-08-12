@@ -30,7 +30,7 @@ export default function MyLeagues() {
         <>
             {currentLeagues.map((l, index) => {
                 const currentLeaguePicks = currentPicks.find(p => p.leagueId === l.id);
-                return (<ul style={{ listStyleType: 'none' }} key={l.id}><LeagueCard league={l} picksSubmitted={currentLeaguePicks != null} /></ul>);
+                return (<ul style={{ listStyleType: 'none', paddingInlineStart: '0px' }} key={l.id}><LeagueCard league={l} picksSubmitted={currentLeaguePicks != null} /></ul>);
             })}
         </>
     );
