@@ -15,9 +15,9 @@ export interface LeagueCardProps {
 }
 
 export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) {
-    const weekStandingLink = SiteUtilities.getWeekStandingLink(league.type, league.id!);
+    const weekStandingLink = SiteUtilities.getWeekStandingLink(league.type, league.id!, league.currentWeekNumber!);
     const leagueStandingLink = SiteUtilities.getLeagueStandingLink(league.type, league.id!);
-    const myPicksLink = SiteUtilities.getMakePicksLink(league.type, league.id!);
+    const myPicksLink = SiteUtilities.getMakePicksLink(league.type, league.id!, league.currentWeekNumber!);
     const pickStatus = SiteUtilities.getEmojiForPickStatus(picksSubmitted);
     const weekDescription = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!);
     return (

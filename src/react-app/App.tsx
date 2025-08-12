@@ -21,6 +21,7 @@ import AppTheme from "./theme/AppTheme";
 import { AuthenticationUtilities } from "./utilities/AuthenticationUtilities";
 import AuthenticationService from './services/AuthenticationService';
 import MyLeagues from './components/MyLeagues';
+import PickemMakePicks from './components/pickem/PickemMakePicks';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -96,6 +97,7 @@ function App() {
                 <Route path="/myleagues" element={ <MyLeagues />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={<PickemMakePicks />} />
               </Routes>
             </Stack>
           </Box>

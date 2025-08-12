@@ -2,18 +2,18 @@ import * as React from 'react';
 import { SeasonDateInformation, WeekInformation } from '../services/PickemApiClient';
 
 export class SiteUtilities {
-    static getWeekStandingLink(leagueType: number, leagueId: string): string {
+    static getWeekStandingLink(leagueType: number, leagueId: string, weekNumber: number): string {
         switch (leagueType) {
             // both 1 and 2 are pickem against the spread and pickem straight up and have the same pick pages
             case 1:
             case 2:
-                return `/pickem/week/${leagueId}`;
+                return `/pickem/week/${leagueId}/${weekNumber}`;
             case 3:
-                return `/survivor/week/${leagueId}`;
+                return `/survivor/week/${leagueId}/${weekNumber}`;
             case 4:
-                return `/allbets/week/${leagueId}`;
+                return `/allbets/week/${leagueId}/${weekNumber}`;
             case 5:
-                return `/squares/week/${leagueId}`;
+                return `/squares/week/${leagueId}/${weekNumber}`;
             default:
                 throw new Error("Unknown league type");
         }
@@ -36,18 +36,18 @@ export class SiteUtilities {
         }
     }
 
-    static getMakePicksLink(leagueType: number, leagueId: string): string {
+    static getMakePicksLink(leagueType: number, leagueId: string, weekNumber: number): string {
         switch (leagueType) {
             // both 1 and 2 are pickem against the spread and pickem straight up and have the same pick pages
             case 1:
             case 2:
-                return `/pickem/makepicks/${leagueId}`;
+                return `/pickem/makepicks/${leagueId}/${weekNumber}`;
             case 3:
-                return `/survivor/makepicks/${leagueId}`;
+                return `/survivor/makepicks/${leagueId}/${weekNumber}`;
             case 4:
-                return `/allbets/makepicks/${leagueId}`;
+                return `/allbets/makepicks/${leagueId}/${weekNumber}`;
             case 5:
-                return `/squares/makepicks/${leagueId}`;
+                return `/squares/makepicks/${leagueId}/${weekNumber}`;
             default:
                 throw new Error("Unknown league type");
         }
@@ -74,5 +74,19 @@ export class SiteUtilities {
             const requestedWeek = season.weekStartTimes[weekNumber - 1];
             return requestedWeek.weekDescription!;
         }
+    }
+
+    static getFormattedGameTime(gameStart: Date): string {
+        const options: Intl.DateTimeFormatOptions = {
+            year: "numeric",
+            month: "numeric",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        };
+
+        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStart);
+        return formattedDate;
     }
 }
