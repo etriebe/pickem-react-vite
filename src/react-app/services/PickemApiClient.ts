@@ -719,7 +719,7 @@ export class Client {
      * @param returnOnlyGamesThatHaveStarted (optional) 
      * @return OK
      */
-    queryGames(weekNumber: number | undefined, year: string | undefined, sport: number | undefined, returnOnlyGamesThatHaveStarted: boolean | undefined): Promise<GameDTO> {
+    queryGames(weekNumber: number | undefined, year: string | undefined, sport: number | undefined, returnOnlyGamesThatHaveStarted: boolean | undefined): Promise<GameDTO[]> {
         let url_ = this.baseUrl + "/api/games/QueryGamesAsync?";
         if (weekNumber === null)
             throw new globalThis.Error("The parameter 'weekNumber' cannot be null.");
@@ -753,14 +753,21 @@ export class Client {
         });
     }
 
-    protected processQueryGames(response: Response): Promise<GameDTO> {
+    protected processQueryGames(response: Response): Promise<GameDTO[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GameDTO.fromJS(resultData200);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(GameDTO.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -768,7 +775,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<GameDTO>(null as any);
+        return Promise.resolve<GameDTO[]>(null as any);
     }
 
     /**
