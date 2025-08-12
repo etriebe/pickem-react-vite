@@ -7,32 +7,6 @@ import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
 
-const columns: GridColDef<(GameDTO[])[number]>[] = [
-  {
-    field: 'awayTeam',
-    headerName: 'Away Team',
-    width: 150,
-    renderCell: (params) => (
-      `${params.value.city} ${params.value.name}`
-    ),
-  },
-  {
-    field: 'homeTeam',
-    headerName: 'Home Team',
-    width: 150,
-    renderCell: (params) => (
-      `${params.value.city} ${params.value.name}`
-    ),
-  },
-  {
-    field: 'gameStartTime',
-    headerName: 'Game Time',
-    width: 175,
-    renderCell: (params) => (
-      `${SiteUtilities.getFormattedGameTime(params.value)}`
-    ),
-  },
-];
 
 export default function PickemMakePicks() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
@@ -41,6 +15,33 @@ export default function PickemMakePicks() {
     const { leagueId, weekNumber } = useParams();
     const weekNumberConverted = parseInt(weekNumber!);
 
+    const columns: GridColDef<(GameDTO[])[number]>[] = [
+    {
+        field: 'awayTeam',
+        headerName: 'Away Team',
+        width: 150,
+        renderCell: (params) => (
+        `${params.value.city} ${params.value.name}`
+        ),
+    },
+    {
+        field: 'homeTeam',
+        headerName: 'Home Team',
+        width: 200,
+        renderCell: (params) => (
+        `${params.value.city} ${params.value.name} (${SiteUtilities.getFormattedSpreadAmount(params.row.currentSpread!)})`
+        ),
+    },
+    {
+        field: 'gameStartTime',
+        headerName: 'Game Time',
+        width: 175,
+        renderCell: (params) => (
+        `${SiteUtilities.getFormattedGameTime(params.value)}`
+        ),
+    },
+    ];
+    
     useEffect(() => {
         const fetchData = async () => {
             const pickemClient = PickemApiClientFactory.createClient();

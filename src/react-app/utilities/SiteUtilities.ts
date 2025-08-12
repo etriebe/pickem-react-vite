@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SeasonDateInformation, WeekInformation } from '../services/PickemApiClient';
+import { SeasonDateInformation, Spread } from '../services/PickemApiClient';
 
 export class SiteUtilities {
     static getWeekStandingLink(leagueType: number, leagueId: string, weekNumber: number): string {
@@ -88,5 +88,12 @@ export class SiteUtilities {
 
         const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStart);
         return formattedDate;
+    }
+
+    static getFormattedSpreadAmount(currentSpread: Spread): string {
+        //string prefix = currentSpread >= 0 ? "+" : "";
+        // return $"{prefix}{currentSpread}";
+        const prefix = currentSpread.spreadAmount! >= 0 ? "+" : "";
+        return `${prefix}${currentSpread.spreadAmount?.toFixed(1)}`
     }
 }
