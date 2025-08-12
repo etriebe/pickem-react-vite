@@ -6,12 +6,14 @@ import { LeagueDTO, SpreadWeekPickDTO, GameDTO } from '../../services/PickemApiC
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
+import { Typography } from '@mui/material';
 
 
 export default function PickemMakePicks() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
     const [currentPicks, setCurrentPicks] = useState<SpreadWeekPickDTO>();
     const [weekGames, setWeekGames] = useState<GameDTO[]>();
+    const [weekDescription, setWeekDescription] = useState("");
     const { leagueId, weekNumber } = useParams();
     const weekNumberConverted = parseInt(weekNumber!);
 
@@ -41,7 +43,7 @@ export default function PickemMakePicks() {
         ),
     },
     ];
-    
+
     useEffect(() => {
         const fetchData = async () => {
             const pickemClient = PickemApiClientFactory.createClient();
@@ -49,16 +51,20 @@ export default function PickemMakePicks() {
             const picks = await pickemClient.getAllSpreadWeekPicks(leagueId, weekNumberConverted);
             const returnOnlyGamesThatHaveStarted = false;
             const games = await pickemClient.queryGames(weekNumberConverted, league.year, league.sport, returnOnlyGamesThatHaveStarted);
+            const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!);
 
             setCurrentLeague(league);
             setCurrentPicks(picks);
             setWeekGames(games);
+            setWeekDescription(description)
         }
 
         fetchData();
     }, []);
     return (
         <>
+            <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
+            <Typography variant='h5'>{weekDescription} Picks</Typography>
             <DataGrid
                 rows={weekGames}
                 columns={columns}
