@@ -395,7 +395,7 @@ export class Client {
     /**
      * @return OK
      */
-    infoGET(): Promise<InfoResponse2> {
+    infoGET(): Promise<InfoResponse> {
         let url_ = this.baseUrl + "/manage/info";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -413,14 +413,14 @@ export class Client {
         });
     }
 
-    protected processInfoGET(response: Response): Promise<InfoResponse2> {
+    protected processInfoGET(response: Response): Promise<InfoResponse> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = InfoResponse2.fromJS(resultData200);
+            result200 = InfoResponse.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -439,13 +439,13 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<InfoResponse2>(null as any);
+        return Promise.resolve<InfoResponse>(null as any);
     }
 
     /**
      * @return OK
      */
-    infoPOST(body: InfoRequest): Promise<InfoResponse2> {
+    infoPOST(body: InfoRequest): Promise<InfoResponse> {
         let url_ = this.baseUrl + "/manage/info";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -467,14 +467,14 @@ export class Client {
         });
     }
 
-    protected processInfoPOST(response: Response): Promise<InfoResponse2> {
+    protected processInfoPOST(response: Response): Promise<InfoResponse> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = InfoResponse2.fromJS(resultData200);
+            result200 = InfoResponse.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -493,7 +493,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<InfoResponse2>(null as any);
+        return Promise.resolve<InfoResponse>(null as any);
     }
 
     /**
@@ -1546,7 +1546,7 @@ export class Client {
      * @param weekNumber (optional) 
      * @return OK
      */
-    getAllSpreadWeekPicks(leagueId: string | undefined, weekNumber: number | undefined): Promise<void> {
+    getAllSpreadWeekPicks(leagueId: string | undefined, weekNumber: number | undefined): Promise<SpreadWeekPickDTO> {
         let url_ = this.baseUrl + "/api/picks/GetAllSpreadWeekPicksAsync?";
         if (leagueId === null)
             throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
@@ -1563,6 +1563,7 @@ export class Client {
             credentials: 'include',
             mode: 'cors',
             headers: {
+                "Accept": "application/json"
             }
         };
 
@@ -1571,19 +1572,22 @@ export class Client {
         });
     }
 
-    protected processGetAllSpreadWeekPicks(response: Response): Promise<void> {
+    protected processGetAllSpreadWeekPicks(response: Response): Promise<SpreadWeekPickDTO> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SpreadWeekPickDTO.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<SpreadWeekPickDTO>(null as any);
     }
 
     /**
@@ -2460,13 +2464,13 @@ export interface IInfoRequest {
     [key: string]: any;
 }
 
-export class InfoResponse2 implements IInfoResponse2 {
+export class InfoResponse implements IInfoResponse {
     email!: string;
     isEmailConfirmed!: boolean;
 
     [key: string]: any;
 
-    constructor(data?: IInfoResponse2) {
+    constructor(data?: IInfoResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2486,9 +2490,9 @@ export class InfoResponse2 implements IInfoResponse2 {
         }
     }
 
-    static fromJS(data: any): InfoResponse2 {
+    static fromJS(data: any): InfoResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new InfoResponse2();
+        let result = new InfoResponse();
         result.init(data);
         return result;
     }
@@ -2505,7 +2509,7 @@ export class InfoResponse2 implements IInfoResponse2 {
     }
 }
 
-export interface IInfoResponse2 {
+export interface IInfoResponse {
     email: string;
     isEmailConfirmed: boolean;
 
@@ -2557,6 +2561,8 @@ export interface IISportsUtils {
 }
 
 export class IWeekPick implements IIWeekPick {
+    id?: string | undefined;
+    leagueId?: string | undefined;
 
     [key: string]: any;
 
@@ -2575,6 +2581,8 @@ export class IWeekPick implements IIWeekPick {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
+            this.id = _data["id"];
+            this.leagueId = _data["leagueId"];
         }
     }
 
@@ -2591,11 +2599,15 @@ export class IWeekPick implements IIWeekPick {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
+        data["id"] = this.id;
+        data["leagueId"] = this.leagueId;
         return data;
     }
 }
 
 export interface IIWeekPick {
+    id?: string | undefined;
+    leagueId?: string | undefined;
 
     [key: string]: any;
 }
@@ -2750,7 +2762,7 @@ export class LeagueDTO implements ILeagueDTO {
     type?: number;
     sport?: number;
     settings?: LeagueSettings;
-    userSeasons?: UserSeasonDTO2[];
+    userSeasons?: UserSeasonDTO[];
     latestProcessedWeek?: number;
     startingWeekNumber?: number;
     endingWeekNumber?: number;
@@ -2791,7 +2803,7 @@ export class LeagueDTO implements ILeagueDTO {
             if (Array.isArray(_data["userSeasons"])) {
                 this.userSeasons = [] as any;
                 for (let item of _data["userSeasons"])
-                    this.userSeasons!.push(UserSeasonDTO2.fromJS(item));
+                    this.userSeasons!.push(UserSeasonDTO.fromJS(item));
             }
             this.latestProcessedWeek = _data["latestProcessedWeek"];
             this.startingWeekNumber = _data["startingWeekNumber"];
@@ -2853,7 +2865,7 @@ export interface ILeagueDTO {
     type?: number;
     sport?: number;
     settings?: LeagueSettings;
-    userSeasons?: UserSeasonDTO2[];
+    userSeasons?: UserSeasonDTO[];
     latestProcessedWeek?: number;
     startingWeekNumber?: number;
     endingWeekNumber?: number;
@@ -4319,7 +4331,7 @@ export interface IUserSeason {
     [key: string]: any;
 }
 
-export class UserSeasonDTO2 implements IUserSeasonDTO2 {
+export class UserSeasonDTO implements IUserSeasonDTO {
     userId?: string;
     year?: string;
     totalPoints?: number;
@@ -4332,7 +4344,7 @@ export class UserSeasonDTO2 implements IUserSeasonDTO2 {
 
     [key: string]: any;
 
-    constructor(data?: IUserSeasonDTO2) {
+    constructor(data?: IUserSeasonDTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -4367,9 +4379,9 @@ export class UserSeasonDTO2 implements IUserSeasonDTO2 {
         }
     }
 
-    static fromJS(data: any): UserSeasonDTO2 {
+    static fromJS(data: any): UserSeasonDTO {
         data = typeof data === 'object' ? data : {};
-        let result = new UserSeasonDTO2();
+        let result = new UserSeasonDTO();
         result.init(data);
         return result;
     }
@@ -4401,7 +4413,7 @@ export class UserSeasonDTO2 implements IUserSeasonDTO2 {
     }
 }
 
-export interface IUserSeasonDTO2 {
+export interface IUserSeasonDTO {
     userId?: string;
     year?: string;
     totalPoints?: number;
