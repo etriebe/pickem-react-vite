@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { SeasonDateInformation, WeekInformation } from '../services/PickemApiClient';
 
 export class SiteUtilities {
     static getWeekStandingLink(leagueType: number, leagueId: string): string {
@@ -47,7 +48,7 @@ export class SiteUtilities {
                 return `/allbets/makepicks/${leagueId}`;
             case 5:
                 return `/squares/makepicks/${leagueId}`;
-            default: 
+            default:
                 throw new Error("Unknown league type");
         }
     }
@@ -58,6 +59,20 @@ export class SiteUtilities {
         }
         else {
             return "❌ - Not Submitted";
+        }
+    }
+
+    static getWeekDescriptionFromWeekNumber(season: SeasonDateInformation, weekNumber: number): string {
+        if (weekNumber > season.weekStartTimes?.length! || weekNumber <= 1) {
+            throw new Error(`Invalid weekNumber requested: ${weekNumber}`);
+        }
+
+        if (season.weekStartTimes == null || season.weekStartTimes.length == 0) {
+            return `Week ${weekNumber}`;
+        }
+        else {
+            const requestedWeek = season.weekStartTimes[weekNumber - 1];
+            return requestedWeek.weekDescription!;
         }
     }
 }

@@ -19,6 +19,7 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
     const leagueStandingLink = SiteUtilities.getLeagueStandingLink(league.type, league.id!);
     const myPicksLink = SiteUtilities.getMakePicksLink(league.type, league.id!);
     const pickStatus = SiteUtilities.getEmojiForPickStatus(picksSubmitted);
+    const weekDescription = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!);
     return (
         <>
             <Card sx={{ minWidth: 275 }}>
@@ -27,7 +28,7 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
                         {league.leagueName}
                     </Typography>
                     <Typography variant="caption" gutterBottom>
-                        Week #{league.currentWeekNumber}
+                        {weekDescription}
                     </Typography>
                     <Typography variant="body2">
                         Picks: {pickStatus}
