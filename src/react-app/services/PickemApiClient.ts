@@ -2771,10 +2771,12 @@ export class LeagueDTO implements ILeagueDTO {
     settings?: LeagueSettings;
     userSeasons?: UserSeasonDTO[];
     latestProcessedWeek?: number;
+    currentWeekNumber?: number;
     startingWeekNumber?: number;
     endingWeekNumber?: number;
     isArchived?: boolean;
     premiumStatus?: number;
+    seasonInformation?: SeasonDateInformation2;
 
     [key: string]: any;
 
@@ -2813,10 +2815,12 @@ export class LeagueDTO implements ILeagueDTO {
                     this.userSeasons!.push(UserSeasonDTO.fromJS(item));
             }
             this.latestProcessedWeek = _data["latestProcessedWeek"];
+            this.currentWeekNumber = _data["currentWeekNumber"];
             this.startingWeekNumber = _data["startingWeekNumber"];
             this.endingWeekNumber = _data["endingWeekNumber"];
             this.isArchived = _data["isArchived"];
             this.premiumStatus = _data["premiumStatus"];
+            this.seasonInformation = _data["seasonInformation"] ? SeasonDateInformation2.fromJS(_data["seasonInformation"]) : <any>undefined;
         }
     }
 
@@ -2853,10 +2857,12 @@ export class LeagueDTO implements ILeagueDTO {
                 data["userSeasons"].push(item ? item.toJSON() : <any>undefined);
         }
         data["latestProcessedWeek"] = this.latestProcessedWeek;
+        data["currentWeekNumber"] = this.currentWeekNumber;
         data["startingWeekNumber"] = this.startingWeekNumber;
         data["endingWeekNumber"] = this.endingWeekNumber;
         data["isArchived"] = this.isArchived;
         data["premiumStatus"] = this.premiumStatus;
+        data["seasonInformation"] = this.seasonInformation ? this.seasonInformation.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -2874,10 +2880,12 @@ export interface ILeagueDTO {
     settings?: LeagueSettings;
     userSeasons?: UserSeasonDTO[];
     latestProcessedWeek?: number;
+    currentWeekNumber?: number;
     startingWeekNumber?: number;
     endingWeekNumber?: number;
     isArchived?: boolean;
     premiumStatus?: number;
+    seasonInformation?: SeasonDateInformation2;
 
     [key: string]: any;
 }
@@ -3395,6 +3403,70 @@ export class SeasonDateInformation implements ISeasonDateInformation {
 }
 
 export interface ISeasonDateInformation {
+    startOfWeekOne?: Date;
+    endOfSeason?: Date;
+    weekStartTimes?: WeekInformation[];
+
+    [key: string]: any;
+}
+
+export class SeasonDateInformation2 implements ISeasonDateInformation2 {
+    startOfWeekOne?: Date;
+    endOfSeason?: Date;
+    weekStartTimes?: WeekInformation[];
+
+    [key: string]: any;
+
+    constructor(data?: ISeasonDateInformation2) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.startOfWeekOne = _data["startOfWeekOne"] ? new Date(_data["startOfWeekOne"].toString()) : <any>undefined;
+            this.endOfSeason = _data["endOfSeason"] ? new Date(_data["endOfSeason"].toString()) : <any>undefined;
+            if (Array.isArray(_data["weekStartTimes"])) {
+                this.weekStartTimes = [] as any;
+                for (let item of _data["weekStartTimes"])
+                    this.weekStartTimes!.push(WeekInformation.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SeasonDateInformation2 {
+        data = typeof data === 'object' ? data : {};
+        let result = new SeasonDateInformation2();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["startOfWeekOne"] = this.startOfWeekOne ? this.startOfWeekOne.toISOString() : <any>undefined;
+        data["endOfSeason"] = this.endOfSeason ? this.endOfSeason.toISOString() : <any>undefined;
+        if (Array.isArray(this.weekStartTimes)) {
+            data["weekStartTimes"] = [];
+            for (let item of this.weekStartTimes)
+                data["weekStartTimes"].push(item ? item.toJSON() : <any>undefined);
+        }
+        return data;
+    }
+}
+
+export interface ISeasonDateInformation2 {
     startOfWeekOne?: Date;
     endOfSeason?: Date;
     weekStartTimes?: WeekInformation[];
