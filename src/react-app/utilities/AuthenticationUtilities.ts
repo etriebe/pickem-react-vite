@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
 import { LoginRequest, UserInfo } from "../services/PickemApiClient";
+import { ApiResponse } from './ApiUtilities';
 
 export class AuthenticationUtilities {
   static async isAuthenticated(): Promise<boolean> {
@@ -81,14 +82,4 @@ export class AuthenticationUtilities {
     }
     return userInfo;
   }
-}
-
-export class ApiResponse {
-    result: boolean;
-    message?: string;
-    
-    constructor(result: boolean, message?: string) {
-        this.result = result;
-        this.message = message;
-    }
 }

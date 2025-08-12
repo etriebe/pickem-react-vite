@@ -23,15 +23,14 @@ const Drawer = styled(MuiDrawer)({
   },
 });
 
-interface SideMenuProps {
-  isAuthenticated: boolean,
-  username?: string,
-  email?: string,
+export interface SideMenuProps {
+  isAuthenticated: boolean;
+  username?: string;
+  email?: string;
 }
 
 
 export default function SideMenu({ isAuthenticated, username, email } : SideMenuProps ) {
-  console.log(`${isAuthenticated}, ${username}, ${email}`);
   return (
     <Drawer
       variant="permanent"

@@ -20,6 +20,7 @@ import SignUp from "./components/SignUp";
 import AppTheme from "./theme/AppTheme";
 import { AuthenticationUtilities } from "./utilities/AuthenticationUtilities";
 import AuthenticationService from './services/AuthenticationService';
+import MyLeagues from './components/MyLeagues';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -30,8 +31,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       const result = await AuthenticationUtilities.isAuthenticated();
-      if (result)
-      {
+      if (result) {
         console.log(`Authenticated with AuthenticationUtilities.isAuthenticated()!`);
       }
       setAuthenticated(result);
@@ -46,9 +46,14 @@ function App() {
         setEmail(userInfo.email!)
       }
       else {
-
+        // if (!window.location.href.match(/\/signin/) && !window.location.href.match(/\/signup/)) {
+        //     window.location.href = '/signin';
+        // }
+        // else {
+        //   console.log(`Not authenticated but on sign-in or sign-up pages.`)
+        // }
       }
-      console.log(`testing`);
+//       console.log(`testing`);
     }
 
     fetchData();
@@ -56,9 +61,6 @@ function App() {
 
   // Example: Replace this with your actual authentication logic
   const authenticated = false; // Set to true if the user is authenticated
-  console.log(import.meta.env.VITE_PICKEM_API_URL);
-  console.log(`import.meta.env.PROD: ${import.meta.env.PROD}`);
-  console.log(`import.meta.env.DEV: ${import.meta.env.DEV}`);
 
   return (
     <>
@@ -66,7 +68,7 @@ function App() {
         <CssBaseline enableColorScheme />
         <Box sx={{ display: 'flex' }}>
           <SideMenu isAuthenticated={isAuthenticated} email={email} username={username} />
-          <AppNavbar />
+          <AppNavbar isAuthenticated={isAuthenticated} email={email} username={username} />
           {/* Main content */}
           <Box
             component="main"
@@ -91,6 +93,7 @@ function App() {
 
               <Routes>
                 <Route path="/" element={<MainGrid />} />
+                <Route path="/myleagues" element={ <MyLeagues />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
               </Routes>

@@ -11,6 +11,7 @@ import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import SideMenuMobile from './SideMenuMobile';
 import MenuButton from './MenuButton';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
+import { SideMenuProps } from './SideMenu';
 
 const Toolbar = styled(MuiToolbar)({
   width: '100%',
@@ -28,7 +29,7 @@ const Toolbar = styled(MuiToolbar)({
   },
 });
 
-export default function AppNavbar() {
+export default function AppNavbar({ isAuthenticated, username, email } : SideMenuProps ) {
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -72,7 +73,7 @@ export default function AppNavbar() {
           <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
             <MenuRoundedIcon />
           </MenuButton>
-          <SideMenuMobile open={open} toggleDrawer={toggleDrawer} />
+          <SideMenuMobile open={open} toggleDrawer={toggleDrawer} isAuthenticated={isAuthenticated} email={email} username={username} />
         </Stack>
       </Toolbar>
     </AppBar>

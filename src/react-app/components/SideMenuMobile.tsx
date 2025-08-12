@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Drawer, { drawerClasses } from '@mui/material/Drawer';
 import Stack from '@mui/material/Stack';
@@ -9,13 +8,17 @@ import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import MenuButton from './MenuButton';
 import MenuContent from './MenuContent';
+import { Button, Link } from '@mui/material';
 
 interface SideMenuMobileProps {
   open: boolean | undefined;
+  isAuthenticated: boolean;
+  username?: string;
+  email?: string;
   toggleDrawer: (newOpen: boolean) => () => void;
 }
 
-export default function SideMenuMobile({ open, toggleDrawer }: SideMenuMobileProps) {
+export default function SideMenuMobile({ open, isAuthenticated, username, email, toggleDrawer }: SideMenuMobileProps) {
   return (
     <Drawer
       anchor="right"
@@ -46,9 +49,25 @@ export default function SideMenuMobile({ open, toggleDrawer }: SideMenuMobilePro
               src="/static/images/avatar/7.jpg"
               sx={{ width: 24, height: 24 }}
             />
-            <Typography component="p" variant="h6">
-              Riley Carter
-            </Typography>
+            {
+              isAuthenticated ?
+                <>
+                  <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
+                    {username}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {email}
+                  </Typography>
+                </>
+                :
+                <Link
+                  href="/signin"
+                  variant="body2"
+                  sx={{ alignSelf: 'center' }}
+                >
+                  Sign in
+                </Link>
+            }
           </Stack>
           <MenuButton showBadge>
             <NotificationsRoundedIcon />
