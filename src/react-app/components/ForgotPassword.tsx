@@ -6,6 +6,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import PickemApiClientFactory from '../services/PickemApiClientFactory';
+import { ForgotPasswordRequest } from '../services/PickemApiClient';
 
 interface ForgotPasswordProps {
   open: boolean;
@@ -20,8 +22,21 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
       slotProps={{
         paper: {
           component: 'form',
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+          onSubmit: async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
+            const data = new FormData(event.currentTarget);
+            const email = data.get('email') as string;
+            
+            try {      
+              const pickemClient = PickemApiClientFactory.createClient();
+              const body = new ForgotPasswordRequest();
+              body.email = email;
+              await pickemClient.forgotPassword(body);
+            }
+            catch (error) {
+              console.error('Error sending forgot password request:', error);
+            }
+
             handleClose();
           },
           sx: { backgroundImage: 'none' },
