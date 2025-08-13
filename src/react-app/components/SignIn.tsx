@@ -14,7 +14,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import AppTheme from '../theme/AppTheme';
-import { FacebookIcon, GoogleIcon } from './CustomIcons';
+import { GoogleIcon } from './CustomIcons';
 import ForgotPassword from './ForgotPassword';
 import SiteLogo from './SiteLogo';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
@@ -216,14 +216,6 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
               startIcon={<GoogleIcon />}
             >
               Sign in with Google
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign in with Facebook')}
-              startIcon={<FacebookIcon />}
-            >
-              Sign in with Facebook
             </Button>
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}

@@ -14,7 +14,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import AppTheme from '../theme/AppTheme';
-import { FacebookIcon, GoogleIcon } from './CustomIcons';
+import { GoogleIcon } from './CustomIcons';
 import SiteLogo from './SiteLogo';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -198,14 +198,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
               startIcon={<GoogleIcon />}
             >
               Sign up with Google
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign up with Facebook')}
-              startIcon={<FacebookIcon />}
-            >
-              Sign up with Facebook
             </Button>
             <Typography sx={{ textAlign: 'center' }}>
               Already have an account?{' '}
