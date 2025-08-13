@@ -3,9 +3,16 @@ import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
 import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
-import { DataGrid, GridColDef, GridEventListener } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
 import { Typography, Snackbar, SnackbarCloseReason } from '@mui/material';
+
+enum MakePicksColumnType {
+  AwayTeam = 1,
+  HomeTeam = 2,
+  KeyPick = 3,
+  GameStartTime = 4,
+}
 
 export default function PickemMakePicks() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
@@ -16,22 +23,48 @@ export default function PickemMakePicks() {
     const [open, setOpen] = useState(false);
     const weekNumberConverted = parseInt(weekNumber!);
 
+    const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): string => {
+        let cellText = `${params.value.city} ${params.value.name}`;
+
+        if (cellType === MakePicksColumnType.HomeTeam) {
+            cellText += ` (${SiteUtilities.getFormattedSpreadAmount(params.row.currentSpread!)})`
+        }
+
+        if (!currentPicks || !currentPicks.gamePicks) {
+            return cellText;
+        }
+        const selectedGameId = params.row.id;
+        const gamePick = currentPicks.gamePicks.find(g => g.gameID === selectedGameId);
+
+        if (!gamePick) {
+            return cellText;
+        }
+
+        const isTeamSelected = (gamePick.sidePicked === 0 && cellType === MakePicksColumnType.HomeTeam) ||
+            (gamePick.sidePicked === 1 && cellType === MakePicksColumnType.AwayTeam);
+        
+        if (isTeamSelected) {
+            cellText += ` ☑️`;
+        }
+        return cellText;
+    }
+
     const columns: GridColDef<(GameDTO[])[number]>[] = [
         {
             field: 'awayTeam',
             headerName: 'Away Team',
             width: 150,
-            renderCell: (params) => (
-                `${params.value.city} ${params.value.name}`
-            ),
+            renderCell: (params) => {
+                return formatCell(params, MakePicksColumnType.AwayTeam);
+            },
         },
         {
             field: 'homeTeam',
             headerName: 'Home Team',
             width: 200,
-            renderCell: (params) => (
-                `${params.value.city} ${params.value.name} (${SiteUtilities.getFormattedSpreadAmount(params.row.currentSpread!)})`
-            ),
+            renderCell: (params) => {
+                return formatCell(params, MakePicksColumnType.HomeTeam);
+            }
         },
         {
             field: 'gameStartTime',
