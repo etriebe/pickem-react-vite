@@ -19,13 +19,10 @@ import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import AppTheme from "./theme/AppTheme";
 import { AuthenticationUtilities } from "./utilities/AuthenticationUtilities";
-import AuthenticationService from './services/AuthenticationService';
 import MyLeagues from './components/MyLeagues';
 import PickemMakePicks from './components/pickem/PickemMakePicks';
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [name, setName] = useState("unknown");
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -59,9 +56,6 @@ function App() {
 
     fetchData();
   }, []);
-
-  // Example: Replace this with your actual authentication logic
-  const authenticated = false; // Set to true if the user is authenticated
 
   return (
     <>
