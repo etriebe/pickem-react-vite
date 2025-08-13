@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import siteLogo from '../assets/logo.png';
 import Typography from '@mui/material/Typography';

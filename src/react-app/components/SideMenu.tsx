@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import MuiDrawer, { drawerClasses } from '@mui/material/Drawer';
@@ -9,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
 import SiteLogo from './SiteLogo';
-import { Button, Link } from '@mui/material';
+import { Link } from '@mui/material';
 const drawerWidth = 240;
 
 const Drawer = styled(MuiDrawer)({

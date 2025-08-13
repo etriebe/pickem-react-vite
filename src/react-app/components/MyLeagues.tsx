@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useState, useEffect } from "react";
 import { LeagueUtilities } from '../utilities/LeagueUtilities';
 import { League, IWeekPick } from '../services/PickemApiClient';
@@ -28,7 +27,7 @@ export default function MyLeagues() {
     }, []);
     return (
         <>
-            {currentLeagues.map((l, index) => {
+            {currentLeagues.map((l) => {
                 const currentLeaguePicks = currentPicks.find(p => p.leagueId === l.id);
                 return (<ul style={{ listStyleType: 'none', paddingInlineStart: '0px' }} key={l.id}><LeagueCard league={l} picksSubmitted={currentLeaguePicks != null} /></ul>);
             })}

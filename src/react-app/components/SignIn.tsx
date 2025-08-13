@@ -17,8 +17,7 @@ import AppTheme from '../theme/AppTheme';
 import { FacebookIcon, GoogleIcon } from './CustomIcons';
 import ForgotPassword from './ForgotPassword';
 import SiteLogo from './SiteLogo';
-import AuthenticationService from '../services/AuthenticationService';
-import { AuthenticationUtilities, ApiResponse } from '../utilities/AuthenticationUtilities';
+import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',

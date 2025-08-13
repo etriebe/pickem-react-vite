@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
-import { LeagueUtilities } from '../../utilities/LeagueUtilities';
 import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridEventListener } from '@mui/x-data-grid';
@@ -50,7 +49,7 @@ export default function PickemMakePicks() {
     ];
 
     const handleClose = (
-        event: React.SyntheticEvent | Event,
+        _event: React.SyntheticEvent | Event,
         reason?: SnackbarCloseReason,
     ) => {
         if (reason === 'clickaway') {

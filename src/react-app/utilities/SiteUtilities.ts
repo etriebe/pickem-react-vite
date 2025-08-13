@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { SeasonDateInformation, Spread } from '../services/PickemApiClient';
 
 export class SiteUtilities {

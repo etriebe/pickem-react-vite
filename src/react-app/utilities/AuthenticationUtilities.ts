@@ -1,4 +1,3 @@
-import * as React from 'react';
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
 import { LoginRequest, UserInfo } from "../services/PickemApiClient";
 import { ApiResponse } from './ApiUtilities';
