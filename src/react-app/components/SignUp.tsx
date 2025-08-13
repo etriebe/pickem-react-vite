@@ -15,6 +15,8 @@ import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import AppTheme from '../theme/AppTheme';
 import SiteLogo from './SiteLogo';
+import PickemApiClientFactory from '../services/PickemApiClientFactory';
+import { RegisterRequest } from '../services/PickemApiClient';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -103,11 +105,12 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     if (nameError || emailError || passwordError) {
       event.preventDefault();
       return;
     }
+    event.preventDefault(); // Prevent default form submission
     const data = new FormData(event.currentTarget);
     console.log({
       name: data.get('name'),
@@ -115,6 +118,16 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       email: data.get('email'),
       password: data.get('password'),
     });
+    const pickemClient = PickemApiClientFactory.createClient();
+    const body = new RegisterRequest();
+    body.email = data.get('email') as string;
+    body.password = data.get('password') as string;
+    try {
+      await pickemClient.register(body);
+    }
+    catch (error) {
+      console.error('Error during registering:', error);
+    }
   };
 
   return (
@@ -129,14 +142,14 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
             <FormControl>
-              <FormLabel htmlFor="name">Full name</FormLabel>
+              <FormLabel htmlFor="name">User name</FormLabel>
               <TextField
                 autoComplete="name"
                 name="name"
                 required
                 fullWidth
                 id="name"
-                placeholder="Jon Snow"
+                placeholder="jon_snow"
                 error={nameError}
                 helperText={nameErrorMessage}
                 color={nameError ? 'error' : 'primary'}
