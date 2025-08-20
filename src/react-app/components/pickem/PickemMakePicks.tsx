@@ -61,8 +61,8 @@ export default function PickemMakePicks() {
         {
             field: 'awayTeam',
             headerName: 'Away Team',
-            width: 250,
-            minWidth: 250,
+            width: 200,
+            minWidth: 200,
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.AwayTeam);
             },
@@ -70,8 +70,8 @@ export default function PickemMakePicks() {
         {
             field: 'homeTeam',
             headerName: 'Home Team',
-            width: 250,
-            minWidth: 250,
+            width: 200,
+            minWidth: 200,
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.HomeTeam);
             }
