@@ -14,7 +14,7 @@ export class Client {
 
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "https://localhost:32771/";
+        this.baseUrl = baseUrl ?? "https://pickemapi20250725110234-hmfrfjgjdafwbpgd.centralus-01.azurewebsites.net/";
     }
 
     /**
