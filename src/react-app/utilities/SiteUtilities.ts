@@ -1,4 +1,6 @@
-import { SeasonDateInformation, Spread } from '../services/PickemApiClient';
+import { ReactElement, ReactNode } from 'hono/jsx';
+import { LeagueDTO, SeasonDateInformation, Spread, TeamDTO } from '../services/PickemApiClient';
+import React from 'react';
 
 export class SiteUtilities {
     static getWeekStandingLink(leagueType: number, leagueId: string, weekNumber: number): string {
@@ -94,5 +96,37 @@ export class SiteUtilities {
         // return $"{prefix}{currentSpread}";
         const prefix = currentSpread.spreadAmount! >= 0 ? "+" : "";
         return `${prefix}${currentSpread.spreadAmount?.toFixed(1)}`
+    }
+
+    static getTeamIconPathFromTeam(team: TeamDTO, league: LeagueDTO): string {
+        const city = team.city?.replace(" ", "_").toLocaleLowerCase();
+        const name = team.name?.replace(" ", "_").toLocaleLowerCase();
+        const imagePath = `/public/TeamIcons/${SiteUtilities.getSportFolderNameFromSportNumber(league?.sport!)}/${city}_${name}.svg`;
+        return imagePath;
+    }
+
+    static getAltTextFromTeam(team: TeamDTO): string {
+        const city = team.city!;
+        const name = team.name!;
+        return `${city} ${name} team logo`;
+    }
+
+    static getSportFolderNameFromSportNumber(sportNumber: number): string {
+        switch (sportNumber) {
+            // both 1 and 2 are pickem against the spread and pickem straight up and have the same pick pages
+            case 1:
+                return `NFL`;
+            case 2:
+                return `NHL`;
+            case 3:
+                return `MLB`;
+            case 4:
+                return `NBA`;
+            case 5:
+            case 6:
+                return `NCAA`;
+            default:
+                throw new Error("Unknown league type");
+        }
     }
 }

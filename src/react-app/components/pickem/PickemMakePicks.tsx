@@ -1,59 +1,68 @@
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
-import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO } from '../../services/PickemApiClient';
+import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
-import { DataGrid, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
 import { Typography, Snackbar, SnackbarCloseReason } from '@mui/material';
+import TeamIcon from '../TeamIcon';
 
 enum MakePicksColumnType {
-  AwayTeam = 1,
-  HomeTeam = 2,
-  KeyPick = 3,
-  GameStartTime = 4,
+    AwayTeam = 1,
+    HomeTeam = 2,
+    KeyPick = 3,
+    GameStartTime = 4,
 }
 
 export default function PickemMakePicks() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
     const [currentPicks, setCurrentPicks] = useState<SpreadWeekPickDTO>();
+    const [selectedPicksCount, setSelectedPicksCount] = useState(0);
     const [weekGames, setWeekGames] = useState<GameDTO[]>();
     const [weekDescription, setWeekDescription] = useState("");
     const { leagueId, weekNumber } = useParams();
     const [open, setOpen] = useState(false);
     const weekNumberConverted = parseInt(weekNumber!);
+    const apiRef = useGridApiRef();
 
-    const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): string => {
-        let cellText = `${params.value.city} ${params.value.name}`;
+    const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): React.ReactNode => {
+        const imagePath = SiteUtilities.getTeamIconPathFromTeam(params.value as TeamDTO, currentLeague!);
+        const altText = SiteUtilities.getAltTextFromTeam(params.value as TeamDTO);
+        let cellText = `${params.value.name}`;
 
         if (cellType === MakePicksColumnType.HomeTeam) {
             cellText += ` (${SiteUtilities.getFormattedSpreadAmount(params.row.currentSpread!)})`
         }
 
-        if (!currentPicks || !currentPicks.gamePicks) {
-            return cellText;
-        }
-        const selectedGameId = params.row.id;
-        const gamePick = currentPicks.gamePicks.find(g => g.gameID === selectedGameId);
+        if (currentPicks && currentPicks.gamePicks) {
+            const selectedGameId = params.row.id;
+            const gamePick = currentPicks.gamePicks.find(g => g.gameID === selectedGameId);
+            if (gamePick) {
+                const isTeamSelected = (gamePick.sidePicked === 0 && cellType === MakePicksColumnType.HomeTeam) ||
+                    (gamePick.sidePicked === 1 && cellType === MakePicksColumnType.AwayTeam);
 
-        if (!gamePick) {
-            return cellText;
+                if (isTeamSelected) {
+                    cellText += ` ☑️`;
+                }
+            }
         }
 
-        const isTeamSelected = (gamePick.sidePicked === 0 && cellType === MakePicksColumnType.HomeTeam) ||
-            (gamePick.sidePicked === 1 && cellType === MakePicksColumnType.AwayTeam);
-        
-        if (isTeamSelected) {
-            cellText += ` ☑️`;
-        }
-        return cellText;
+        return (
+            <>
+                <div className='teamPickContainer'>
+                    <TeamIcon imagePath={imagePath} altText={altText} />
+                    <div >{cellText}</div>
+                </div>
+            </>);
     }
 
     const columns: GridColDef<(GameDTO[])[number]>[] = [
         {
             field: 'awayTeam',
             headerName: 'Away Team',
-            width: 150,
+            width: 250,
+            minWidth: 250,
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.AwayTeam);
             },
@@ -61,7 +70,8 @@ export default function PickemMakePicks() {
         {
             field: 'homeTeam',
             headerName: 'Home Team',
-            width: 200,
+            width: 250,
+            minWidth: 250,
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.HomeTeam);
             }
@@ -70,6 +80,7 @@ export default function PickemMakePicks() {
             field: 'gameStartTime',
             headerName: 'Game Time',
             width: 175,
+            minWidth: 175,
             renderCell: (params) => (
                 `${SiteUtilities.getFormattedGameTime(params.value)}`
             ),
@@ -77,6 +88,7 @@ export default function PickemMakePicks() {
         {
             field: 'keyPick',
             headerName: 'Key Pick',
+            minWidth: 175,
             width: 100,
         },
     ];
@@ -101,20 +113,18 @@ export default function PickemMakePicks() {
             throw new Error("currentPicks.gamePicks should not be able to be null here.");
         }
         let currentGame = weekGames?.find(g => g.id === params.row.id);
+        if (!currentGame) {
+            throw new Error("Couldn't find the correct game");
+        }
         let currentPick = currentPicks.gamePicks.find(g => g.gameID === params.row.id);
 
         if (!currentPick) {
             // Picking a brand new game
-
             if (currentPicks.gamePicks.length >= currentLeague?.settings?.totalPicks!) {
                 setOpen(true);
                 return;
             }
-            currentPick = new SpreadGamePickDTO();
-            currentPick.gameID = currentGame?.id;
-            currentPick.gameStartTime = currentGame?.gameStartTime;
-            currentPick.sidePicked = currentGame?.awayTeam === params.value ? 0 : 1;
-            currentPick.isKeyPicked = false; // TODO: Pull for real
+            currentPick = createPickObject(currentGame, params.value as TeamDTO);
             currentPicks.gamePicks.push(currentPick);
             setCurrentPicks(currentPicks);
         }
@@ -125,20 +135,28 @@ export default function PickemMakePicks() {
             if ((currentPick.sidePicked === 0 && currentGame?.homeTeam === params.value) ||
                 (currentPick.sidePicked === 1 && currentGame?.awayTeam === params.value)) {
                 const indexOfPick = currentPicks.gamePicks.indexOf(currentPick);
-                if (indexOfPick && indexOfPick > -1) {
-                    currentPicks.gamePicks.splice(indexOfPick, 1);
-                }
+                currentPicks.gamePicks.splice(indexOfPick, 1);
             }
-            // If they are picking the opposite side now
+            // If they are picking the opposite side now. TODO: THIS CASE ISN'T WORKING
             else if ((currentPick.sidePicked === 0 && currentGame?.awayTeam === params.value) ||
                 (currentPick.sidePicked === 1 && currentGame?.homeTeam === params.value)) {
-                currentPick.sidePicked = currentGame?.homeTeam === params.value ? 0 : 1;
+                const indexOfPick = currentPicks.gamePicks.indexOf(currentPick);
+                currentPicks.gamePicks.splice(indexOfPick, 1);
+                currentPick = createPickObject(currentGame, params.value as TeamDTO);
+                currentPicks.gamePicks.push(currentPick);
+                // currentPick.sidePicked = currentGame?.homeTeam === params.value ? 0 : 1;
             }
+            setCurrentPicks(currentPicks);
 
             // currentPick.sidePicked = currentGame?.awayTeam === params.value ? 0 : 1;
         }
 
+        // setWeekGames(weekGames);
         setCurrentPicks(currentPicks);
+        setSelectedPicksCount(currentPicks.gamePicks.length);
+        // apiRef.current!.setCellFocus(params.id, params.field);
+        apiRef.current?.selectRow(params.id);
+        apiRef.current?.autosizeColumns();
     };
 
     useEffect(() => {
@@ -158,10 +176,11 @@ export default function PickemMakePicks() {
 
         fetchData();
     }, []);
+
     return (
         <>
             <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
-            <Typography variant='h5'>{weekDescription} Picks</Typography>
+            <Typography variant='h5'>{weekDescription} Picks - {selectedPicksCount} / {currentLeague?.settings?.totalPicks} Picks</Typography>
             <Snackbar
                 open={open}
                 autoHideDuration={5000}
@@ -172,8 +191,19 @@ export default function PickemMakePicks() {
                 rows={weekGames}
                 columns={columns}
                 onCellClick={handleCellClick}
+                apiRef={apiRef}
+                rowSelection={false}
             />
         </>
     );
+
+    function createPickObject(currentGame: GameDTO, chosenTeam: TeamDTO) {
+        const currentPick = new SpreadGamePickDTO();
+        currentPick.gameID = currentGame?.id;
+        currentPick.gameStartTime = currentGame?.gameStartTime;
+        currentPick.sidePicked = currentGame?.homeTeam === chosenTeam ? 0 : 1;
+        currentPick.isKeyPicked = false; // TODO: Pull for real
+        return currentPick;
+    }
 }
 

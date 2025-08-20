@@ -1,0 +1,24 @@
+.teamlogo {
+    max-width: 40px;
+    max-height: 40px;
+
+}
+
+.teamPickContainer {
+    display: inline-flex;
+    place-items: center;
+    /* Centers both horizontally and vertically */
+    max-height: 40px;
+    /* Set the height of the container */
+    max-width: 40px;
+}
+
+.teamPickContainer img {
+    max-height: 100%;
+    /* Ensures the image fits within the container */
+    max-width: 100%;
+}
+
+.teamPickContainer div {
+    margin-left: 5px;
+}
