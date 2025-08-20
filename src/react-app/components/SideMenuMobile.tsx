@@ -8,7 +8,6 @@ import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import MenuButton from './MenuButton';
 import MenuContent from './MenuContent';
 import { Button, Link } from '@mui/material';
-import { href } from 'react-router';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
 
 interface SideMenuMobileProps {
