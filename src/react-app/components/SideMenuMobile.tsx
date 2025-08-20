@@ -8,6 +8,8 @@ import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import MenuButton from './MenuButton';
 import MenuContent from './MenuContent';
 import { Button, Link } from '@mui/material';
+import { href } from 'react-router';
+import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
 
 interface SideMenuMobileProps {
   open: boolean | undefined;
@@ -18,6 +20,9 @@ interface SideMenuMobileProps {
 }
 
 export default function SideMenuMobile({ open, isAuthenticated, username, email, toggleDrawer }: SideMenuMobileProps) {
+  const handleLogOut = async () => {
+    await AuthenticationUtilities.logout(window.location.origin);
+  };
   return (
     <Drawer
       anchor="right"
@@ -78,7 +83,7 @@ export default function SideMenuMobile({ open, isAuthenticated, username, email,
           <Divider />
         </Stack>
         <Stack sx={{ p: 2 }}>
-          <Button variant="outlined" fullWidth startIcon={<LogoutRoundedIcon />}>
+          <Button variant="outlined" fullWidth onClick={handleLogOut} startIcon={<LogoutRoundedIcon />}>
             Logout
           </Button>
         </Stack>

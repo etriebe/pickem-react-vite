@@ -3,6 +3,7 @@ import { LeagueUtilities } from '../utilities/LeagueUtilities';
 import { League, IWeekPick } from '../services/PickemApiClient';
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
 import LeagueCard from './LeagueCard';
+import { Grid } from "@mui/material";
 
 export default function MyLeagues() {
     const [currentLeagues, setCurrentLeagues] = useState<League[]>([]);
@@ -27,10 +28,20 @@ export default function MyLeagues() {
     }, []);
     return (
         <>
-            {currentLeagues.map((l) => {
-                const currentLeaguePicks = currentPicks.find(p => p.leagueId === l.id);
-                return (<ul style={{ listStyleType: 'none', paddingInlineStart: '0px' }} key={l.id}><LeagueCard league={l} picksSubmitted={currentLeaguePicks != null} /></ul>);
-            })}
+            <Grid
+                container
+                spacing={2}
+                columns={12}
+                sx={{ mb: (theme) => theme.spacing(2) }}
+            >
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                    {currentLeagues.map((l) => {
+                        const currentLeaguePicks = currentPicks.find(p => p.leagueId === l.id);
+                        return (<ul style={{ listStyleType: 'none', paddingInlineStart: '0px' }} key={l.id}><LeagueCard league={l} picksSubmitted={currentLeaguePicks != null} /></ul>);
+                    })}
+                </Grid>
+            </Grid>
+
         </>
     );
 }

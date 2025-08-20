@@ -62,7 +62,7 @@ export class SiteUtilities {
     }
 
     static getWeekDescriptionFromWeekNumber(season: SeasonDateInformation, weekNumber: number): string {
-        if (weekNumber > season.weekStartTimes?.length! || weekNumber <= 1) {
+        if (weekNumber > season.weekStartTimes?.length! || weekNumber < 1) {
             throw new Error(`Invalid weekNumber requested: ${weekNumber}`);
         }
 

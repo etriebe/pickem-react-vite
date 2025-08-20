@@ -6,4 +6,19 @@ export class LeagueUtilities {
     const pickemClient = PickemApiClientFactory.createClient();
     return pickemClient.getLeaguesForCurrentUser(showArchivedLeagues);
   }
+
+  static isOffSeason(league: League): boolean {
+    const numberOfDaysBuffer = 14;
+    const startOfWeekOne = league.seasonInformation!.startOfWeekOne!;
+    const endOfSeason = league.seasonInformation!.endOfSeason!;
+    const currentDate = new Date();
+    startOfWeekOne.setDate(startOfWeekOne.getDate() - numberOfDaysBuffer);
+    endOfSeason.setDate(endOfSeason.getDate() - numberOfDaysBuffer);
+    if (currentDate < startOfWeekOne || currentDate > endOfSeason) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
 }

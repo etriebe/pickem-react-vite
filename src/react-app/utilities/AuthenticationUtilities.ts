@@ -48,6 +48,24 @@ export class AuthenticationUtilities {
     }
   }
 
+  static async logout(returnUrl: string): Promise<void> {
+    const pickemClient = PickemApiClientFactory.createClient();
+    
+    try
+    {
+        await pickemClient.logout();
+        this.clearLocalStorage();
+        window.location.href = '/';
+        return;
+    }
+    catch (err)
+    {
+        console.error(`Failed to logout: ${err}`);
+        AuthenticationUtilities.clearLocalStorage();
+        return;
+    }
+  }
+
   private static clearLocalStorage(): void {
     localStorage.setItem('isLoggedIn', 'false');
     localStorage.setItem('email', "");

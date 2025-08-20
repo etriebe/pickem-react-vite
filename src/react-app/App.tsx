@@ -87,7 +87,7 @@ function App() {
               <Header />
 
               <Routes>
-                <Route path="/" element={<MainGrid />} />
+                <Route path="/" element={ isAuthenticated ? <MyLeagues /> : <MainGrid />}/>
                 <Route path="/myleagues" element={ <MyLeagues />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
