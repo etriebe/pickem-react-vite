@@ -214,6 +214,17 @@ export default function PickemMakePicks() {
         apiRef.current?.autosizeColumns();
     };
 
+    const handleSubmitPicks = async () => {
+        if (!currentPicks) {
+            throw new Error("currentPicks should not be able to be null here.");
+        }
+
+        const pickemClient = PickemApiClientFactory.createClient();
+        await pickemClient.upsertSpreadWeekPick(currentPicks);
+        setSnackbarMessage("Your picks have been submitted successfully!");
+        setOpen(true);
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             const pickemClient = PickemApiClientFactory.createClient();
@@ -279,7 +290,7 @@ export default function PickemMakePicks() {
                 getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
             />
             <div className='makePicksButtonsDiv'>
-                <Button className='submitPicksButton' variant='contained' color='primary'>Submit Picks</Button>
+                <Button className='submitPicksButton' variant='contained' color='primary' onClick={handleSubmitPicks}>Submit Picks</Button>
                 <Button className='cancelPicksButton' variant='outlined' href='/'>Cancel</Button>
             </div>
         </>
@@ -290,7 +301,12 @@ export default function PickemMakePicks() {
         currentPick.gameID = currentGame?.id;
         currentPick.gameStartTime = currentGame?.gameStartTime;
         currentPick.sidePicked = currentGame?.homeTeam === chosenTeam ? 0 : 1;
-        currentPick.isKeyPicked = false; // TODO: Pull for real
+        currentPick.isKeyPicked = false;
+        currentPick.spreadWhenPicked = currentGame?.currentSpread!;
+        currentPick.isEdited = false;
+        currentPick.isLocked = false;
+        currentPick.timeOfPick = new Date();
+        currentPick.pickType = currentLeague?.type;
         return currentPick;
     }
 }
