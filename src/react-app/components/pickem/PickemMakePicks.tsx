@@ -19,42 +19,59 @@ export default function PickemMakePicks() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
     const [currentPicks, setCurrentPicks] = useState<SpreadWeekPickDTO>();
     const [selectedPicksCount, setSelectedPicksCount] = useState(0);
+    const [selectedKeyPicksCount, setSelectedKeyPicksCount] = useState(0);
     const [weekGames, setWeekGames] = useState<GameDTO[]>();
     const [weekDescription, setWeekDescription] = useState("");
     const { leagueId, weekNumber } = useParams();
     const [open, setOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
     const weekNumberConverted = parseInt(weekNumber!);
     const apiRef = useGridApiRef();
 
     const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): React.ReactNode => {
-        const imagePath = SiteUtilities.getTeamIconPathFromTeam(params.value as TeamDTO, currentLeague!);
-        const altText = SiteUtilities.getAltTextFromTeam(params.value as TeamDTO);
-        let cellText = `${params.value.name}`;
+        if (cellType === MakePicksColumnType.AwayTeam ||
+            cellType === MakePicksColumnType.HomeTeam) {
+            let cellText = `${params.value.name}`;
 
-        if (cellType === MakePicksColumnType.HomeTeam) {
-            cellText += ` (${SiteUtilities.getFormattedSpreadAmount(params.row.currentSpread!)})`
-        }
+            if (cellType === MakePicksColumnType.HomeTeam) {
+                cellText += ` (${SiteUtilities.getFormattedSpreadAmount(params.row.currentSpread!)})`
+            }
 
-        if (currentPicks && currentPicks.gamePicks) {
-            const selectedGameId = params.row.id;
-            const gamePick = currentPicks.gamePicks.find(g => g.gameID === selectedGameId);
-            if (gamePick) {
-                const isTeamSelected = (gamePick.sidePicked === 0 && cellType === MakePicksColumnType.HomeTeam) ||
-                    (gamePick.sidePicked === 1 && cellType === MakePicksColumnType.AwayTeam);
+            if (currentPicks && currentPicks.gamePicks) {
+                const selectedGameId = params.row.id;
+                const gamePick = currentPicks.gamePicks.find(g => g.gameID === selectedGameId);
+                if (gamePick) {
+                    const isTeamSelected = (gamePick.sidePicked === 0 && cellType === MakePicksColumnType.HomeTeam) ||
+                        (gamePick.sidePicked === 1 && cellType === MakePicksColumnType.AwayTeam);
 
-                if (isTeamSelected) {
-                    cellText += ` ☑️`;
+                    if (isTeamSelected) {
+                        cellText += ` ☑️`;
+                    }
                 }
             }
+            const imagePath = SiteUtilities.getTeamIconPathFromTeam(params.value as TeamDTO, currentLeague!);
+            const altText = SiteUtilities.getAltTextFromTeam(params.value as TeamDTO);
+            return (
+                <>
+                    <div className='teamPickContainer'>
+                        <TeamIcon imagePath={imagePath} altText={altText} />
+                        <div >{cellText}</div>
+                    </div>
+                </>);
         }
-
-        return (
-            <>
-                <div className='teamPickContainer'>
-                    <TeamIcon imagePath={imagePath} altText={altText} />
-                    <div >{cellText}</div>
-                </div>
-            </>);
+        else if (cellType === MakePicksColumnType.KeyPick) {
+            if (currentPicks && currentPicks.gamePicks) {
+                const selectedGameId = params.row.id;
+                const gamePick = currentPicks.gamePicks.find(g => g.gameID === selectedGameId);
+                if (gamePick?.isKeyPicked) {
+                    return <>🔑</>
+                }
+            }
+            return <></>;
+        }
+        else {
+            return <></>;
+        }
     }
 
     const columns: GridColDef<(GameDTO[])[number]>[] = [
@@ -90,8 +107,11 @@ export default function PickemMakePicks() {
         {
             field: 'keyPick',
             headerName: 'Key Pick',
-            minWidth: 175,
+            minWidth: 100,
             width: 100,
+            renderCell: (params) => {
+                return formatCell(params, MakePicksColumnType.KeyPick);
+            }
         },
     ];
 
@@ -120,9 +140,34 @@ export default function PickemMakePicks() {
         }
         let currentPick = currentPicks.gamePicks.find(g => g.gameID === params.row.id);
 
+        if (params.field === "keyPick") {
+            if (currentPick == null) {
+                setSnackbarMessage("You cannot select a key pick unless you have selected the game first.")
+                setOpen(true);
+                return;
+            }
+
+            if (currentPick.isKeyPicked) {
+                currentPick.isKeyPicked = false;
+            }
+            else {
+                let currentKeyPickCount = currentPicks.gamePicks.filter(g => g.isKeyPicked).length;
+                if (currentKeyPickCount >= currentLeague?.settings?.keyPicks!) {
+                    setSnackbarMessage("You have selected too many picks. Please unselect one before selecting again.")
+                    setOpen(true);
+                    return;
+                }
+                currentPick.isKeyPicked = !currentPick.isKeyPicked;
+            }
+            setCurrentPicks(currentPicks);
+            setSelectedKeyPicksCount(currentPicks.gamePicks.filter(p => p.isKeyPicked).length);
+            return;
+        }
+
         if (!currentPick) {
             // Picking a brand new game
             if (currentPicks.gamePicks.length >= currentLeague?.settings?.totalPicks!) {
+                setSnackbarMessage("You have selected too many picks. Please unselect one before selecting again.")
                 setOpen(true);
                 return;
             }
@@ -182,14 +227,20 @@ export default function PickemMakePicks() {
     return (
         <>
             <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
-            <Typography variant='h5'>{weekDescription} Picks - {selectedPicksCount} / {currentLeague?.settings?.totalPicks} Picks</Typography>
+            <Typography variant='h5'>{weekDescription} Picks - {selectedPicksCount} / {currentLeague?.settings?.totalPicks} Picks, {selectedKeyPicksCount} / {currentLeague?.settings?.keyPicks} Key Picks</Typography>
             <Snackbar
                 open={open}
                 autoHideDuration={5000}
                 onClose={handleClose}
-                message="You have selected too many picks. Please unselect one before selecting again."
+                message={snackbarMessage}
             />
             <DataGrid
+                // Uncommenting this will remove focus for a cell when clicked
+                // sx={{
+                //     "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                //         outline: "none !important",
+                //     },
+                // }}
                 rows={weekGames}
                 columns={columns}
                 onCellClick={handleCellClick}
