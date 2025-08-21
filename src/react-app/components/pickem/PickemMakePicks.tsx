@@ -63,6 +63,7 @@ export default function PickemMakePicks() {
             headerName: 'Away Team',
             width: 200,
             minWidth: 200,
+            cellClassName: "centerDivContainer",
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.AwayTeam);
             },
@@ -72,6 +73,7 @@ export default function PickemMakePicks() {
             headerName: 'Home Team',
             width: 200,
             minWidth: 200,
+            cellClassName: "centerDivContainer",
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.HomeTeam);
             }
