@@ -17,7 +17,6 @@ enum MakePicksColumnType {
 }
 
 export default function PickemMakePicks() {
-    const [width, setWidth] = React.useState(window.innerWidth);
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
     const [currentPicks, setCurrentPicks] = useState<SpreadWeekPickDTO>();
     const [selectedPicksCount, setSelectedPicksCount] = useState(0);
@@ -244,7 +243,7 @@ export default function PickemMakePicks() {
 
     React.useEffect(() => {
         const handleResizeWindow = () => { 
-            setWidth(window.innerWidth);
+            // setWidth(window.innerWidth);
             apiRef.current?.autosizeColumns();
         };
         // subscribe to window resize event "onComponentDidMount"
