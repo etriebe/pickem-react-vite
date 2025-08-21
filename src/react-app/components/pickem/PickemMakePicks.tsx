@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
 import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
-import { DataGrid, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
+import { DataGrid, gridClasses, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
 import { Typography, Snackbar, SnackbarCloseReason } from '@mui/material';
 import TeamIcon from '../TeamIcon';
+import { red } from '@mui/material/colors';
 
 enum MakePicksColumnType {
     AwayTeam = 1,
@@ -235,12 +236,21 @@ export default function PickemMakePicks() {
                 message={snackbarMessage}
             />
             <DataGrid
-                // Uncommenting this will remove focus for a cell when clicked
-                // sx={{
-                //     "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                //         outline: "none !important",
-                //     },
-                // }}
+                sx={{
+                    border: '1px solid #7e7e7eff', // Darker gray border
+                    '& .MuiDataGrid-row': {
+                        borderBottom: '1px solid #7e7e7eff', // Darker row border
+                    },
+                    '& .MuiDataGrid-iconSeparator': {
+                        color: '#7e7e7eff', // Darker row border
+                    },
+                    '& .MuiDataGrid-columnHeaders': {
+                        borderBottom: '1px solid #7e7e7eff', // Darker row border
+                    },
+                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                        outline: "none !important",
+                    },
+                }}
                 rows={weekGames}
                 columns={columns}
                 onCellClick={handleCellClick}
