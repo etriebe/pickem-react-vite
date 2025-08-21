@@ -32,7 +32,7 @@ export default function PickemMakePicks() {
     const apiRef = useGridApiRef();
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
     const awayTeamColumnWidth = isSmallScreen ? 85 : 200;
-    const homeTeamColumnWidth = isSmallScreen ? 110 : 200;
+    const homeTeamColumnWidth = isSmallScreen ? 110 : 220;
     const gameStartColumnWidth = isSmallScreen ? 110 : 200;
     const keyPickColumnWidth = isSmallScreen ? 75 : 125;
 
