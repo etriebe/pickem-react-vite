@@ -8,6 +8,7 @@ import { SiteUtilities } from '../../utilities/SiteUtilities';
 import { Typography, Snackbar, SnackbarCloseReason } from '@mui/material';
 import TeamIcon from '../TeamIcon';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import MakePicksTeamCell from '../MakePicksTeamCell';
 
 enum MakePicksColumnType {
     AwayTeam = 1,
@@ -30,9 +31,10 @@ export default function PickemMakePicks() {
     const weekNumberConverted = parseInt(weekNumber!);
     const apiRef = useGridApiRef();
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
-    const awayTeamColumnWidth = isSmallScreen ? 100 : 200;
-    const homeTeamColumnWidth = isSmallScreen ? 150 : 200;
-    const gameStartColumnWidth = isSmallScreen ? 125 : 200;
+    const awayTeamColumnWidth = isSmallScreen ? 85 : 200;
+    const homeTeamColumnWidth = isSmallScreen ? 110 : 200;
+    const gameStartColumnWidth = isSmallScreen ? 100 : 200;
+    const keyPickColumnWidth = isSmallScreen ? 75 : 125;
 
     const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): React.ReactNode => {
         const teamChosen = (params.value as TeamDTO);
@@ -60,10 +62,7 @@ export default function PickemMakePicks() {
             const altText = SiteUtilities.getAltTextFromTeam(teamChosen);
             return (
                 <>
-                    <div className='teamPickContainer'>
-                        <TeamIcon imagePath={imagePath} altText={altText} />
-                        <div >{cellText}</div>
-                    </div>
+                    <MakePicksTeamCell imagePath={imagePath} altText={altText} isSmallScreen={isSmallScreen} cellText={cellText} />
                 </>);
         }
         else if (cellType === MakePicksColumnType.GameStartTime) {
@@ -87,41 +86,45 @@ export default function PickemMakePicks() {
     const columns: GridColDef<(GameDTO[])[number]>[] = [
         {
             field: 'awayTeam',
-            headerName: 'Away Team',
+            headerName: 'Away',
             width: awayTeamColumnWidth,
             minWidth: awayTeamColumnWidth,
             cellClassName: "centerDivContainer",
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.AwayTeam);
             },
+            disableColumnMenu: true,
         },
         {
             field: 'homeTeam',
-            headerName: 'Home Team',
+            headerName: 'Home',
             width: homeTeamColumnWidth,
             minWidth: homeTeamColumnWidth,
             cellClassName: "centerDivContainer",
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.HomeTeam);
-            }
+            },
+            disableColumnMenu: true,
         },
         {
             field: 'gameStartTime',
             headerName: 'Game Time',
-            width: gameStartColumnWidth,
             minWidth: gameStartColumnWidth,
+            flex: 1,
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.GameStartTime);
-            }
+            },
+            disableColumnMenu: true,
         },
         {
             field: 'keyPick',
             headerName: 'Key Pick',
-            minWidth: 100,
-            width: 100,
+            minWidth: keyPickColumnWidth,
+            flex: 0.75,
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.KeyPick);
-            }
+            },
+            disableColumnMenu: true,
         },
     ];
 
@@ -230,7 +233,10 @@ export default function PickemMakePicks() {
     }, []);
 
     React.useEffect(() => {
-        const handleResizeWindow = () => setWidth(window.innerWidth);
+        const handleResizeWindow = () => { 
+            setWidth(window.innerWidth);
+            apiRef.current?.autosizeColumns();
+        };
         // subscribe to window resize event "onComponentDidMount"
         window.addEventListener("resize", handleResizeWindow);
         return () => {
@@ -270,6 +276,7 @@ export default function PickemMakePicks() {
                 onCellClick={handleCellClick}
                 apiRef={apiRef}
                 rowSelection={false}
+                getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
             />
         </>
     );

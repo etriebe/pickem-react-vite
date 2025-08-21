@@ -26,3 +26,30 @@
 .teamPickContainer div {
     margin-left: 5px;
 }
+
+.makePickContainer {
+    font-size: medium;
+}
+
+.makePickContainerSmall {
+    font-size: small;
+}
+
+.teamPickContainerSmall {
+    display: inline-flex;
+    place-items: center;
+    /* Centers both horizontally and vertically */
+    max-height: 20px;
+    /* Set the height of the container */
+    max-width: 20px;
+}
+
+.teamPickContainerSmall img {
+    max-height: 100%;
+    /* Ensures the image fits within the container */
+    max-width: 100%;
+}
+
+.teamPickContainerSmall div {
+    margin-left: 5px;
+}
