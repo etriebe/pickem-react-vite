@@ -26,7 +26,7 @@ export default function OptionsMenu() {
     setAnchorEl(null);
   };
   const handleLogOut = async () => {
-    await AuthenticationUtilities.logout(window.location.origin);
+    await AuthenticationUtilities.logout();
   };
   return (
     <React.Fragment>

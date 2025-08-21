@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-
 export interface TeamIconProps {
     imagePath: string;
     altText: string;

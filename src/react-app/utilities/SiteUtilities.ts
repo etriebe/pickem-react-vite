@@ -1,6 +1,4 @@
-import { ReactElement, ReactNode } from 'hono/jsx';
 import { LeagueDTO, SeasonDateInformation, Spread, TeamDTO } from '../services/PickemApiClient';
-import React from 'react';
 
 export class SiteUtilities {
     static getWeekStandingLink(leagueType: number, leagueId: string, weekNumber: number): string {

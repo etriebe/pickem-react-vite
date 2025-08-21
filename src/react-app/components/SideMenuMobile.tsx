@@ -20,7 +20,7 @@ interface SideMenuMobileProps {
 
 export default function SideMenuMobile({ open, isAuthenticated, username, email, toggleDrawer }: SideMenuMobileProps) {
   const handleLogOut = async () => {
-    await AuthenticationUtilities.logout(window.location.origin);
+    await AuthenticationUtilities.logout();
   };
   return (
     <Drawer

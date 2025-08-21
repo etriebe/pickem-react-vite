@@ -1,9 +1,7 @@
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import HighlightedCard from './HighlightedCard';
-import { Button } from '@mui/material';
 
 export default function MainGrid() {
   return (

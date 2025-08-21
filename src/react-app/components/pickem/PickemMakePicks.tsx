@@ -3,10 +3,9 @@ import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
 import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
-import { DataGrid, gridClasses, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
 import { Typography, Snackbar, SnackbarCloseReason, Button } from '@mui/material';
-import TeamIcon from '../TeamIcon';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MakePicksTeamCell from '../MakePicksTeamCell';
 

@@ -48,7 +48,7 @@ export class AuthenticationUtilities {
     }
   }
 
-  static async logout(returnUrl: string): Promise<void> {
+  static async logout(): Promise<void> {
     const pickemClient = PickemApiClientFactory.createClient();
     
     try

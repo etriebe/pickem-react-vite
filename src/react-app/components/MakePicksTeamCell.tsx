@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
 import TeamIcon from "./TeamIcon";
-import { Typography } from "@mui/material";
 
 export interface MakePicksTeamCellProps {
     imagePath: string;
