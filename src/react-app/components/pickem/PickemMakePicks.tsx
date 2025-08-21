@@ -7,7 +7,7 @@ import { DataGrid, gridClasses, GridColDef, GridEventListener, GridRenderCellPar
 import { SiteUtilities } from '../../utilities/SiteUtilities';
 import { Typography, Snackbar, SnackbarCloseReason } from '@mui/material';
 import TeamIcon from '../TeamIcon';
-import { red } from '@mui/material/colors';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 enum MakePicksColumnType {
     AwayTeam = 1,
@@ -17,6 +17,7 @@ enum MakePicksColumnType {
 }
 
 export default function PickemMakePicks() {
+    const [width, setWidth] = React.useState(window.innerWidth);
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
     const [currentPicks, setCurrentPicks] = useState<SpreadWeekPickDTO>();
     const [selectedPicksCount, setSelectedPicksCount] = useState(0);
@@ -28,11 +29,16 @@ export default function PickemMakePicks() {
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const weekNumberConverted = parseInt(weekNumber!);
     const apiRef = useGridApiRef();
+    const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
+    const awayTeamColumnWidth = isSmallScreen ? 100 : 200;
+    const homeTeamColumnWidth = isSmallScreen ? 150 : 200;
+    const gameStartColumnWidth = isSmallScreen ? 125 : 200;
 
     const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): React.ReactNode => {
+        const teamChosen = (params.value as TeamDTO);
         if (cellType === MakePicksColumnType.AwayTeam ||
             cellType === MakePicksColumnType.HomeTeam) {
-            let cellText = `${params.value.name}`;
+            let cellText = isSmallScreen ? `${teamChosen.abbreviation}` : `${teamChosen.name}`;
 
             if (cellType === MakePicksColumnType.HomeTeam) {
                 cellText += ` (${SiteUtilities.getFormattedSpreadAmount(params.row.currentSpread!)})`
@@ -50,8 +56,8 @@ export default function PickemMakePicks() {
                     }
                 }
             }
-            const imagePath = SiteUtilities.getTeamIconPathFromTeam(params.value as TeamDTO, currentLeague!);
-            const altText = SiteUtilities.getAltTextFromTeam(params.value as TeamDTO);
+            const imagePath = SiteUtilities.getTeamIconPathFromTeam(teamChosen, currentLeague!);
+            const altText = SiteUtilities.getAltTextFromTeam(teamChosen);
             return (
                 <>
                     <div className='teamPickContainer'>
@@ -59,6 +65,9 @@ export default function PickemMakePicks() {
                         <div >{cellText}</div>
                     </div>
                 </>);
+        }
+        else if (cellType === MakePicksColumnType.GameStartTime) {
+            return <>{SiteUtilities.getFormattedGameTime(params.value, isSmallScreen)}</>;
         }
         else if (cellType === MakePicksColumnType.KeyPick) {
             if (currentPicks && currentPicks.gamePicks) {
@@ -79,8 +88,8 @@ export default function PickemMakePicks() {
         {
             field: 'awayTeam',
             headerName: 'Away Team',
-            width: 200,
-            minWidth: 200,
+            width: awayTeamColumnWidth,
+            minWidth: awayTeamColumnWidth,
             cellClassName: "centerDivContainer",
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.AwayTeam);
@@ -89,8 +98,8 @@ export default function PickemMakePicks() {
         {
             field: 'homeTeam',
             headerName: 'Home Team',
-            width: 200,
-            minWidth: 200,
+            width: homeTeamColumnWidth,
+            minWidth: homeTeamColumnWidth,
             cellClassName: "centerDivContainer",
             renderCell: (params) => {
                 return formatCell(params, MakePicksColumnType.HomeTeam);
@@ -99,11 +108,11 @@ export default function PickemMakePicks() {
         {
             field: 'gameStartTime',
             headerName: 'Game Time',
-            width: 175,
-            minWidth: 175,
-            renderCell: (params) => (
-                `${SiteUtilities.getFormattedGameTime(params.value)}`
-            ),
+            width: gameStartColumnWidth,
+            minWidth: gameStartColumnWidth,
+            renderCell: (params) => {
+                return formatCell(params, MakePicksColumnType.GameStartTime);
+            }
         },
         {
             field: 'keyPick',
@@ -192,17 +201,12 @@ export default function PickemMakePicks() {
                 currentPicks.gamePicks.splice(indexOfPick, 1);
                 currentPick = createPickObject(currentGame, params.value as TeamDTO);
                 currentPicks.gamePicks.push(currentPick);
-                // currentPick.sidePicked = currentGame?.homeTeam === params.value ? 0 : 1;
             }
             setCurrentPicks(currentPicks);
-
-            // currentPick.sidePicked = currentGame?.awayTeam === params.value ? 0 : 1;
         }
 
-        // setWeekGames(weekGames);
         setCurrentPicks(currentPicks);
         setSelectedPicksCount(currentPicks.gamePicks.length);
-        // apiRef.current!.setCellFocus(params.id, params.field);
         apiRef.current?.selectRow(params.id);
         apiRef.current?.autosizeColumns();
     };
@@ -223,6 +227,16 @@ export default function PickemMakePicks() {
         }
 
         fetchData();
+    }, []);
+
+    React.useEffect(() => {
+        const handleResizeWindow = () => setWidth(window.innerWidth);
+        // subscribe to window resize event "onComponentDidMount"
+        window.addEventListener("resize", handleResizeWindow);
+        return () => {
+            // unsubscribe "onComponentDestroy"
+            window.removeEventListener("resize", handleResizeWindow);
+        };
     }, []);
 
     return (
