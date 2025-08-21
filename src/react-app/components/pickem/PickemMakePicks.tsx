@@ -5,7 +5,7 @@ import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO } fro
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, gridClasses, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
-import { Typography, Snackbar, SnackbarCloseReason } from '@mui/material';
+import { Typography, Snackbar, SnackbarCloseReason, Button } from '@mui/material';
 import TeamIcon from '../TeamIcon';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MakePicksTeamCell from '../MakePicksTeamCell';
@@ -33,7 +33,7 @@ export default function PickemMakePicks() {
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
     const awayTeamColumnWidth = isSmallScreen ? 85 : 200;
     const homeTeamColumnWidth = isSmallScreen ? 110 : 200;
-    const gameStartColumnWidth = isSmallScreen ? 100 : 200;
+    const gameStartColumnWidth = isSmallScreen ? 110 : 200;
     const keyPickColumnWidth = isSmallScreen ? 75 : 125;
 
     const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): React.ReactNode => {
@@ -118,7 +118,7 @@ export default function PickemMakePicks() {
         },
         {
             field: 'keyPick',
-            headerName: 'Key Pick',
+            headerName: 'Key',
             minWidth: keyPickColumnWidth,
             flex: 0.75,
             renderCell: (params) => {
@@ -278,6 +278,10 @@ export default function PickemMakePicks() {
                 rowSelection={false}
                 getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
             />
+            <div className='makePicksButtonsDiv'>
+                <Button className='submitPicksButton' variant='contained' color='primary'>Submit Picks</Button>
+                <Button className='cancelPicksButton' variant='outlined' href='/'>Cancel</Button>
+            </div>
         </>
     );
 

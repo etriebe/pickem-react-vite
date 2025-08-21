@@ -53,3 +53,7 @@
 .teamPickContainerSmall div {
     margin-left: 5px;
 }
+
+.submitPicksButton {
+    margin-right: 10px;
+}
