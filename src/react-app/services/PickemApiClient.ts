@@ -14,7 +14,7 @@ export class Client {
 
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "https://pickemapi20250725110234-hmfrfjgjdafwbpgd.centralus-01.azurewebsites.net/";
+        this.baseUrl = baseUrl ?? "https://localhost:32773/";
     }
 
     /**
@@ -1590,6 +1590,62 @@ export class Client {
             });
         }
         return Promise.resolve<SpreadWeekPickDTO[]>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @param weekNumber (optional) 
+     * @return OK
+     */
+    getAllTempSpreadWeekResults(leagueId: string | undefined, weekNumber: number | undefined): Promise<SpreadWeekResultDTO[]> {
+        let url_ = this.baseUrl + "/api/picks/GetAllTempSpreadWeekResultsAsync?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        if (weekNumber === null)
+            throw new globalThis.Error("The parameter 'weekNumber' cannot be null.");
+        else if (weekNumber !== undefined)
+            url_ += "weekNumber=" + encodeURIComponent("" + weekNumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAllTempSpreadWeekResults(_response);
+        });
+    }
+
+    protected processGetAllTempSpreadWeekResults(response: Response): Promise<SpreadWeekResultDTO[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(SpreadWeekResultDTO.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SpreadWeekResultDTO[]>(null as any);
     }
 
     /**
@@ -3190,6 +3246,78 @@ export interface IMoneyline2 {
     [key: string]: any;
 }
 
+export class PickResult implements IPickResult {
+    gameId?: string | undefined;
+    success?: boolean;
+    totalPoints?: number;
+    isKeyPick?: boolean;
+    isFinal?: boolean;
+    isSimulatedPayoutBasedOnCurrentStatus?: boolean;
+    isEdited?: boolean;
+
+    [key: string]: any;
+
+    constructor(data?: IPickResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.gameId = _data["gameId"];
+            this.success = _data["success"];
+            this.totalPoints = _data["totalPoints"];
+            this.isKeyPick = _data["isKeyPick"];
+            this.isFinal = _data["isFinal"];
+            this.isSimulatedPayoutBasedOnCurrentStatus = _data["isSimulatedPayoutBasedOnCurrentStatus"];
+            this.isEdited = _data["isEdited"];
+        }
+    }
+
+    static fromJS(data: any): PickResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new PickResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["gameId"] = this.gameId;
+        data["success"] = this.success;
+        data["totalPoints"] = this.totalPoints;
+        data["isKeyPick"] = this.isKeyPick;
+        data["isFinal"] = this.isFinal;
+        data["isSimulatedPayoutBasedOnCurrentStatus"] = this.isSimulatedPayoutBasedOnCurrentStatus;
+        data["isEdited"] = this.isEdited;
+        return data;
+    }
+}
+
+export interface IPickResult {
+    gameId?: string | undefined;
+    success?: boolean;
+    totalPoints?: number;
+    isKeyPick?: boolean;
+    isFinal?: boolean;
+    isSimulatedPayoutBasedOnCurrentStatus?: boolean;
+    isEdited?: boolean;
+
+    [key: string]: any;
+}
+
 export class RefreshRequest implements IRefreshRequest {
     refreshToken!: string;
 
@@ -3822,6 +3950,110 @@ export interface ISpreadWeekPickDTO {
     gamePicks?: SpreadGamePickDTO[] | undefined;
     isFinal?: boolean;
     processed?: boolean;
+
+    [key: string]: any;
+}
+
+export class SpreadWeekResultDTO implements ISpreadWeekResultDTO {
+    id?: string;
+    leagueId?: string;
+    pickId?: string;
+    totalPoints?: number;
+    correctPicks?: number;
+    correctKeyPicks?: number;
+    pickResults?: PickResult[];
+    userId?: string;
+    weekNumber?: number;
+    year?: string;
+    trophies?: number[];
+
+    [key: string]: any;
+
+    constructor(data?: ISpreadWeekResultDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.leagueId = _data["leagueId"];
+            this.pickId = _data["pickId"];
+            this.totalPoints = _data["totalPoints"];
+            this.correctPicks = _data["correctPicks"];
+            this.correctKeyPicks = _data["correctKeyPicks"];
+            if (Array.isArray(_data["pickResults"])) {
+                this.pickResults = [] as any;
+                for (let item of _data["pickResults"])
+                    this.pickResults!.push(PickResult.fromJS(item));
+            }
+            this.userId = _data["userId"];
+            this.weekNumber = _data["weekNumber"];
+            this.year = _data["year"];
+            if (Array.isArray(_data["trophies"])) {
+                this.trophies = [] as any;
+                for (let item of _data["trophies"])
+                    this.trophies!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): SpreadWeekResultDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new SpreadWeekResultDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["leagueId"] = this.leagueId;
+        data["pickId"] = this.pickId;
+        data["totalPoints"] = this.totalPoints;
+        data["correctPicks"] = this.correctPicks;
+        data["correctKeyPicks"] = this.correctKeyPicks;
+        if (Array.isArray(this.pickResults)) {
+            data["pickResults"] = [];
+            for (let item of this.pickResults)
+                data["pickResults"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["userId"] = this.userId;
+        data["weekNumber"] = this.weekNumber;
+        data["year"] = this.year;
+        if (Array.isArray(this.trophies)) {
+            data["trophies"] = [];
+            for (let item of this.trophies)
+                data["trophies"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface ISpreadWeekResultDTO {
+    id?: string;
+    leagueId?: string;
+    pickId?: string;
+    totalPoints?: number;
+    correctPicks?: number;
+    correctKeyPicks?: number;
+    pickResults?: PickResult[];
+    userId?: string;
+    weekNumber?: number;
+    year?: string;
+    trophies?: number[];
 
     [key: string]: any;
 }
