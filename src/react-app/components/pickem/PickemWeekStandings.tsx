@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
-import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO, UserInfo } from '../../services/PickemApiClient';
+import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
-import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
 import { Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import MakePicksTeamCell from '../MakePicksTeamCell';
 import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsTeamCell';
 import TeamIcon from '../TeamIcon';
 
@@ -28,7 +27,7 @@ export default function PickemWeekStandings() {
     const { leagueId, weekNumber } = useParams();
     const weekNumberConverted = parseInt(weekNumber!);
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
-    const userColumnWidth = 85;
+    const userColumnWidth = 100;
     const gameColumnWidth = isSmallScreen ? 95 : 95;
 
     const formatCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
@@ -38,7 +37,7 @@ export default function PickemWeekStandings() {
 
         if (columnType === PickemWeekColumnType.User) {
             const userName = userMapping?.find(u => u.id === userId)?.userName ?? "Unknown User";
-            return <div className='centerDivContainer'><span>{userName}</span></div>;
+            return <div className='centerDivContainer standingsUserName'><span>{userName}</span></div>;
         }
         else if (columnType === PickemWeekColumnType.WeekPoints) {
             return <div className='centerDivContainer'><span>-1</span></div>;
@@ -94,6 +93,7 @@ export default function PickemWeekStandings() {
                         return formatCell(params, PickemWeekColumnType.User, leagueUserMapping);
                     },
                     disableColumnMenu: true,
+                    pinnable: true,
                 },
                 {
                     field: 'weekPoints',
@@ -137,32 +137,48 @@ export default function PickemWeekStandings() {
         fetchData();
     }, []);
 
+    const pinnedColumns = { pinnedColumns: { left: ['user'], right: [] } };
+
     return (
         <>
             <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
             <Typography variant='h5'>{weekDescription} Standings</Typography>
-            <DataGrid
-                sx={{
-                    border: '1px solid #7e7e7eff', // Darker gray border
-                    '& .MuiDataGrid-row': {
-                        borderBottom: '1px solid #7e7e7eff', // Darker row border
-                    },
-                    '& .MuiDataGrid-iconSeparator': {
-                        color: '#7e7e7eff', // Darker row border
-                    },
-                    '& .MuiDataGrid-columnHeaders': {
-                        borderBottom: '1px solid #7e7e7eff', // Darker row border
-                    },
-                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                        outline: "none !important",
-                    },
-                }}
-                rows={userMapping}
-                columns={columns}
-                rowSelection={false}
-                columnHeaderHeight={175}
-                getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
-            />
+            <div style={{ height: '100%', width: '100%' }}>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
+                    <DataGrid
+                        sx={{
+                            border: '1px solid #7e7e7eff', // Darker gray border
+                            '& .MuiDataGrid-row': {
+                                borderBottom: '1px solid #7e7e7eff', // Darker row border
+                            },
+                            '& .MuiDataGrid-iconSeparator': {
+                                color: '#7e7e7eff', // Darker row border
+                            },
+                            '& .MuiDataGrid-columnHeaders': {
+                                borderBottom: '1px solid #7e7e7eff', // Darker row border
+                            },
+                            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                                outline: "none !important",
+                            },
+                        }}
+                        rows={userMapping}
+                        columns={columns}
+                        rowSelection={false}
+                        columnHeaderHeight={175}
+                        scrollbarSize={10}
+
+                        getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
+                    />
+                </div>
+
+                {/** Visualize max and min container height */}
+            </div>
+
         </>
     );
 }
