@@ -143,7 +143,7 @@ export default function PickemWeekStandings() {
         <>
             <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
             <Typography variant='h5'>{weekDescription} Standings</Typography>
-            <div style={{ height: '100%', width: '100%' }}>
+            <div style={{ height: '100%', width: '90%' }}>
                 <div
                     style={{
                         display: 'flex',
