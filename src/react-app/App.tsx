@@ -21,6 +21,7 @@ import AppTheme from "./theme/AppTheme";
 import { AuthenticationUtilities } from "./utilities/AuthenticationUtilities";
 import MyLeagues from './components/MyLeagues';
 import PickemMakePicks from './components/pickem/PickemMakePicks';
+import PickemWeekStandings from './components/pickem/PickemWeekStandings';
 
 function App() {
   const [isAuthenticated, setAuthenticated] = useState(false);
@@ -30,11 +31,10 @@ function App() {
     const fetchData = async () => {
       const result = await AuthenticationUtilities.isAuthenticated();
       if (result) {
-        console.log(`Authenticated with AuthenticationUtilities.isAuthenticated()!`);
+        console.log(`Authenticated!`);
       }
       setAuthenticated(result);
       if (result) {
-        console.log(`Authenticated with IsAuthorized!`);
         let userInfo = AuthenticationUtilities.getUserInfoFromLocalStorage();
         if (!userInfo.email || !userInfo.id || !userInfo.userName) {
           userInfo = await AuthenticationUtilities.getUserInfo();
@@ -92,6 +92,7 @@ function App() {
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={<PickemMakePicks />} />
+                <Route path="/pickem/week/:leagueId/:weekNumber" element={<PickemWeekStandings />} />
               </Routes>
             </Stack>
           </Box>

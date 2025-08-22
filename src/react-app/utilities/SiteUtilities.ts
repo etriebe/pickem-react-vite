@@ -1,4 +1,4 @@
-import { LeagueDTO, SeasonDateInformation, Spread, TeamDTO } from '../services/PickemApiClient';
+import { GameDTO, LeagueDTO, SeasonDateInformation, Spread, TeamDTO } from '../services/PickemApiClient';
 
 export class SiteUtilities {
     static getWeekStandingLink(leagueType: number, leagueId: string, weekNumber: number): string {
@@ -84,6 +84,7 @@ export class SiteUtilities {
             minute: "2-digit",
             hour12: true,
         };
+
         if (isSmallScreen) {
             options = {
                 month: "numeric",
@@ -93,6 +94,19 @@ export class SiteUtilities {
                 hour12: true,
             };
         }
+
+        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStart);
+        return formattedDate;
+    }
+
+    static getWeekStandingsHeaderGameTime(gameStart: Date): string {
+        let options: Intl.DateTimeFormatOptions = {
+            month: "numeric",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        };
 
         const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStart);
         return formattedDate;
@@ -135,5 +149,34 @@ export class SiteUtilities {
             default:
                 throw new Error("Unknown league type");
         }
+    }
+
+    static getGameHeaderStatusDescription(game: GameDTO, isSmallScreen: boolean): string {
+        switch (game.result?.status) {
+            case 0: // scheduled
+                return `${SiteUtilities.getWeekStandingsHeaderGameTime(game.gameStartTime!)}`;
+            case 1: // in progress
+                return game.result?.timeLeft! + " - " + game.result?.currentQuarter;
+            case 2: // final
+                return "FINAL";
+            case 3: // canceled
+                return "CANCELED";
+            case 4: // delayed
+                return "DELAYED";
+            case 5: // suspended
+                return "SUSPENDED";
+            default:
+                break;
+        }
+        if (game.result?.status === 0) {
+            
+        }
+        else if (game.result?.status === 1) { // in progress
+            
+        }
+        else if (game.result?.status === 1) { // in progress
+            return game.result?.timeLeft! + " - " + game.result?.currentQuarter;
+        }
+        return game.result?.timeLeft ?? "";
     }
 }

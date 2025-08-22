@@ -1227,7 +1227,7 @@ export class Client {
      * @param leagueId (optional) 
      * @return OK
      */
-    getUserMappingForLeague(leagueId: string | undefined): Promise<{ [key: string]: UserInfo; }> {
+    getUserMappingForLeague(leagueId: string | undefined): Promise<UserInfo[]> {
         let url_ = this.baseUrl + "/api/leagues/GetUserMappingForLeague?";
         if (leagueId === null)
             throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
@@ -1249,19 +1249,17 @@ export class Client {
         });
     }
 
-    protected processGetUserMappingForLeague(response: Response): Promise<{ [key: string]: UserInfo; }> {
+    protected processGetUserMappingForLeague(response: Response): Promise<UserInfo[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (resultData200) {
-                result200 = {} as any;
-                for (let key in resultData200) {
-                    if (resultData200.hasOwnProperty(key))
-                        (result200 as any)![key] = resultData200[key] ? UserInfo.fromJS(resultData200[key]) : new UserInfo();
-                }
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(UserInfo.fromJS(item));
             }
             else {
                 result200 = null as any;
@@ -1273,7 +1271,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<{ [key: string]: UserInfo; }>(null as any);
+        return Promise.resolve<UserInfo[]>(null as any);
     }
 
     /**
