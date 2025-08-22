@@ -9,6 +9,7 @@ import { Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MakePicksTeamCell from '../MakePicksTeamCell';
 import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsTeamCell';
+import TeamIcon from '../TeamIcon';
 
 enum PickemWeekColumnType {
     User = 1,
@@ -30,8 +31,11 @@ export default function PickemWeekStandings() {
     const userColumnWidth = 85;
     const gameColumnWidth = isSmallScreen ? 95 : 95;
 
-    const formatCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>, columnType: PickemWeekColumnType): React.ReactNode => {
+    const formatCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
+        columnType: PickemWeekColumnType,
+        userMapping: UserInfo[]): React.ReactNode => {
         const userId = params.row.id;
+
         if (columnType === PickemWeekColumnType.User) {
             const userName = userMapping?.find(u => u.id === userId)?.userName ?? "Unknown User";
             return <div className='centerDivContainer'><span>{userName}</span></div>;
@@ -39,10 +43,28 @@ export default function PickemWeekStandings() {
         else if (columnType === PickemWeekColumnType.WeekPoints) {
             return <div className='centerDivContainer'><span>-1</span></div>;
         }
-        else if (columnType === PickemWeekColumnType.Game) {
-            return <div className='centerDivContainer'>CHI</div>;
-        }
         return <></>;
+    }
+
+    const formatGamePickCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
+        league: LeagueDTO,
+        picks: SpreadWeekPickDTO[],
+        game: GameDTO): React.ReactNode => {
+        const userId = params.row.id;
+        const userPicks = picks?.find(p => p.userId === userId);
+        const gamePick = userPicks?.gamePicks?.find(gp => gp.gameID === game.id);
+
+        if (!gamePick) {
+            return <></>;
+        }
+
+        const teamPicked = gamePick.sidePicked === 0 ? game.homeTeam : game.awayTeam;
+
+        const pickImagePath = SiteUtilities.getTeamIconPathFromTeam(teamPicked!, league!);
+        const pickAltText = SiteUtilities.getAltTextFromTeam(teamPicked!);
+        return <div className='centerDivContainer'>
+            <TeamIcon imagePath={pickImagePath} altText={pickAltText} />
+        </div>;
     }
 
     const renderGameHeader = (game: GameDTO, league: LeagueDTO): React.ReactNode => {
@@ -69,7 +91,7 @@ export default function PickemWeekStandings() {
                     minWidth: userColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
-                        return formatCell(params, PickemWeekColumnType.User);
+                        return formatCell(params, PickemWeekColumnType.User, leagueUserMapping);
                     },
                     disableColumnMenu: true,
                 },
@@ -80,7 +102,7 @@ export default function PickemWeekStandings() {
                     minWidth: userColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
-                        return formatCell(params, PickemWeekColumnType.WeekPoints);
+                        return formatCell(params, PickemWeekColumnType.WeekPoints, leagueUserMapping);
                     },
                     disableColumnMenu: true,
                 },
@@ -97,7 +119,7 @@ export default function PickemWeekStandings() {
                     minWidth: gameColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
-                        return formatCell(params, PickemWeekColumnType.Game);
+                        return formatGamePickCell(params, league, picks, game);
                     },
                     disableColumnMenu: true,
                     sortable: false,
