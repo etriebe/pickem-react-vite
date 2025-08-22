@@ -8,7 +8,7 @@ export interface PickemWeekStandingsHeaderTeamCellProps {
     isSmallScreen: boolean;
 }
 
-export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague, isSmallScreen }: PickemWeekStandingsHeaderTeamCellProps) {
+export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague }: PickemWeekStandingsHeaderTeamCellProps) {
     let gameHeaderClass = "GameHeader ";
 
     const awayImagePath = SiteUtilities.getTeamIconPathFromTeam(game.awayTeam!, currentLeague!);
