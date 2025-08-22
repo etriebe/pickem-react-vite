@@ -19,8 +19,6 @@ enum PickemWeekColumnType {
 
 export default function PickemWeekStandings() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
-    const [weekPicks, setWeekPicks] = useState<SpreadWeekPickDTO[]>();
-    const [weekGames, setWeekGames] = useState<GameDTO[]>();
     const [columns, setColumns] = useState<GridColDef<UserInfo>[]>([]);
     const [userMapping, setUserMapping] = useState<UserInfo[]>();
     const [weekDescription, setWeekDescription] = useState("");
@@ -157,8 +155,6 @@ export default function PickemWeekStandings() {
                 columnList.push(gameColumn);
             }
 
-            setWeekPicks(picks);
-            setWeekGames(games);
             setWeekDescription(description)
             setUserMapping(leagueUserMapping);
             setColumns(columnList);
@@ -166,8 +162,6 @@ export default function PickemWeekStandings() {
 
         fetchData();
     }, []);
-
-    const pinnedColumns = { pinnedColumns: { left: ['user'], right: [] } };
 
     return (
         <>

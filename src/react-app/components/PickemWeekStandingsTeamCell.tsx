@@ -9,7 +9,6 @@ export interface PickemWeekStandingsHeaderTeamCellProps {
 }
 
 export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague, isSmallScreen }: PickemWeekStandingsHeaderTeamCellProps) {
-    const imageContainerClassName = isSmallScreen ? 'teamPickContainerSmall' : 'teamPickContainer';
     let gameHeaderClass = "GameHeader ";
 
     const awayImagePath = SiteUtilities.getTeamIconPathFromTeam(game.awayTeam!, currentLeague!);
@@ -65,7 +64,7 @@ export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague,
                 {gameSpread}
             </div>
             <div className="GameStatus">
-                {SiteUtilities.getGameHeaderStatusDescription(game, isSmallScreen)}
+                {SiteUtilities.getGameHeaderStatusDescription(game)}
             </div>
         </div>
     </>;

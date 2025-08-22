@@ -151,7 +151,7 @@ export class SiteUtilities {
         }
     }
 
-    static getGameHeaderStatusDescription(game: GameDTO, isSmallScreen: boolean): string {
+    static getGameHeaderStatusDescription(game: GameDTO): string {
         switch (game.result?.status) {
             case 0: // scheduled
                 return `${SiteUtilities.getWeekStandingsHeaderGameTime(game.gameStartTime!)}`;
