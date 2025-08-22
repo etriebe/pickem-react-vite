@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
-import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo } from '../../services/PickemApiClient';
+import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
@@ -30,7 +30,7 @@ export default function PickemWeekStandings() {
     const userColumnWidth = 100;
     const gameColumnWidth = isSmallScreen ? 95 : 95;
 
-    const formatCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
+    const renderCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
         columnType: PickemWeekColumnType,
         userMapping: UserInfo[]): React.ReactNode => {
         const userId = params.row.id;
@@ -45,7 +45,7 @@ export default function PickemWeekStandings() {
         return <></>;
     }
 
-    const formatGamePickCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
+    const renderGamePickCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
         league: LeagueDTO,
         picks: SpreadWeekPickDTO[],
         game: GameDTO): React.ReactNode => {
@@ -70,6 +70,35 @@ export default function PickemWeekStandings() {
         return <PickemWeekStandingsHeaderTeamCell game={game} currentLeague={league!} isSmallScreen={isSmallScreen} />;
     };
 
+    const renderWeekResultsCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>, league: LeagueDTO, weekResults: SpreadWeekResultDTO[]): React.ReactNode => {
+        const userId = params.row.id;
+        const userWeekResult = weekResults.find(wr => wr.userId === userId);
+
+        let maximumPoints = 0;
+        if (!userWeekResult?.pickResults) {
+            return <>0 / 0</>;
+        }
+        for (const pick of userWeekResult?.pickResults!) {
+            if (pick.isFinal) {
+                if (pick.success) {
+                    maximumPoints += pick.totalPoints!;
+                }
+            }
+            else {
+                maximumPoints += 1;
+                if (pick.isKeyPick) {
+                    maximumPoints += league.settings?.keyPickBonus!;
+                }
+            }
+        }
+        const totalPoints = userWeekResult?.totalPoints;
+        return <>
+            <div>
+                {totalPoints} / {maximumPoints}
+            </div>
+        </>;
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             const pickemClient = PickemApiClientFactory.createClient();
@@ -81,6 +110,7 @@ export default function PickemWeekStandings() {
             const games = await pickemClient.queryGames(weekNumberConverted, league.year, league.sport, returnOnlyGamesThatHaveStarted);
             const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!);
             const leagueUserMapping = await pickemClient.getUserMappingForLeague(leagueId);
+            const weekResults = await pickemClient.getAllTempSpreadWeekResults(leagueId, weekNumberConverted);
 
             const columnList: GridColDef<(UserInfo[])[number]>[] = [
                 {
@@ -90,7 +120,7 @@ export default function PickemWeekStandings() {
                     minWidth: userColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
-                        return formatCell(params, PickemWeekColumnType.User, leagueUserMapping);
+                        return renderCell(params, PickemWeekColumnType.User, leagueUserMapping);
                     },
                     disableColumnMenu: true,
                     pinnable: true,
@@ -102,7 +132,7 @@ export default function PickemWeekStandings() {
                     minWidth: userColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
-                        return formatCell(params, PickemWeekColumnType.WeekPoints, leagueUserMapping);
+                        return renderWeekResultsCell(params, league, weekResults);
                     },
                     disableColumnMenu: true,
                 },
@@ -119,7 +149,7 @@ export default function PickemWeekStandings() {
                     minWidth: gameColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
-                        return formatGamePickCell(params, league, picks, game);
+                        return renderGamePickCell(params, league, picks, game);
                     },
                     disableColumnMenu: true,
                     sortable: false,
