@@ -31,7 +31,8 @@ export default function PickemWeekStandings() {
     const renderGamePickCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
         league: LeagueDTO,
         picks: SpreadWeekPickDTO[],
-        game: GameDTO): React.ReactNode => {
+        game: GameDTO,
+        weekResults: SpreadWeekResultDTO[]): React.ReactNode => {
         const userId = params.row.id;
         const userPicks = picks?.find(p => p.userId === userId);
         const gamePick = userPicks?.gamePicks?.find(gp => gp.gameID === game.id);
@@ -41,12 +42,15 @@ export default function PickemWeekStandings() {
         }
 
         const teamPicked = gamePick.sidePicked === 0 ? game.homeTeam : game.awayTeam;
-
         const pickImagePath = SiteUtilities.getTeamIconPathFromTeam(teamPicked!, league!);
         const pickAltText = SiteUtilities.getAltTextFromTeam(teamPicked!);
+        const userWeekResult = weekResults.find(wr => wr.userId === userId);
+        const userGameResult = userWeekResult?.pickResults?.find(pr => pr.gameId === game.id);
+        const gameResultText = userGameResult?.isFinal ? (userGameResult.success ? "✅" : "❌") : "";
         return <div className='centerDivContainer'>
             <TeamIcon imagePath={pickImagePath} altText={pickAltText} />
             {gamePick.isKeyPicked && <div className='keyPickIndicator'>🔑</div>}
+            {userGameResult && <div className='gamePickResultIndicator'>{gameResultText}</div>}
         </div>;
     }
 
