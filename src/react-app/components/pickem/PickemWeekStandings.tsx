@@ -10,13 +10,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsTeamCell';
 import TeamIcon from '../TeamIcon';
 
-enum PickemWeekColumnType {
-    User = 1,
-    WeekPoints = 2,
-    Game = 3,
-    LeaguePoints = 4,
-}
-
 export default function PickemWeekStandings() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
     const [columns, setColumns] = useState<GridColDef<UserInfo>[]>([]);
@@ -28,19 +21,11 @@ export default function PickemWeekStandings() {
     const userColumnWidth = 100;
     const gameColumnWidth = isSmallScreen ? 95 : 95;
 
-    const renderCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
-        columnType: PickemWeekColumnType,
+    const renderUserCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
         userMapping: UserInfo[]): React.ReactNode => {
         const userId = params.row.id;
-
-        if (columnType === PickemWeekColumnType.User) {
-            const userName = userMapping?.find(u => u.id === userId)?.userName ?? "Unknown User";
-            return <div className='centerDivContainer standingsUserName'><span>{userName}</span></div>;
-        }
-        else if (columnType === PickemWeekColumnType.WeekPoints) {
-            return <div className='centerDivContainer'><span>-1</span></div>;
-        }
-        return <></>;
+        const userName = userMapping?.find(u => u.id === userId)?.userName ?? "Unknown User";
+        return <div className='centerDivContainer standingsUserName'><span>{userName}</span></div>;
     }
 
     const renderGamePickCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
@@ -61,6 +46,7 @@ export default function PickemWeekStandings() {
         const pickAltText = SiteUtilities.getAltTextFromTeam(teamPicked!);
         return <div className='centerDivContainer'>
             <TeamIcon imagePath={pickImagePath} altText={pickAltText} />
+            {gamePick.isKeyPicked && <div className='keyPickIndicator'>🔑</div>}
         </div>;
     }
 
@@ -118,7 +104,7 @@ export default function PickemWeekStandings() {
                     minWidth: userColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
-                        return renderCell(params, PickemWeekColumnType.User, leagueUserMapping);
+                        return renderUserCell(params, leagueUserMapping);
                     },
                     disableColumnMenu: true,
                     pinnable: true,
