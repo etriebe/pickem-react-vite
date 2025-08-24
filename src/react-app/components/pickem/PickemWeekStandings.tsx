@@ -137,7 +137,7 @@ export default function PickemWeekStandings() {
                     minWidth: gameColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
-                        return renderGamePickCell(params, league, picks, game);
+                        return renderGamePickCell(params, league, picks, game, weekResults);
                     },
                     disableColumnMenu: true,
                     sortable: false,
