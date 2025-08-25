@@ -497,27 +497,25 @@ export class Client {
     }
 
     /**
-     * @param returnUrl (optional) 
      * @return OK
      */
-    performExternalLogin(returnUrl: string | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/Account/PerformExternalLogin";
+    performExternalLogin(provider: string, returnUrl: string): Promise<void> {
+        let url_ = this.baseUrl + "/Account/PerformExternalLogin?";
+        if (provider === undefined || provider === null)
+            throw new globalThis.Error("The parameter 'provider' must be defined and cannot be null.");
+        else
+            url_ += "provider=" + encodeURIComponent("" + provider) + "&";
+        if (returnUrl === undefined || returnUrl === null)
+            throw new globalThis.Error("The parameter 'returnUrl' must be defined and cannot be null.");
+        else
+            url_ += "returnUrl=" + encodeURIComponent("" + returnUrl) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let content_ = "";
-        if (returnUrl === null)
-            throw new globalThis.Error("The parameter 'returnUrl' cannot be null.");
-        else if (returnUrl !== undefined)
-            content_ += encodeURIComponent("returnUrl") + "=" + encodeURIComponent("" + returnUrl) + "&";
-        content_ = content_.replace(/&$/, "");
-
         let options_: RequestInit = {
-            body: content_,
             method: "POST",
             credentials: 'include',
             mode: 'cors',
             headers: {
-                "Content-Type": "multipart/form-data",
             }
         };
 
