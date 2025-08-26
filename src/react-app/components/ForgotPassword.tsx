@@ -29,9 +29,10 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
             
             try {      
               const pickemClient = PickemApiClientFactory.createClient();
+              const returnUrl = window.location.origin + '/resetpassword/##RESETCODE##';
               const body = new ForgotPasswordRequest();
               body.email = email;
-              await pickemClient.forgotPassword(body);
+              await pickemClient.forgotPassword(returnUrl, body);
             }
             catch (error) {
               console.error('Error sending forgot password request:', error);

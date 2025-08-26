@@ -247,10 +247,15 @@ export class Client {
     }
 
     /**
+     * @param returnUrl (optional) 
      * @return OK
      */
-    forgotPassword(body: ForgotPasswordRequest): Promise<void> {
-        let url_ = this.baseUrl + "/forgotPassword";
+    forgotPassword(returnUrl: string | undefined, body: ForgotPasswordRequest): Promise<void> {
+        let url_ = this.baseUrl + "/forgotPassword?";
+        if (returnUrl === null)
+            throw new globalThis.Error("The parameter 'returnUrl' cannot be null.");
+        else if (returnUrl !== undefined)
+            url_ += "returnUrl=" + encodeURIComponent("" + returnUrl) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
