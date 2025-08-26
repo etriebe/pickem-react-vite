@@ -89,7 +89,7 @@ function App() {
                 <Route path="/myleagues" element={ <MyLeagues />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
-                <Route path="/createleague" element={<CreateLeague />} />
+                <Route path="/createleague" element={isAuthenticated ? <CreateLeague /> : <SignIn />} />
                 <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={<PickemMakePicks />} />
                 <Route path="/pickem/week/:leagueId/:weekNumber" element={<PickemWeekStandings />} />
                 <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
