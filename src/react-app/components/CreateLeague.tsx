@@ -5,6 +5,8 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
+import { LeagueDTO, LeagueSettings } from '../services/PickemApiClient';
+import PickemApiClientFactory from '../services/PickemApiClientFactory';
 
 const sports = [
     { value: 1, label: 'NFL' },
@@ -25,18 +27,30 @@ const leagueTypes = [
 
 export default function CreateLeague() {
     const [leagueName, setLeagueName] = useState('');
-    const [leagueType, setLeagueType] = useState('');
-    const [sport, setSport] = useState('NFL');
+    const [leagueType, setLeagueType] = useState(1);
+    const [sport, setSport] = useState(1);
     const [startWeek, setStartWeek] = useState(1);
     const [endWeek, setEndWeek] = useState(17);
-    const [totalPicks, setTotalPicks] = useState(10);
+    const [totalPicks, setTotalPicks] = useState(6);
     const [keyPicks, setKeyPicks] = useState(1);
-    const [keyPickBonus, setKeyPickBonus] = useState(0);
+    const [keyPickBonus, setKeyPickBonus] = useState(1);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Submit league creation to backend
-        alert(`League Created!\nName: ${leagueName}\nType: ${leagueType}\nSport: ${sport}\nStart Week: ${startWeek}\nEnd Week: ${endWeek}\nTotal Picks: ${totalPicks}\nKey Picks: ${keyPicks}\nKey Pick Bonus: ${keyPickBonus}`);
+        const pickemClient = PickemApiClientFactory.createClient();
+        const newLeague = new LeagueDTO();
+        newLeague.name = leagueName;
+        newLeague.type = leagueType;
+        newLeague.sport = sport;
+        newLeague.startingWeekNumber = startWeek;
+        newLeague.endingWeekNumber = endWeek;
+        const leagueSettings = new LeagueSettings();
+        leagueSettings.totalPicks = totalPicks;
+        leagueSettings.keyPicks = keyPicks;
+        leagueSettings.keyPickBonus = keyPickBonus;
+        newLeague.settings = leagueSettings;
+        await pickemClient.addLeague(newLeague);
+        window.location.href = '/';
     };
 
     return (
@@ -67,7 +81,7 @@ export default function CreateLeague() {
                             select
                             label="League Type"
                             value={leagueType}
-                            onChange={e => setLeagueType(e.target.value)}
+                            onChange={e => setLeagueType(Number(e.target.value))}
                             fullWidth
                             required
                             variant="outlined"
@@ -83,7 +97,7 @@ export default function CreateLeague() {
                             select
                             label="Sport"
                             value={sport}
-                            onChange={e => setSport(e.target.value)}
+                            onChange={e => setSport(Number(e.target.value))}
                             fullWidth
                             required
                             variant="outlined"
