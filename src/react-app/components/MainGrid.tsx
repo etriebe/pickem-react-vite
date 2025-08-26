@@ -8,7 +8,7 @@ export default function MainGrid() {
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
       {/* cards */}
       <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-        Overview
+        Welcome to Just Pick'em!
       </Typography>
       <Grid
         container
@@ -19,9 +19,9 @@ export default function MainGrid() {
         <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <HighlightedCard />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+        {/* <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <HighlightedCard />
-        </Grid>
+        </Grid> */}
       </Grid>
     </Box>
   );

@@ -1,0 +1,168 @@
+import React, { useState } from 'react';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+
+const sports = [
+    { value: 1, label: 'NFL' },
+    { value: 2, label: 'NHL' },
+    { value: 3, label: 'MLB' },
+    { value: 4, label: 'NBA' },
+    { value: 5, label: 'NCAAF' },
+    { value: 6, label: 'NCAAB' },
+];
+
+const leagueTypes = [
+    { value: 1, label: 'Pickem Against the Spread' },
+    { value: 2, label: 'Pickem Straight up' },
+    { value: 3, label: 'Survivor Pool' },
+    { value: 4, label: 'All Bet Types' },
+    { value: 5, label: 'Squares' },
+];
+
+export default function CreateLeague() {
+    const [leagueName, setLeagueName] = useState('');
+    const [leagueType, setLeagueType] = useState('');
+    const [sport, setSport] = useState('NFL');
+    const [startWeek, setStartWeek] = useState(1);
+    const [endWeek, setEndWeek] = useState(17);
+    const [totalPicks, setTotalPicks] = useState(10);
+    const [keyPicks, setKeyPicks] = useState(1);
+    const [keyPickBonus, setKeyPickBonus] = useState(0);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        // TODO: Submit league creation to backend
+        alert(`League Created!\nName: ${leagueName}\nType: ${leagueType}\nSport: ${sport}\nStart Week: ${startWeek}\nEnd Week: ${endWeek}\nTotal Picks: ${totalPicks}\nKey Picks: ${keyPicks}\nKey Pick Bonus: ${keyPickBonus}`);
+    };
+
+    return (
+        <Box maxWidth={600} mx="auto" mt={4} sx={{
+            '& .MuiTextField-root': { m: 1 },
+            '& .MuiInputLabel-root.MuiInputLabel-shrink': {
+                background: 'var(--template-palette-background-default)',
+                padding: '0 4px',
+                zIndex: 1,
+            },
+        }}>
+            <Typography variant="h4" gutterBottom>Create a League</Typography>
+            <form onSubmit={handleSubmit}>
+                <Grid container spacing={2}>
+                    <Grid size={4}>
+                        <TextField
+                            label="League Name"
+                            value={leagueName}
+                            onChange={e => setLeagueName(e.target.value)}
+                            fullWidth
+                            required
+                            variant="outlined"
+                            InputLabelProps={{ shrink: true }}
+                        />
+                    </Grid>
+                    <Grid size={5}>
+                        <TextField
+                            select
+                            label="League Type"
+                            value={leagueType}
+                            onChange={e => setLeagueType(e.target.value)}
+                            fullWidth
+                            required
+                            variant="outlined"
+                            InputLabelProps={{ shrink: true }}>
+
+                            {leagueTypes.map(option => (
+                                <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>
+                    <Grid size={3}>
+                        <TextField
+                            select
+                            label="Sport"
+                            value={sport}
+                            onChange={e => setSport(e.target.value)}
+                            fullWidth
+                            required
+                            variant="outlined"
+                        >
+                            {sports.map(option => (
+                                <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>
+                    <Grid size={6}>
+                        <TextField
+                            label="Starting Week Number"
+                            type="number"
+                            value={startWeek}
+                            onChange={e => setStartWeek(Number(e.target.value))}
+                            fullWidth
+                            required
+                            inputProps={{ min: 1 }}
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid size={6}>
+                        <TextField
+                            label="Ending Week Number"
+                            type="number"
+                            value={endWeek}
+                            onChange={e => setEndWeek(Number(e.target.value))}
+                            fullWidth
+                            required
+                            inputProps={{ min: startWeek }}
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid size={4}>
+                        <TextField
+                            label="Total Number of Picks"
+                            type="number"
+                            value={totalPicks}
+                            onChange={e => setTotalPicks(Number(e.target.value))}
+                            fullWidth
+                            required
+                            inputProps={{ min: 1 }}
+                            variant="outlined"
+                            InputLabelProps={{ shrink: true }}
+                        />
+                    </Grid>
+                    <Grid size={4}>
+                        <TextField
+                            label="Total Number of Key Picks"
+                            type="number"
+                            value={keyPicks}
+                            onChange={e => setKeyPicks(Number(e.target.value))}
+                            fullWidth
+                            required
+                            inputProps={{ min: 0 }}
+                            variant="outlined"
+                            InputLabelProps={{ shrink: true }}
+                        />
+                    </Grid>
+                    <Grid size={4}>
+                        <TextField
+                            label="Key Pick Bonus"
+                            type="number"
+                            value={keyPickBonus}
+                            onChange={e => setKeyPickBonus(Number(e.target.value))}
+                            fullWidth
+                            required
+                            inputProps={{ min: 0 }}
+                            variant="outlined"
+                            InputLabelProps={{ shrink: true }}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 12, lg: 12 }}>
+                        <Button type="submit" variant="contained" color="primary" fullWidth>
+                            Create League
+                        </Button>
+                    </Grid>
+                </Grid>
+            </form>
+        </Box>
+    );
+}

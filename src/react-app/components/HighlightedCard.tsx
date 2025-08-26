@@ -32,8 +32,20 @@ export default function HighlightedCard() {
           color="primary"
           endIcon={<ChevronRightRoundedIcon />}
           fullWidth={isSmallScreen}
+          sx={{ marginRight: 1 }}
+          href='/signin'
         >
-          Register
+          Sign In
+        </Button>
+        <Button
+          variant="contained"
+          size="small"
+          color="primary"
+          endIcon={<ChevronRightRoundedIcon />}
+          fullWidth={isSmallScreen}
+          href='/signup'
+        >
+          Sign Up
         </Button>
       </CardContent>
     </Card>

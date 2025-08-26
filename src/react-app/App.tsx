@@ -23,6 +23,7 @@ import MyLeagues from './components/MyLeagues';
 import PickemMakePicks from './components/pickem/PickemMakePicks';
 import PickemWeekStandings from './components/pickem/PickemWeekStandings';
 import ResetPassword from './components/ResetPassword';
+import CreateLeague from './components/CreateLeague';
 
 function App() {
   const [isAuthenticated, setAuthenticated] = useState(false);
@@ -31,9 +32,6 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       const result = await AuthenticationUtilities.isAuthenticated();
-      if (result) {
-        console.log(`Authenticated!`);
-      }
       setAuthenticated(result);
       if (result) {
         let userInfo = AuthenticationUtilities.getUserInfoFromLocalStorage();
@@ -52,7 +50,6 @@ function App() {
         //   console.log(`Not authenticated but on sign-in or sign-up pages.`)
         // }
       }
-//       console.log(`testing`);
     }
 
     fetchData();
@@ -92,6 +89,7 @@ function App() {
                 <Route path="/myleagues" element={ <MyLeagues />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/createleague" element={<CreateLeague />} />
                 <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={<PickemMakePicks />} />
                 <Route path="/pickem/week/:leagueId/:weekNumber" element={<PickemWeekStandings />} />
                 <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
