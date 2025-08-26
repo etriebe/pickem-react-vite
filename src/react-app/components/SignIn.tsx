@@ -89,10 +89,6 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       return;
     }
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
     event.preventDefault(); // Prevent default form submission
     const email = data.get('email') as string;
     try {      
