@@ -1349,57 +1349,21 @@ export class Client {
     }
 
     /**
-     * @param leagueName (optional) 
-     * @param leagueType (optional) 
-     * @param sport (optional) 
-     * @param startingWeekNumber (optional) 
-     * @param endingWeekNumber (optional) 
-     * @param totalPicks (optional) 
-     * @param keyPicks (optional) 
-     * @param keyPickBonus (optional) 
      * @return OK
      */
-    createLeague(leagueName: string | undefined, leagueType: number | undefined, sport: number | undefined, startingWeekNumber: number | undefined, endingWeekNumber: number | undefined, totalPicks: number | undefined, keyPicks: number | undefined, keyPickBonus: number | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/leagues/CreateLeague?";
-        if (leagueName === null)
-            throw new globalThis.Error("The parameter 'leagueName' cannot be null.");
-        else if (leagueName !== undefined)
-            url_ += "leagueName=" + encodeURIComponent("" + leagueName) + "&";
-        if (leagueType === null)
-            throw new globalThis.Error("The parameter 'leagueType' cannot be null.");
-        else if (leagueType !== undefined)
-            url_ += "leagueType=" + encodeURIComponent("" + leagueType) + "&";
-        if (sport === null)
-            throw new globalThis.Error("The parameter 'sport' cannot be null.");
-        else if (sport !== undefined)
-            url_ += "sport=" + encodeURIComponent("" + sport) + "&";
-        if (startingWeekNumber === null)
-            throw new globalThis.Error("The parameter 'startingWeekNumber' cannot be null.");
-        else if (startingWeekNumber !== undefined)
-            url_ += "startingWeekNumber=" + encodeURIComponent("" + startingWeekNumber) + "&";
-        if (endingWeekNumber === null)
-            throw new globalThis.Error("The parameter 'endingWeekNumber' cannot be null.");
-        else if (endingWeekNumber !== undefined)
-            url_ += "endingWeekNumber=" + encodeURIComponent("" + endingWeekNumber) + "&";
-        if (totalPicks === null)
-            throw new globalThis.Error("The parameter 'totalPicks' cannot be null.");
-        else if (totalPicks !== undefined)
-            url_ += "totalPicks=" + encodeURIComponent("" + totalPicks) + "&";
-        if (keyPicks === null)
-            throw new globalThis.Error("The parameter 'keyPicks' cannot be null.");
-        else if (keyPicks !== undefined)
-            url_ += "keyPicks=" + encodeURIComponent("" + keyPicks) + "&";
-        if (keyPickBonus === null)
-            throw new globalThis.Error("The parameter 'keyPickBonus' cannot be null.");
-        else if (keyPickBonus !== undefined)
-            url_ += "keyPickBonus=" + encodeURIComponent("" + keyPickBonus) + "&";
+    createLeague(body: CreateLeagueRequest): Promise<void> {
+        let url_ = this.baseUrl + "/api/leagues/CreateLeague";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(body);
+
         let options_: RequestInit = {
+            body: content_,
             method: "POST",
             credentials: 'include',
             mode: 'cors',
             headers: {
+                "Content-Type": "application/json",
             }
         };
 
@@ -2121,6 +2085,82 @@ export interface IAccessTokenResponse {
     accessToken: string;
     expiresIn: number;
     refreshToken: string;
+
+    [key: string]: any;
+}
+
+export class CreateLeagueRequest implements ICreateLeagueRequest {
+    leagueName!: string;
+    leagueType!: number;
+    sport!: number;
+    startingWeekNumber!: number;
+    endingWeekNumber!: number;
+    totalPicks!: number;
+    keyPicks!: number;
+    keyPickBonus!: number;
+
+    [key: string]: any;
+
+    constructor(data?: ICreateLeagueRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.leagueName = _data["leagueName"];
+            this.leagueType = _data["leagueType"];
+            this.sport = _data["sport"];
+            this.startingWeekNumber = _data["startingWeekNumber"];
+            this.endingWeekNumber = _data["endingWeekNumber"];
+            this.totalPicks = _data["totalPicks"];
+            this.keyPicks = _data["keyPicks"];
+            this.keyPickBonus = _data["keyPickBonus"];
+        }
+    }
+
+    static fromJS(data: any): CreateLeagueRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateLeagueRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["leagueName"] = this.leagueName;
+        data["leagueType"] = this.leagueType;
+        data["sport"] = this.sport;
+        data["startingWeekNumber"] = this.startingWeekNumber;
+        data["endingWeekNumber"] = this.endingWeekNumber;
+        data["totalPicks"] = this.totalPicks;
+        data["keyPicks"] = this.keyPicks;
+        data["keyPickBonus"] = this.keyPickBonus;
+        return data;
+    }
+}
+
+export interface ICreateLeagueRequest {
+    leagueName: string;
+    leagueType: number;
+    sport: number;
+    startingWeekNumber: number;
+    endingWeekNumber: number;
+    totalPicks: number;
+    keyPicks: number;
+    keyPickBonus: number;
 
     [key: string]: any;
 }
@@ -4593,13 +4633,13 @@ export interface ITwoFactorResponse {
 }
 
 export class UpdateLeagueSettingsRequest implements IUpdateLeagueSettingsRequest {
-    leagueId?: string;
-    settings?: LeagueSettings;
-    leagueName?: string;
-    isPublic?: boolean;
-    isArchived?: boolean;
-    startingWeekNumber?: number;
-    endingWeekNumber?: number;
+    leagueId!: string;
+    settings!: LeagueSettings;
+    leagueName!: string;
+    isPublic!: boolean;
+    isArchived!: boolean;
+    startingWeekNumber!: number;
+    endingWeekNumber!: number;
 
     [key: string]: any;
 
@@ -4610,6 +4650,9 @@ export class UpdateLeagueSettingsRequest implements IUpdateLeagueSettingsRequest
                     (this as any)[property] = (data as any)[property];
             }
         }
+        if (!data) {
+            this.settings = new LeagueSettings();
+        }
     }
 
     init(_data?: any) {
@@ -4619,7 +4662,7 @@ export class UpdateLeagueSettingsRequest implements IUpdateLeagueSettingsRequest
                     this[property] = _data[property];
             }
             this.leagueId = _data["leagueId"];
-            this.settings = _data["settings"] ? LeagueSettings.fromJS(_data["settings"]) : undefined as any;
+            this.settings = _data["settings"] ? LeagueSettings.fromJS(_data["settings"]) : new LeagueSettings();
             this.leagueName = _data["leagueName"];
             this.isPublic = _data["isPublic"];
             this.isArchived = _data["isArchived"];
@@ -4653,13 +4696,13 @@ export class UpdateLeagueSettingsRequest implements IUpdateLeagueSettingsRequest
 }
 
 export interface IUpdateLeagueSettingsRequest {
-    leagueId?: string;
-    settings?: LeagueSettings;
-    leagueName?: string;
-    isPublic?: boolean;
-    isArchived?: boolean;
-    startingWeekNumber?: number;
-    endingWeekNumber?: number;
+    leagueId: string;
+    settings: LeagueSettings;
+    leagueName: string;
+    isPublic: boolean;
+    isArchived: boolean;
+    startingWeekNumber: number;
+    endingWeekNumber: number;
 
     [key: string]: any;
 }

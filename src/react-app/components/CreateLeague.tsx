@@ -5,8 +5,9 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import { LeagueDTO, LeagueSettings, SeasonDateInformation2 } from '../services/PickemApiClient';
+import { CreateLeagueRequest, LeagueDTO, LeagueSettings, SeasonDateInformation2 } from '../services/PickemApiClient';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
+import { create } from 'domain';
 
 const sports = [
     { value: 1, label: 'NFL' },
@@ -41,7 +42,16 @@ export default function CreateLeague() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const pickemClient = PickemApiClientFactory.createClient();
-        await pickemClient.createLeague(leagueName, leagueType, sport, startWeek, endWeek, totalPicks, keyPicks, keyPickBonus);
+        const createLeagueRequest = new CreateLeagueRequest();
+        createLeagueRequest.leagueName = leagueName;
+        createLeagueRequest.leagueType = leagueType;
+        createLeagueRequest.sport = sport;
+        createLeagueRequest.startWeek = startWeek;
+        createLeagueRequest.endWeek = endWeek;
+        createLeagueRequest.totalPicks = totalPicks;
+        createLeagueRequest.keyPicks = keyPicks;
+        createLeagueRequest.keyPickBonus = keyPickBonus;
+        await pickemClient.createLeague(createLeagueRequest);
         window.location.href = '/';
     };
 
