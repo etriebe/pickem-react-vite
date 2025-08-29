@@ -41,18 +41,7 @@ export default function CreateLeague() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const pickemClient = PickemApiClientFactory.createClient();
-        const newLeague = new LeagueDTO();
-        newLeague.name = leagueName;
-        newLeague.type = leagueType;
-        newLeague.sport = sport;
-        newLeague.startingWeekNumber = startWeek;
-        newLeague.endingWeekNumber = endWeek;
-        const leagueSettings = new LeagueSettings();
-        leagueSettings.totalPicks = totalPicks;
-        leagueSettings.keyPicks = keyPicks;
-        leagueSettings.keyPickBonus = keyPickBonus;
-        newLeague.settings = leagueSettings;
-        await pickemClient.addLeague(newLeague);
+        await pickemClient.createLeague(leagueName, leagueType, sport, startWeek, endWeek, totalPicks, keyPicks, keyPickBonus);
         window.location.href = '/';
     };
 

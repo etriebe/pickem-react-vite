@@ -1349,6 +1349,81 @@ export class Client {
     }
 
     /**
+     * @param leagueName (optional) 
+     * @param leagueType (optional) 
+     * @param sport (optional) 
+     * @param startingWeekNumber (optional) 
+     * @param endingWeekNumber (optional) 
+     * @param totalPicks (optional) 
+     * @param keyPicks (optional) 
+     * @param keyPickBonus (optional) 
+     * @return OK
+     */
+    createLeague(leagueName: string | undefined, leagueType: number | undefined, sport: number | undefined, startingWeekNumber: number | undefined, endingWeekNumber: number | undefined, totalPicks: number | undefined, keyPicks: number | undefined, keyPickBonus: number | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/leagues/CreateLeague?";
+        if (leagueName === null)
+            throw new globalThis.Error("The parameter 'leagueName' cannot be null.");
+        else if (leagueName !== undefined)
+            url_ += "leagueName=" + encodeURIComponent("" + leagueName) + "&";
+        if (leagueType === null)
+            throw new globalThis.Error("The parameter 'leagueType' cannot be null.");
+        else if (leagueType !== undefined)
+            url_ += "leagueType=" + encodeURIComponent("" + leagueType) + "&";
+        if (sport === null)
+            throw new globalThis.Error("The parameter 'sport' cannot be null.");
+        else if (sport !== undefined)
+            url_ += "sport=" + encodeURIComponent("" + sport) + "&";
+        if (startingWeekNumber === null)
+            throw new globalThis.Error("The parameter 'startingWeekNumber' cannot be null.");
+        else if (startingWeekNumber !== undefined)
+            url_ += "startingWeekNumber=" + encodeURIComponent("" + startingWeekNumber) + "&";
+        if (endingWeekNumber === null)
+            throw new globalThis.Error("The parameter 'endingWeekNumber' cannot be null.");
+        else if (endingWeekNumber !== undefined)
+            url_ += "endingWeekNumber=" + encodeURIComponent("" + endingWeekNumber) + "&";
+        if (totalPicks === null)
+            throw new globalThis.Error("The parameter 'totalPicks' cannot be null.");
+        else if (totalPicks !== undefined)
+            url_ += "totalPicks=" + encodeURIComponent("" + totalPicks) + "&";
+        if (keyPicks === null)
+            throw new globalThis.Error("The parameter 'keyPicks' cannot be null.");
+        else if (keyPicks !== undefined)
+            url_ += "keyPicks=" + encodeURIComponent("" + keyPicks) + "&";
+        if (keyPickBonus === null)
+            throw new globalThis.Error("The parameter 'keyPickBonus' cannot be null.");
+        else if (keyPickBonus !== undefined)
+            url_ += "keyPickBonus=" + encodeURIComponent("" + keyPickBonus) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateLeague(_response);
+        });
+    }
+
+    protected processCreateLeague(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
      * @param leagueId (optional) 
      * @return OK
      */
