@@ -120,8 +120,8 @@ export class SiteUtilities {
     }
 
     static getTeamIconPathFromTeam(team: TeamDTO, league: LeagueDTO): string {
-        const city = team.city?.replace(" ", "_");
-        const name = team.name?.replace(" ", "_");
+        const city = team.city?.replace(" ", "_").replace(".", "");
+        const name = team.name?.replace(" ", "_").replace(".", "");
         const imagePath = `/TeamIcons/${SiteUtilities.getSportFolderNameFromSportNumber(league?.sport!)}/${city}_${name}.svg`;
         return imagePath;
     }
