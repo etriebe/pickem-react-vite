@@ -35,7 +35,8 @@ export default function CreateLeague() {
     const [keyPicks, setKeyPicks] = useState(1);
     const [keyPickBonus, setKeyPickBonus] = useState(1);
     const [sportSeasonInformation, setSportSeasonInformation] = useState<{ [key: string]: SeasonDateInformation2; }>();
-    const [maxWeeks, setMaxWeeks] = useState(17);
+    const [maxWeeks, setMaxWeeks] = useState(-1);
+    const [endingWeekNumberLabel, setEndingWeekNumberLabel] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -60,6 +61,9 @@ export default function CreateLeague() {
             const pickemClient = PickemApiClientFactory.createClient();
             const sportSeasonInformation = await pickemClient.getCurrentSportsSeasonInformation();
             setSportSeasonInformation(sportSeasonInformation);
+            const max = getCurrentMaxWeeks(sportSeasonInformation, getSportNameFromNumber(sport));
+            setEndWeek(max);
+            setEndingWeekNumberLabel(getEndingWeekLabel(max));
         }
 
         fetchData();
@@ -112,10 +116,11 @@ export default function CreateLeague() {
                             onChange={e => { 
                                 setSport(Number(e.target.value));
                                 const sportNumber = Number(e.target.value);
-                                const sportName: string = sports.find(s => s.value === sportNumber)?.label!;
-                                const newMaxWeeks = sportSeasonInformation ? sportSeasonInformation[sportName].weekStartTimes?.length! : -1;
+                                const sportName: string = getSportNameFromNumber(sportNumber);
+                                const newMaxWeeks = getCurrentMaxWeeks(sportSeasonInformation, sportName);
                                 setEndWeek(newMaxWeeks);
                                 setMaxWeeks(newMaxWeeks);
+                                setEndingWeekNumberLabel(getEndingWeekLabel(newMaxWeeks));
                             }}
                             fullWidth
                             required
@@ -140,7 +145,7 @@ export default function CreateLeague() {
                     </Grid>
                     <Grid size={6}>
                         <TextField
-                            label="Ending Week Number"
+                            label={endingWeekNumberLabel}
                             type="number"
                             value={endWeek}
                             onChange={e => setEndWeek(Number(e.target.value))}
@@ -150,7 +155,6 @@ export default function CreateLeague() {
                             variant="outlined"
                         />
                         <Typography variant="caption" display="block" gutterBottom sx={{ ml: 1 }}>
-                            (Max weeks for selected sport: {maxWeeks})
                         </Typography>
                     </Grid>
                     <Grid size={4}>
@@ -202,3 +206,16 @@ export default function CreateLeague() {
         </Box>
     );
 }
+
+function getEndingWeekLabel(max: number): React.SetStateAction<string> {
+    return `Ending Week Number (Max:${max})`;
+}
+
+function getSportNameFromNumber(sportNumber: number): string {
+    return sports.find(s => s.value === sportNumber)?.label!;
+}
+
+function getCurrentMaxWeeks(sportSeasonInformation: { [key: string]: SeasonDateInformation2; } | undefined, sportName: string) {
+    return sportSeasonInformation ? sportSeasonInformation[sportName].weekStartTimes?.length! : -1;
+}
+
