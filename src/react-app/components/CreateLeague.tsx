@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import { LeagueDTO, LeagueSettings } from '../services/PickemApiClient';
+import { LeagueDTO, LeagueSettings, SeasonDateInformation2 } from '../services/PickemApiClient';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
 
 const sports = [
@@ -34,6 +34,8 @@ export default function CreateLeague() {
     const [totalPicks, setTotalPicks] = useState(6);
     const [keyPicks, setKeyPicks] = useState(1);
     const [keyPickBonus, setKeyPickBonus] = useState(1);
+    const [sportSeasonInformation, setSportSeasonInformation] = useState<{ [key: string]: SeasonDateInformation2; }>();
+    const [maxWeeks, setMaxWeeks] = useState(17);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -52,6 +54,16 @@ export default function CreateLeague() {
         await pickemClient.addLeague(newLeague);
         window.location.href = '/';
     };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const pickemClient = PickemApiClientFactory.createClient();
+            const sportSeasonInformation = await pickemClient.getCurrentSportsSeasonInformation();
+            setSportSeasonInformation(sportSeasonInformation);
+        }
+
+        fetchData();
+    }, []);
 
     return (
         <Box maxWidth={600} mx="auto" mt={4} sx={{
@@ -97,7 +109,14 @@ export default function CreateLeague() {
                             select
                             label="Sport"
                             value={sport}
-                            onChange={e => setSport(Number(e.target.value))}
+                            onChange={e => { 
+                                setSport(Number(e.target.value));
+                                const sportNumber = Number(e.target.value);
+                                const sportName: string = sports.find(s => s.value === sportNumber)?.label!;
+                                const newMaxWeeks = sportSeasonInformation ? sportSeasonInformation[sportName].weekStartTimes?.length! : -1;
+                                setEndWeek(newMaxWeeks);
+                                setMaxWeeks(newMaxWeeks);
+                            }}
                             fullWidth
                             required
                             variant="outlined"
@@ -127,9 +146,12 @@ export default function CreateLeague() {
                             onChange={e => setEndWeek(Number(e.target.value))}
                             fullWidth
                             required
-                            inputProps={{ min: startWeek }}
+                            inputProps={{ min: startWeek, max: maxWeeks }}
                             variant="outlined"
                         />
+                        <Typography variant="caption" display="block" gutterBottom sx={{ ml: 1 }}>
+                            (Max weeks for selected sport: {maxWeeks})
+                        </Typography>
                     </Grid>
                     <Grid size={4}>
                         <TextField
