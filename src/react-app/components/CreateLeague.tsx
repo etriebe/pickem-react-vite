@@ -5,9 +5,8 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import { CreateLeagueRequest, LeagueDTO, LeagueSettings, SeasonDateInformation2 } from '../services/PickemApiClient';
+import { CreateLeagueRequest, SeasonDateInformation2 } from '../services/PickemApiClient';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
-import { create } from 'domain';
 
 const sports = [
     { value: 1, label: 'NFL' },
