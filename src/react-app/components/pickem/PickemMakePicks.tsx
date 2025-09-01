@@ -171,7 +171,7 @@ export default function PickemMakePicks() {
                 currentPick.isKeyPicked = !currentPick.isKeyPicked;
             }
             setCurrentPicks(currentPicks);
-            setSelectedKeyPicksCount(currentPicks.gamePicks.filter(p => p.isKeyPicked).length);
+            setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
             return;
         }
 
@@ -208,6 +208,7 @@ export default function PickemMakePicks() {
 
         setCurrentPicks(currentPicks);
         setSelectedPicksCount(currentPicks.gamePicks.length);
+        setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
         apiRef.current?.selectRow(params.id);
         apiRef.current?.autosizeColumns();
     };
@@ -234,6 +235,8 @@ export default function PickemMakePicks() {
 
             setCurrentLeague(league);
             setCurrentPicks(picks);
+            setSelectedPicksCount(getSelectedPicksCount(picks));
+            setSelectedKeyPicksCount(getSelectedKeyPicksCount(picks));
             setWeekGames(games);
             setWeekDescription(description)
         }
@@ -242,7 +245,7 @@ export default function PickemMakePicks() {
     }, []);
 
     React.useEffect(() => {
-        const handleResizeWindow = () => { 
+        const handleResizeWindow = () => {
             // setWidth(window.innerWidth);
             apiRef.current?.autosizeColumns();
         };
@@ -309,3 +312,13 @@ export default function PickemMakePicks() {
     }
 }
 
+function getSelectedPicksCount(picks: SpreadWeekPickDTO): React.SetStateAction<number> {
+    return picks.gamePicks!.length;
+}
+
+function getSelectedKeyPicksCount(currentPicks: SpreadWeekPickDTO): React.SetStateAction<number> {
+    if (!currentPicks || !currentPicks.gamePicks) {
+        return 0;
+    }
+    return currentPicks.gamePicks.filter(p => p.isKeyPicked).length;
+}
