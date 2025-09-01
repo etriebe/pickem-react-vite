@@ -25,7 +25,7 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
     const isAdmin = league.leagueAdminIds?.find(a => a === userInfo.id);
     return (
         <>
-            <Card sx={{ minWidth: 350 }}>
+            <Card sx={{  }}>
                 <CardContent>
                     <Typography variant="h5" component="div">
                         {league.leagueName}

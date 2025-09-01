@@ -31,15 +31,15 @@ export default function MyLeagues() {
             <Grid
                 container
                 spacing={2}
-                columns={12}
+                padding={2}
                 sx={{ mb: (theme) => theme.spacing(2) }}
             >
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-                    {currentLeagues.map((l) => {
-                        const currentLeaguePicks = currentPicks.find(p => p.leagueId === l.id);
-                        return (<ul style={{ listStyleType: 'none', paddingInlineStart: '0px' }} key={l.id}><LeagueCard league={l} picksSubmitted={currentLeaguePicks != null} /></ul>);
-                    })}
-                </Grid>
+                {currentLeagues.map((l) => {
+                    const currentLeaguePicks = currentPicks.find(p => p.leagueId === l.id);
+                    return <><Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+                        <LeagueCard league={l} picksSubmitted={currentLeaguePicks != null} />
+                    </Grid></>;
+                })}
             </Grid>
 
         </>
