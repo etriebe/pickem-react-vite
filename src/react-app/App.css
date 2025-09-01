@@ -159,3 +159,11 @@ height: 30px;
 .standingsUserName {
     font-size: small;
 }
+
+.NavigationBreadcrumbs {
+    padding-right: 1ch;
+}
+
+.NavigationBreadcrumbsContainer {
+    display: flex;
+}

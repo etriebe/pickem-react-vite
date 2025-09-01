@@ -8,6 +8,7 @@ import { SiteUtilities } from '../../utilities/SiteUtilities';
 import { Typography, Snackbar, SnackbarCloseReason, Button } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MakePicksTeamCell from '../MakePicksTeamCell';
+import LeagueNavigationBreadcrumbs from '../LeagueNavigationBreadcrumbs';
 
 enum MakePicksColumnType {
     AwayTeam = 1,
@@ -261,6 +262,9 @@ export default function PickemMakePicks() {
         <>
             <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
             <Typography variant='h5'>{weekDescription} Picks - {selectedPicksCount} / {currentLeague?.settings?.totalPicks} Picks, {selectedKeyPicksCount} / {currentLeague?.settings?.keyPicks} Key Picks</Typography>
+            <LeagueNavigationBreadcrumbs 
+                league={currentLeague!}
+                currentWeekNumber={weekNumberConverted} />
             <Snackbar
                 open={open}
                 autoHideDuration={5000}
