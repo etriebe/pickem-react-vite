@@ -29,6 +29,7 @@ function App() {
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+
   useEffect(() => {
     const fetchData = async () => {
       const result = await AuthenticationUtilities.isAuthenticated();

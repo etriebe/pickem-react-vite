@@ -9,6 +9,7 @@ import { Typography, Snackbar, SnackbarCloseReason, Button } from '@mui/material
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MakePicksTeamCell from '../MakePicksTeamCell';
 import LeagueNavigationBreadcrumbs from '../LeagueNavigationBreadcrumbs';
+import Loading from '../Loading';
 
 enum MakePicksColumnType {
     AwayTeam = 1,
@@ -27,6 +28,7 @@ export default function PickemMakePicks() {
     const { leagueId, weekNumber } = useParams();
     const [open, setOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [dataLoaded, setDataLoaded] = useState(false);
     const weekNumberConverted = parseInt(weekNumber!);
     const apiRef = useGridApiRef();
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
@@ -240,6 +242,7 @@ export default function PickemMakePicks() {
             setSelectedKeyPicksCount(getSelectedKeyPicksCount(picks));
             setWeekGames(games);
             setWeekDescription(description)
+            setDataLoaded(true);
         }
 
         fetchData();
@@ -262,7 +265,7 @@ export default function PickemMakePicks() {
         <>
             <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
             <Typography variant='h5'>{weekDescription} Picks - {selectedPicksCount} / {currentLeague?.settings?.totalPicks} Picks, {selectedKeyPicksCount} / {currentLeague?.settings?.keyPicks} Key Picks</Typography>
-            <LeagueNavigationBreadcrumbs 
+            <LeagueNavigationBreadcrumbs
                 league={currentLeague!}
                 currentWeekNumber={weekNumberConverted} />
             <Snackbar
@@ -271,33 +274,39 @@ export default function PickemMakePicks() {
                 onClose={handleClose}
                 message={snackbarMessage}
             />
-            <DataGrid
-                sx={{
-                    border: '1px solid #7e7e7eff', // Darker gray border
-                    '& .MuiDataGrid-row': {
-                        borderBottom: '1px solid #7e7e7eff', // Darker row border
-                    },
-                    '& .MuiDataGrid-iconSeparator': {
-                        color: '#7e7e7eff', // Darker row border
-                    },
-                    '& .MuiDataGrid-columnHeaders': {
-                        borderBottom: '1px solid #7e7e7eff', // Darker row border
-                    },
-                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                        outline: "none !important",
-                    },
-                }}
-                rows={weekGames}
-                columns={columns}
-                onCellClick={handleCellClick}
-                apiRef={apiRef}
-                rowSelection={false}
-                getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
-            />
-            <div className='makePicksButtonsDiv'>
-                <Button className='submitPicksButton' variant='contained' color='primary' onClick={handleSubmitPicks}>Submit Picks</Button>
-                <Button className='cancelPicksButton' variant='outlined' href='/'>Cancel</Button>
-            </div>
+            {!dataLoaded ?
+                <Loading /> :
+                <>
+                    <DataGrid
+                        sx={{
+                            border: '1px solid #7e7e7eff', // Darker gray border
+                            '& .MuiDataGrid-row': {
+                                borderBottom: '1px solid #7e7e7eff', // Darker row border
+                            },
+                            '& .MuiDataGrid-iconSeparator': {
+                                color: '#7e7e7eff', // Darker row border
+                            },
+                            '& .MuiDataGrid-columnHeaders': {
+                                borderBottom: '1px solid #7e7e7eff', // Darker row border
+                            },
+                            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                                outline: "none !important",
+                            },
+                        }}
+                        rows={weekGames}
+                        columns={columns}
+                        onCellClick={handleCellClick}
+                        apiRef={apiRef}
+                        rowSelection={false}
+                        getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
+                    />
+                    <div className='makePicksButtonsDiv'>
+                        <Button className='submitPicksButton' variant='contained' color='primary' onClick={handleSubmitPicks}>Submit Picks</Button>
+                        <Button className='cancelPicksButton' variant='outlined' href='/'>Cancel</Button>
+                    </div>
+                </>
+            }
+
         </>
     );
 

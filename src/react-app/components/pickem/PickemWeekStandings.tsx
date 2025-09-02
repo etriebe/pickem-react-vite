@@ -5,10 +5,11 @@ import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo, SpreadWeekResultDTO } 
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
-import { Typography } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsTeamCell';
 import TeamIcon from '../TeamIcon';
+import Loading from '../Loading';
 
 export default function PickemWeekStandings() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
@@ -18,6 +19,7 @@ export default function PickemWeekStandings() {
     const { leagueId, weekNumber } = useParams();
     const weekNumberConverted = parseInt(weekNumber!);
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
+    const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
     const gameColumnWidth = isSmallScreen ? 95 : 95;
 
@@ -148,6 +150,7 @@ export default function PickemWeekStandings() {
             setWeekDescription(description)
             setUserMapping(leagueUserMapping);
             setColumns(columnList);
+            setDataLoaded(true);
         }
 
         fetchData();
@@ -164,32 +167,34 @@ export default function PickemWeekStandings() {
                         flexDirection: 'column',
                     }}
                 >
-                    <DataGrid
-                        sx={{
-                            border: '1px solid #7e7e7eff', // Darker gray border
-                            '& .MuiDataGrid-row': {
-                                borderBottom: '1px solid #7e7e7eff', // Darker row border
-                            },
-                            '& .MuiDataGrid-iconSeparator': {
-                                color: '#7e7e7eff', // Darker row border
-                            },
-                            '& .MuiDataGrid-columnHeaders': {
-                                borderBottom: '1px solid #7e7e7eff', // Darker row border
-                            },
-                            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                                outline: "none !important",
-                            },
-                        }}
-                        rows={userMapping}
-                        columns={columns}
-                        rowSelection={false}
-                        columnHeaderHeight={175}
-                        scrollbarSize={10}
+                    {!dataLoaded ?
+                        <Loading /> :
+                        <DataGrid
+                            sx={{
+                                border: '1px solid #7e7e7eff', // Darker gray border
+                                '& .MuiDataGrid-row': {
+                                    borderBottom: '1px solid #7e7e7eff', // Darker row border
+                                },
+                                '& .MuiDataGrid-iconSeparator': {
+                                    color: '#7e7e7eff', // Darker row border
+                                },
+                                '& .MuiDataGrid-columnHeaders': {
+                                    borderBottom: '1px solid #7e7e7eff', // Darker row border
+                                },
+                                "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                                    outline: "none !important",
+                                },
+                            }}
+                            rows={userMapping}
+                            columns={columns}
+                            rowSelection={false}
+                            columnHeaderHeight={175}
+                            scrollbarSize={10}
 
-                        getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
-                    />
+                            getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
+                        />
+                    }
                 </div>
-
                 {/** Visualize max and min container height */}
             </div>
 
