@@ -44,12 +44,7 @@ function App() {
         setEmail(userInfo.email!)
       }
       else {
-        // if (!window.location.href.match(/\/signin/) && !window.location.href.match(/\/signup/)) {
-        //     window.location.href = '/signin';
-        // }
-        // else {
-        //   console.log(`Not authenticated but on sign-in or sign-up pages.`)
-        // }
+        console.log(`Not authenticated. ${result}`);
       }
     }
 

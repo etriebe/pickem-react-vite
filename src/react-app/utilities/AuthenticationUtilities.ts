@@ -9,7 +9,8 @@ export class AuthenticationUtilities {
         await pickemClient.isAuthorized();
         return true;
     }
-    catch {
+    catch (err) {
+      console.error(`IsAuthorized threw an excpetion: ${err}`);
       // AuthenticationUtilities.clearLocalStorage();
       return false;
     }
