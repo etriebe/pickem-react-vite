@@ -5,7 +5,6 @@ import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo, SpreadWeekResultDTO } 
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
-import { Box, CircularProgress, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsTeamCell';
 import TeamIcon from '../TeamIcon';
