@@ -1,0 +1,6 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/decf33d8-ac50-49b2-8aa3-d1b5660f1797/resourceGroups/pickem/providers/Microsoft.Web/sites/pickem-react",
+    "appService.deploySubpath": "/dist",
+    "appService.zipGlobPattern": "**/*",
+    "appService.preDeployTask": "npm: build"
+}
