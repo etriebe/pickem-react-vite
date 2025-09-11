@@ -37,13 +37,15 @@ export default function MyLeagues() {
                     container
                     spacing={2}
                     padding={2}
-                    sx={{ mb: (theme) => theme.spacing(2) }}
+                    sx={{ mb: (theme) => theme.spacing(2), width: '100%' }}
                 >
                     {currentLeagues.map((l) => {
                         const currentLeaguePicks = currentPicks.find(p => p.leagueId === l.id);
-                        return <><Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                            <LeagueCard league={l} picksSubmitted={currentLeaguePicks != null} />
-                        </Grid></>;
+                        return <>
+                            <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+                                <LeagueCard league={l} picksSubmitted={currentLeaguePicks != null} />
+                            </Grid>
+                        </>;
                     })}
                 </Grid>
             }
