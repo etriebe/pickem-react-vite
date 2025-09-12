@@ -7,6 +7,7 @@ import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } fr
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Loading from '../Loading';
 import { Typography } from '@mui/material';
+import { SiteUtilities } from '../../utilities/SiteUtilities';
 
 export default function PickemLeagueStandings() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
@@ -21,7 +22,7 @@ export default function PickemLeagueStandings() {
     const renderUserCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
         userMapping: UserInfo[]): React.ReactNode => {
         const userId = params.row.id;
-        const userName = userMapping?.find(u => u.id === userId)?.userName ?? "Unknown User";
+        let userName = SiteUtilities.getShortenedUserNameFromId(userMapping, userId, params.row.email);
         return <div className='centerDivContainer standingsUserName'><span>{userName}</span></div>;
     }
 

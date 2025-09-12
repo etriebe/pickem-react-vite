@@ -26,7 +26,7 @@ export default function PickemWeekStandings() {
     const renderUserCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
         userMapping: UserInfo[]): React.ReactNode => {
         const userId = params.row.id;
-        const userName = userMapping?.find(u => u.id === userId)?.userName ?? "Unknown User";
+        let userName = SiteUtilities.getShortenedUserNameFromId(userMapping, userId, params.row.email);
         return <div className='centerDivContainer standingsUserName'><span>{userName}</span></div>;
     }
 

@@ -1,4 +1,4 @@
-import { GameDTO, LeagueDTO, SeasonDateInformation, Spread, TeamDTO } from '../services/PickemApiClient';
+import { GameDTO, LeagueDTO, SeasonDateInformation, Spread, TeamDTO, UserInfo } from '../services/PickemApiClient';
 
 export class SiteUtilities {
     static getWeekStandingLink(leagueType: number, leagueId: string, weekNumber: number): string {
@@ -174,10 +174,10 @@ export class SiteUtilities {
                 break;
         }
         if (game.result?.status === 0) {
-            
+
         }
         else if (game.result?.status === 1) { // in progress
-            
+
         }
         else if (game.result?.status === 1) { // in progress
             return game.result?.timeLeft! + " - " + game.result?.currentQuarter;
@@ -232,6 +232,14 @@ export class SiteUtilities {
             return undefined;
         }
     }
+
+    static getShortenedUserNameFromId(userMapping: UserInfo[], userId: string | undefined, email: string | undefined) {
+        let userName = userMapping?.find(u => u.id === userId)?.userName ?? "Unknown User";
+        if (userName === email) {
+            userName = userName?.split('@')[0];
+        }
+        return userName;
+    }
 }
 
 export const Sports: SportType[] = [
@@ -246,9 +254,9 @@ export const Sports: SportType[] = [
 export const LeagueTypes: LeagueType[] = [
     { value: 1, label: 'Pickem Against the Spread', urlPart: 'pickem' },
     { value: 2, label: 'Pickem Straight up', urlPart: 'pickem' },
-    { value: 3, label: 'Survivor Pool', urlPart: 'survivor'  },
-    { value: 4, label: 'All Bet Types', urlPart: 'allbets'  },
-    { value: 5, label: 'Squares', urlPart: 'squares'  },
+    { value: 3, label: 'Survivor Pool', urlPart: 'survivor' },
+    { value: 4, label: 'All Bet Types', urlPart: 'allbets' },
+    { value: 5, label: 'Squares', urlPart: 'squares' },
 ];
 
 export interface LeagueType {
