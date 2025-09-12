@@ -235,8 +235,12 @@ export default function PickemWeekStandings() {
                             rowSelection={false}
                             columnHeaderHeight={175}
                             scrollbarSize={10}
-
                             getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
+                            initialState={{
+                                sorting: {
+                                    sortModel: [{ field: 'weekPoints', sort: 'desc' }],
+                                },
+                            }}
                         />
                     }
                 </div>

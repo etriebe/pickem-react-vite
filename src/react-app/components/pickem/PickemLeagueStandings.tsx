@@ -192,8 +192,12 @@ export default function PickemLeagueStandings() {
                             rowSelection={false}
                             columnHeaderHeight={175}
                             scrollbarSize={10}
-
                             getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
+                            initialState={{
+                                sorting: {
+                                    sortModel: [{ field: 'seasonPoints', sort: 'desc' }],
+                                },
+                            }}
                         />
                     }
                 </div>
