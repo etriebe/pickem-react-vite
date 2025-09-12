@@ -212,6 +212,15 @@ export default function PickemWeekStandings() {
                                 "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
                                     outline: "none !important",
                                 },
+                                '& .MuiIconButton-root': {
+                                    fontSize: '0.8rem',
+                                    padding: '2px',
+                                    width: '24px',
+                                    height: '24px',
+                                },
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: '1rem',
+                                },
                             }}
                             rows={userMapping}
                             columns={columns}
