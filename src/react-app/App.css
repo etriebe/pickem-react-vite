@@ -162,6 +162,7 @@ height: 30px;
 
 .NavigationBreadcrumbs {
     padding-right: 1ch;
+    padding-left: 1ch;
 }
 
 .NavigationBreadcrumbsContainer {

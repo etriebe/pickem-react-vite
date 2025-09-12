@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
-import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO } from '../../services/PickemApiClient';
+import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO, ApiException } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
-import { Typography, Snackbar, SnackbarCloseReason, Button } from '@mui/material';
+import { Typography, Snackbar, SnackbarCloseReason, Button, Paper } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MakePicksTeamCell from '../MakePicksTeamCell';
 import LeagueNavigationBreadcrumbs from '../LeagueNavigationBreadcrumbs';
 import Loading from '../Loading';
+
 
 enum MakePicksColumnType {
     AwayTeam = 1,
@@ -152,6 +153,13 @@ export default function PickemMakePicks() {
         if (!currentGame) {
             throw new Error("Couldn't find the correct game");
         }
+
+        if (currentGame.gameStartTime && currentGame.gameStartTime <= new Date()) {
+            setSnackbarMessage("You cannot change your pick for a game that has already started.");
+            setOpen(true);
+            return;
+        }
+
         let currentPick = currentPicks.gamePicks.find(g => g.gameID === params.row.id);
 
         if (params.field === "keyPick") {
@@ -222,9 +230,15 @@ export default function PickemMakePicks() {
         }
 
         const pickemClient = PickemApiClientFactory.createClient();
-        await pickemClient.upsertSpreadWeekPick(currentPicks);
-        setSnackbarMessage("Your picks have been submitted successfully!");
-        setOpen(true);
+        try {
+            await pickemClient.upsertSpreadWeekPick(currentPicks);
+            setSnackbarMessage("Your picks have been submitted successfully!");
+            setOpen(true);
+        }
+        catch (error: ApiException | any) {
+            setSnackbarMessage(`There was an error submitting your picks. ${error.response}`);
+            setOpen(true);
+        }
     }
 
     useEffect(() => {
@@ -241,7 +255,7 @@ export default function PickemMakePicks() {
             setSelectedPicksCount(getSelectedPicksCount(picks));
             setSelectedKeyPicksCount(getSelectedKeyPicksCount(picks));
             setWeekGames(games);
-            setWeekDescription(description)
+            setWeekDescription(`${description} Picks`);
             setDataLoaded(true);
         }
 
@@ -264,49 +278,52 @@ export default function PickemMakePicks() {
     return (
         <>
             <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
-            <Typography variant='h5'>{weekDescription} Picks - {selectedPicksCount} / {currentLeague?.settings?.totalPicks} Picks, {selectedKeyPicksCount} / {currentLeague?.settings?.keyPicks} Key Picks</Typography>
+            <Typography variant='h5'></Typography>
             <LeagueNavigationBreadcrumbs
                 league={currentLeague!}
-                currentWeekNumber={weekNumberConverted} />
+                currentWeekNumber={weekNumberConverted}
+                navigationTitle={weekDescription} />
             <Snackbar
                 open={open}
                 autoHideDuration={5000}
                 onClose={handleClose}
                 message={snackbarMessage}
             />
-            {!dataLoaded ?
-                <Loading /> :
-                <>
-                    <DataGrid
-                        sx={{
-                            border: '1px solid #7e7e7eff', // Darker gray border
-                            '& .MuiDataGrid-row': {
-                                borderBottom: '1px solid #7e7e7eff', // Darker row border
-                            },
-                            '& .MuiDataGrid-iconSeparator': {
-                                color: '#7e7e7eff', // Darker row border
-                            },
-                            '& .MuiDataGrid-columnHeaders': {
-                                borderBottom: '1px solid #7e7e7eff', // Darker row border
-                            },
-                            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                                outline: "none !important",
-                            },
-                        }}
-                        rows={weekGames}
-                        columns={columns}
-                        onCellClick={handleCellClick}
-                        apiRef={apiRef}
-                        rowSelection={false}
-                        getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
-                    />
-                    <div className='makePicksButtonsDiv'>
-                        <Button className='submitPicksButton' variant='contained' color='primary' onClick={handleSubmitPicks}>Submit Picks</Button>
-                        <Button className='cancelPicksButton' variant='outlined' href='/'>Cancel</Button>
-                    </div>
-                </>
-            }
-
+            <Paper elevation={3} sx={{ padding: '1rem', marginTop: '1rem' }}>
+                <Typography variant='h6'>{selectedPicksCount} / {currentLeague?.settings?.totalPicks} Picks, {selectedKeyPicksCount} / {currentLeague?.settings?.keyPicks} Key Picks</Typography>
+                {!dataLoaded ?
+                    <Loading /> :
+                    <>
+                        <DataGrid
+                            sx={{
+                                border: '1px solid #7e7e7eff', // Darker gray border
+                                '& .MuiDataGrid-row': {
+                                    borderBottom: '1px solid #7e7e7eff', // Darker row border
+                                },
+                                '& .MuiDataGrid-iconSeparator': {
+                                    color: '#7e7e7eff', // Darker row border
+                                },
+                                '& .MuiDataGrid-columnHeaders': {
+                                    borderBottom: '1px solid #7e7e7eff', // Darker row border
+                                },
+                                "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                                    outline: "none !important",
+                                },
+                            }}
+                            rows={weekGames}
+                            columns={columns}
+                            onCellClick={handleCellClick}
+                            apiRef={apiRef}
+                            rowSelection={false}
+                            getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
+                        />
+                        <div className='makePicksButtonsDiv'>
+                            <Button className='submitPicksButton' variant='contained' color='primary' onClick={handleSubmitPicks}>Submit Picks</Button>
+                            <Button className='cancelPicksButton' variant='outlined' href='/'>Cancel</Button>
+                        </div>
+                    </>
+                }
+            </Paper>
         </>
     );
 

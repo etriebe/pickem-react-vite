@@ -1,13 +1,15 @@
-import { Link } from "@mui/material";
+import { IconButton, Link, Typography } from "@mui/material";
 import { SiteUtilities } from "../utilities/SiteUtilities";
 import { LeagueDTO } from "../services/PickemApiClient";
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 
 type LeagueNavigationBreadcrumbsProps = {
     league: LeagueDTO;
     currentWeekNumber: number;
+    navigationTitle: string;
 }
 
-export default function LeagueNavigationBreadcrumbs({ league, currentWeekNumber }: LeagueNavigationBreadcrumbsProps) {
+export default function LeagueNavigationBreadcrumbs({ league, currentWeekNumber, navigationTitle }: LeagueNavigationBreadcrumbsProps) {
     if (!league) {
         return <></>;
     }
@@ -20,24 +22,17 @@ export default function LeagueNavigationBreadcrumbs({ league, currentWeekNumber 
             <div className="NavigationBreadcrumbsContainer">
                 {previousWeekNumber >= league.startingWeekNumber! &&
                     <div className="NavigationBreadcrumbs">
-                        <Link
-                            href={previousWeekURL}
-                            variant="body2"
-                            sx={{ alignSelf: 'center' }}
-                        >
-                            Week {previousWeekNumber} Picks
-                        </Link>
+                        <IconButton href={previousWeekURL} size="small" sx={{ alignSelf: 'center' }} >
+                            <ChevronLeft />
+                        </IconButton>
                     </div>
                 }
+                <Typography variant='h5'>{navigationTitle}</Typography>
                 {nextWeekNumber <= league.endingWeekNumber! &&
                     <div className="NavigationBreadcrumbs">
-                        <Link
-                            href={nextWeekURL}
-                            variant="body2"
-                            sx={{ alignSelf: 'center' }}
-                        >
-                            Week {nextWeekNumber} Picks
-                        </Link>
+                        <IconButton href={nextWeekURL} size="small" sx={{ alignSelf: 'center' }} >
+                            <ChevronRight />
+                        </IconButton>
                     </div>
                 }
             </div>
