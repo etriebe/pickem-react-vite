@@ -124,6 +124,16 @@ export default function PickemWeekStandings() {
                     renderCell: (params) => {
                         return renderWeekResultsCell(params, league, weekResults);
                     },
+                    valueGetter: (value, row) => {
+                        if (!row) {
+                            return 0;
+                        }
+
+                        const userId = row.id;
+                        const userWeekResult = weekResults.find(wr => wr.userId === userId);
+                        return userWeekResult?.totalPoints ?? 0;
+                    },
+                    sortable: true,
                     disableColumnMenu: true,
                 },
             ];
