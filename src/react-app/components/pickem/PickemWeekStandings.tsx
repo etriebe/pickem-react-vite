@@ -114,6 +114,9 @@ export default function PickemWeekStandings() {
                     width: userColumnWidth,
                     minWidth: userColumnWidth,
                     cellClassName: "centerDivContainer",
+                    renderHeader: () => {
+                        return <div className='weekStandingsHeader'>User</div>;
+                    },
                     renderCell: (params) => {
                         return renderUserCell(params, leagueUserMapping);
                     },
@@ -130,10 +133,12 @@ export default function PickemWeekStandings() {
                 },
                 {
                     field: 'weekPoints',
-                    headerName: 'Week Points',
                     width: userColumnWidth,
                     minWidth: userColumnWidth,
                     cellClassName: "centerDivContainer",
+                    renderHeader: () => {
+                        return <div className='weekStandingsHeader'>Week<br/>Points</div>;
+                    },
                     renderCell: (params) => {
                         return renderWeekResultsCell(params, league, weekResults, picks);
                     },
