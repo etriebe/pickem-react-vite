@@ -1,13 +1,10 @@
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
-import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
+import { LeagueDTO, UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
-import { SiteUtilities } from '../../utilities/SiteUtilities';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsTeamCell';
-import TeamIcon from '../TeamIcon';
 import Loading from '../Loading';
 import { Typography } from '@mui/material';
 
@@ -19,7 +16,7 @@ export default function PickemLeagueStandings() {
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
     const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
-    const weekColumnWidth = isSmallScreen ? 95 : 95;
+    const weekColumnWidth = isSmallScreen ? 75 : 75;
 
     const renderUserCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
         userMapping: UserInfo[]): React.ReactNode => {
@@ -97,6 +94,9 @@ export default function PickemLeagueStandings() {
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
                         const userId = params.row.id;
+                        if (!userId) {
+                            return <>0</>;
+                        }
                         return renderSeasonResultsCell(weekResults, userId);
                     },
                     valueGetter: (_, row) => {
@@ -114,7 +114,7 @@ export default function PickemLeagueStandings() {
             ];
 
             for (let weekNumber = league.startingWeekNumber!; weekNumber <= league.endingWeekNumber!; weekNumber++) {
-                const gameColumn: GridColDef<(UserInfo[])[number]> = {
+                const weekColumn: GridColDef<(UserInfo[])[number]> = {
                     field: `week_${weekNumber}`,
                     headerName: `Week ${weekNumber}`,
                     width: weekColumnWidth,
@@ -135,7 +135,7 @@ export default function PickemLeagueStandings() {
                     disableColumnMenu: true,
                     sortable: true,
                 };
-                columnList.push(gameColumn);
+                columnList.push(weekColumn);
             }
 
             setUserMapping(leagueUserMapping);
