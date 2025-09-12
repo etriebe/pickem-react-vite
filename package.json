@@ -52,6 +52,7 @@
     "lint": "eslint .",
     "preview": "npm run build && vite preview",
     "prod": "vite --mode production",
+    "staging": "vite --mode staging",
     "start": "npm run build && vite preview"
   },
   "type": "module"
