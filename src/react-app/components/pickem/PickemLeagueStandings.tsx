@@ -11,17 +11,15 @@ import TeamIcon from '../TeamIcon';
 import Loading from '../Loading';
 import { Typography } from '@mui/material';
 
-export default function PickemWeekStandings() {
+export default function PickemLeagueStandings() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
     const [columns, setColumns] = useState<GridColDef<UserInfo>[]>([]);
     const [userMapping, setUserMapping] = useState<UserInfo[]>();
-    const [weekDescription, setWeekDescription] = useState("");
-    const { leagueId, weekNumber } = useParams();
-    const weekNumberConverted = parseInt(weekNumber!);
+    const { leagueId } = useParams();
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
     const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
-    const gameColumnWidth = isSmallScreen ? 95 : 95;
+    const weekColumnWidth = isSmallScreen ? 95 : 95;
 
     const renderUserCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
         userMapping: UserInfo[]): React.ReactNode => {
@@ -30,65 +28,32 @@ export default function PickemWeekStandings() {
         return <div className='centerDivContainer standingsUserName'><span>{userName}</span></div>;
     }
 
-    const renderGamePickCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
-        league: LeagueDTO,
-        picks: SpreadWeekPickDTO[],
-        game: GameDTO,
-        weekResults: SpreadWeekResultDTO[]): React.ReactNode => {
+    const renderWeekResultCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
+        weekResults: SpreadWeekResultDTO[],
+        weekNumber: number): React.ReactNode => {
         const userId = params.row.id;
-        const userPicks = picks?.find(p => p.userId === userId);
-        const gamePick = userPicks?.gamePicks?.find(gp => gp.gameID === game.id);
+        const userWeekResult = weekResults.find(wr => wr.userId === userId && wr.weekNumber === weekNumber);
 
-        if (!gamePick) {
-            return <></>;
+        if (!userWeekResult) {
+            return <>-</>;
         }
-
-        const teamPicked = gamePick.sidePicked === 0 ? game.homeTeam : game.awayTeam;
-        const pickImagePath = SiteUtilities.getTeamIconPathFromTeam(teamPicked!, league!);
-        const pickAltText = SiteUtilities.getAltTextFromTeam(teamPicked!);
-        const userWeekResult = weekResults.find(wr => wr.userId === userId);
-        const userGameResult = userWeekResult?.pickResults?.find(pr => pr.gameId === game.id);
-        const gameResultText = userGameResult?.isFinal ? (userGameResult.success ? "✅" : "❌") : "";
         return <div className='centerDivContainer'>
-            <TeamIcon imagePath={pickImagePath} altText={pickAltText} />
-            {gamePick.isKeyPicked && <div className='keyPickIndicator'>🔑</div>}
-            {userGameResult && <div className='gamePickResultIndicator'>{gameResultText}</div>}
+            {userWeekResult.totalPoints}
         </div>;
     }
 
-    const renderGameHeader = (game: GameDTO, league: LeagueDTO): React.ReactNode => {
-        return <PickemWeekStandingsHeaderTeamCell game={game} currentLeague={league!} isSmallScreen={isSmallScreen} />;
-    };
-
-    const renderWeekResultsCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>, league: LeagueDTO, weekResults: SpreadWeekResultDTO[], picks: SpreadWeekPickDTO[]): React.ReactNode => {
-        const userId = params.row.id;
-        const userWeekResult = weekResults.find(wr => wr.userId === userId);
-        const userPicks = picks.find(p => p.userId === userId);
-        let maximumPoints = 0;
-        if (!userWeekResult?.pickResults) {
-            return <>0 / 0</>;
+    const renderSeasonResultsCell = (
+        weekResults: SpreadWeekResultDTO[],
+        userId: string): React.ReactNode => {
+        if (!weekResults) {
+            return <>0</>;
         }
-        for (const pick of userPicks?.gamePicks!) {
-            const pickResult = userWeekResult.pickResults?.find(pr => pr.gameId === pick.gameID);
 
-            // There is no pick result yet so game is still in progress
-            if (!pickResult) {
-                maximumPoints += 1;
-                if (pick.isKeyPick) {
-                    maximumPoints += league.settings?.keyPickBonus!;
-                }
-                continue;
-            }
-            else {
-                if (pick.success) {
-                    maximumPoints += pick.totalPoints!;
-                }
-            }
-        }
-        const totalPoints = userWeekResult?.totalPoints;
+        const userWeekResults = weekResults.filter(wr => wr.userId === userId);
+        let totalPoints = getTotalPointsForSeason(userWeekResults);
         return <>
             <div>
-                {totalPoints} / {maximumPoints}
+                {totalPoints}
             </div>
         </>;
     };
@@ -99,13 +64,9 @@ export default function PickemWeekStandings() {
             const league = await pickemClient.getLeagueById(leagueId);
             setCurrentLeague(league);
 
-            const picks = await pickemClient.getAllSpreadWeekPicks(leagueId, weekNumberConverted);
-            const returnOnlyGamesThatHaveStarted = false;
-            const games = await pickemClient.queryGames(weekNumberConverted, league.year, league.sport, returnOnlyGamesThatHaveStarted);
-            const longDescription = true;
-            const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!, longDescription);
             const leagueUserMapping = await pickemClient.getUserMappingForLeague(leagueId);
-            const weekResults = await pickemClient.getAllTempSpreadWeekResults(leagueId, weekNumberConverted);
+            const weekNumber = -1; // Use -1 to get all week results
+            const weekResults = await pickemClient.getSpreadWeekResult(leagueId, weekNumber);
 
             const columnList: GridColDef<(UserInfo[])[number]>[] = [
                 {
@@ -129,13 +90,14 @@ export default function PickemWeekStandings() {
                     pinnable: true,
                 },
                 {
-                    field: 'weekPoints',
-                    headerName: 'Week Points',
+                    field: 'seasonPoints',
+                    headerName: 'Season Points',
                     width: userColumnWidth,
                     minWidth: userColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
-                        return renderWeekResultsCell(params, league, weekResults, picks);
+                        const userId = params.row.id;
+                        return renderSeasonResultsCell(weekResults, userId);
                     },
                     valueGetter: (_, row) => {
                         if (!row) {
@@ -143,26 +105,23 @@ export default function PickemWeekStandings() {
                         }
 
                         const userId = row.id;
-                        const userWeekResult = weekResults.find(wr => wr.userId === userId);
-                        return userWeekResult?.totalPoints ?? 0;
+                        const userWeekResults = weekResults.filter(wr => wr.userId === userId);
+                        return getTotalPointsForSeason(userWeekResults);
                     },
                     sortable: true,
                     disableColumnMenu: true,
                 },
             ];
 
-            for (const game of games!) {
+            for (let weekNumber = league.startingWeekNumber!; weekNumber <= league.endingWeekNumber!; weekNumber++) {
                 const gameColumn: GridColDef<(UserInfo[])[number]> = {
-                    field: `game_${game.id}`,
-                    headerName: `${game.awayTeam?.abbreviation} @ ${game.homeTeam?.abbreviation}`,
-                    renderHeader: () => {
-                        return renderGameHeader(game, league);
-                    },
-                    width: gameColumnWidth,
-                    minWidth: gameColumnWidth,
+                    field: `week_${weekNumber}`,
+                    headerName: `Week ${weekNumber}`,
+                    width: weekColumnWidth,
+                    minWidth: weekColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
-                        return renderGamePickCell(params, league, picks, game, weekResults);
+                        return renderWeekResultCell(params, weekResults, weekNumber);
                     },
                     valueGetter: (_, row) => {
                         if (!row) {
@@ -170,9 +129,8 @@ export default function PickemWeekStandings() {
                         }
 
                         const userId = row.id;
-                        const userPicks = picks?.find(p => p.userId === userId);
-                        const gamePick = userPicks?.gamePicks?.find(gp => gp.gameID === game.id);
-                        return gamePick?.sidePicked ?? -1;
+                        const userWeekResult = weekResults.find(wr => wr.userId === userId && wr.weekNumber === weekNumber);
+                        return userWeekResult?.totalPoints ?? 0;
                     },
                     disableColumnMenu: true,
                     sortable: true,
@@ -180,7 +138,6 @@ export default function PickemWeekStandings() {
                 columnList.push(gameColumn);
             }
 
-            setWeekDescription(description);
             setUserMapping(leagueUserMapping);
             setColumns(columnList);
             setDataLoaded(true);
@@ -192,7 +149,7 @@ export default function PickemWeekStandings() {
     return (
         <>
             <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
-            <Typography variant='h5'>{weekDescription} Standings</Typography>
+            <Typography variant='h5'>Season Standings</Typography>
             <div style={{ height: '100%', width: '90%' }}>
                 <div
                     style={{
@@ -245,5 +202,17 @@ export default function PickemWeekStandings() {
 
         </>
     );
+
+    function getTotalPointsForSeason(weekResults: SpreadWeekResultDTO[]) {
+        let totalPoints = 0;
+        for (const week of weekResults) {
+            if (!week.totalPoints) {
+                continue;
+            }
+
+            totalPoints += week.totalPoints;
+        }
+        return totalPoints;
+    }
 }
 

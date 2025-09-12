@@ -24,6 +24,7 @@ import PickemMakePicks from './components/pickem/PickemMakePicks';
 import PickemWeekStandings from './components/pickem/PickemWeekStandings';
 import ResetPassword from './components/ResetPassword';
 import CreateLeague from './components/CreateLeague';
+import PickemLeagueStandings from './components/pickem/PickemLeagueStandings';
 
 function App() {
   const [isAuthenticated, setAuthenticated] = useState(false);
@@ -88,6 +89,7 @@ function App() {
                 <Route path="/createleague" element={isAuthenticated ? <CreateLeague /> : <SignIn />} />
                 <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={<PickemMakePicks />} />
                 <Route path="/pickem/week/:leagueId/:weekNumber" element={<PickemWeekStandings />} />
+                <Route path="/pickem/standings/:leagueId" element={<PickemLeagueStandings />} />
                 <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
               </Routes>
             </Stack>
