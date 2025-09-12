@@ -61,7 +61,7 @@ export class SiteUtilities {
         }
     }
 
-    static getWeekDescriptionFromWeekNumber(season: SeasonDateInformation, weekNumber: number): string {
+    static getWeekDescriptionFromWeekNumber(season: SeasonDateInformation, weekNumber: number, longDescription: boolean): string {
         if (weekNumber > season.weekStartTimes?.length! || weekNumber < 1) {
             throw new Error(`Invalid weekNumber requested: ${weekNumber}`);
         }
@@ -71,7 +71,12 @@ export class SiteUtilities {
         }
         else {
             const requestedWeek = season.weekStartTimes[weekNumber - 1];
-            return requestedWeek.weekDescription!;
+            if (longDescription && requestedWeek.weekStartTime && requestedWeek.weekEndTime) {
+                return `${requestedWeek.weekDescription!}: ${requestedWeek.weekStartTime?.toLocaleDateString()} - ${requestedWeek.weekEndTime?.toLocaleDateString()}`;
+            }
+            else {
+                return requestedWeek.weekDescription!;
+            }
         }
     }
 

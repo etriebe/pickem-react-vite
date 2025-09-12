@@ -18,7 +18,8 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
     const leagueStandingLink = SiteUtilities.getLeagueStandingLink(league.type, league.id!);
     const myPicksLink = SiteUtilities.getMakePicksLink(league.type, league.id!, league.currentWeekNumber!);
     const pickStatus = SiteUtilities.getEmojiForPickStatus(picksSubmitted);
-    const weekDescription = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!);
+    const longDescription = true;
+    const weekDescription = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!, longDescription);
     const leagueYear = league.year?.replace("_", "-");
     const isOffSeason = LeagueUtilities.isOffSeason(league);
     const userInfo = AuthenticationUtilities.getUserInfoFromLocalStorage();
@@ -28,10 +29,10 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
             <Card sx={{  }}>
                 <CardContent>
                     <Typography variant="h5" component="div">
-                        {league.leagueName}
+                        {league.leagueName} - {leagueYear}
                     </Typography>
                     <Typography variant="caption" gutterBottom>
-                        {weekDescription} - {leagueYear}
+                        {weekDescription}
                     </Typography>
                     <Typography variant="body2">
                         Picks: {pickStatus}

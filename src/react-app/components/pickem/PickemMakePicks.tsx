@@ -248,7 +248,8 @@ export default function PickemMakePicks() {
             const picks = await pickemClient.getSpreadWeekPicksForUser(leagueId, weekNumberConverted);
             const returnOnlyGamesThatHaveStarted = false;
             const games = await pickemClient.queryGames(weekNumberConverted, league.year, league.sport, returnOnlyGamesThatHaveStarted);
-            const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!);
+            const longDescription = true;
+            const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!, longDescription);
 
             setCurrentLeague(league);
             setCurrentPicks(picks);

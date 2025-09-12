@@ -1,4 +1,4 @@
-import { IconButton, Link, Typography } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import { SiteUtilities } from "../utilities/SiteUtilities";
 import { LeagueDTO } from "../services/PickemApiClient";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";

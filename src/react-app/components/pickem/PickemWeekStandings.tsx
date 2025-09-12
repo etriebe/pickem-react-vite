@@ -102,7 +102,8 @@ export default function PickemWeekStandings() {
             const picks = await pickemClient.getAllSpreadWeekPicks(leagueId, weekNumberConverted);
             const returnOnlyGamesThatHaveStarted = false;
             const games = await pickemClient.queryGames(weekNumberConverted, league.year, league.sport, returnOnlyGamesThatHaveStarted);
-            const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!);
+            const longDescription = true;
+            const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!, longDescription);
             const leagueUserMapping = await pickemClient.getUserMappingForLeague(leagueId);
             const weekResults = await pickemClient.getAllTempSpreadWeekResults(leagueId, weekNumberConverted);
 
