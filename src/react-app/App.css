@@ -168,3 +168,8 @@ height: 30px;
 .NavigationBreadcrumbsContainer {
     display: flex;
 }
+
+.gameStarted {
+    background-color: lightgray;
+    filter: grayscale(1);
+}
