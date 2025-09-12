@@ -159,8 +159,18 @@ export default function PickemWeekStandings() {
                     renderCell: (params) => {
                         return renderGamePickCell(params, league, picks, game, weekResults);
                     },
+                    valueGetter: (_, row) => {
+                        if (!row) {
+                            return 0;
+                        }
+
+                        const userId = row.id;
+                        const userPicks = picks?.find(p => p.userId === userId);
+                        const gamePick = userPicks?.gamePicks?.find(gp => gp.gameID === game.id);
+                        return gamePick?.sidePicked ?? -1;
+                    },
                     disableColumnMenu: true,
-                    sortable: false,
+                    sortable: true,
                 };
                 columnList.push(gameColumn);
             }
