@@ -7,23 +7,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import { CreateLeagueRequest, SeasonDateInformation2 } from '../services/PickemApiClient';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
-
-const sports = [
-    { value: 1, label: 'NFL' },
-    { value: 2, label: 'NHL' },
-    { value: 3, label: 'MLB' },
-    { value: 4, label: 'NBA' },
-    { value: 5, label: 'NCAAF' },
-    { value: 6, label: 'NCAAB' },
-];
-
-const leagueTypes = [
-    { value: 1, label: 'Pickem Against the Spread' },
-    { value: 2, label: 'Pickem Straight up' },
-    { value: 3, label: 'Survivor Pool' },
-    { value: 4, label: 'All Bet Types' },
-    { value: 5, label: 'Squares' },
-];
+import { Sports, LeagueTypes } from '../utilities/SiteUtilities';
 
 export default function CreateLeague() {
     const [leagueName, setLeagueName] = useState('');
@@ -101,7 +85,7 @@ export default function CreateLeague() {
                             variant="outlined"
                             InputLabelProps={{ shrink: true }}>
 
-                            {leagueTypes.map(option => (
+                            {LeagueTypes.map(option => (
                                 <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                             ))}
                         </TextField>
@@ -124,7 +108,7 @@ export default function CreateLeague() {
                             required
                             variant="outlined"
                         >
-                            {sports.map(option => (
+                            {Sports.map(option => (
                                 <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                             ))}
                         </TextField>
@@ -210,7 +194,7 @@ function getEndingWeekLabel(max: number): React.SetStateAction<string> {
 }
 
 function getSportNameFromNumber(sportNumber: number): string {
-    return sports.find(s => s.value === sportNumber)?.label!;
+    return Sports.find(s => s.value === sportNumber)?.label!;
 }
 
 function getCurrentMaxWeeks(sportSeasonInformation: { [key: string]: SeasonDateInformation2; } | undefined, sportName: string) {

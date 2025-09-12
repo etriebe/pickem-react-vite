@@ -184,4 +184,87 @@ export class SiteUtilities {
         }
         return game.result?.timeLeft ?? "";
     }
+
+    static getPageTypeFromUrl(url: string): PageType {
+        if (url.includes("/makepicks/")) {
+            return PageType.MakePicksPage;
+        }
+        else if (url.includes("/week/")) {
+            return PageType.WeekStandingsPage;
+        }
+        else if (url.includes("/standings/")) {
+            return PageType.LeagueStandingsPage;
+        }
+        else {
+            return PageType.OtherPage;
+        }
+    }
+
+    static getLeagueIdFromUrl(url: string): string | undefined {
+        const urlParts = url.split("/");
+        const leagueIdIndex = urlParts.findIndex(part => part === "makepicks" || part === "week" || part === "standings") + 1;
+        if (leagueIdIndex > 0 && leagueIdIndex < urlParts.length) {
+            return urlParts[leagueIdIndex];
+        }
+        else {
+            return undefined;
+        }
+    }
+
+    static getLeagueTypeFromUrl(url: string): LeagueType | undefined {
+        const urlParts = url.split("/");
+        const leagueType = LeagueTypes.find(lt => urlParts[1] == lt.urlPart);
+        if (leagueType) {
+            return leagueType;
+        }
+        else {
+            return undefined;
+        }
+    }
+
+    static getWeekNumberFromUrl(url: string): number | undefined {
+        const urlParts = url.split("/");
+        const weekNumberIndex = urlParts.findIndex(part => part === "makepicks" || part === "week") + 2;
+        if (weekNumberIndex > 1 && weekNumberIndex < urlParts.length) {
+            return Number(urlParts[weekNumberIndex]);
+        }
+        else {
+            return undefined;
+        }
+    }
+}
+
+export const Sports: SportType[] = [
+    { value: 1, label: 'NFL' },
+    { value: 2, label: 'NHL' },
+    { value: 3, label: 'MLB' },
+    { value: 4, label: 'NBA' },
+    { value: 5, label: 'NCAAF' },
+    { value: 6, label: 'NCAAB' },
+];
+
+export const LeagueTypes: LeagueType[] = [
+    { value: 1, label: 'Pickem Against the Spread', urlPart: 'pickem' },
+    { value: 2, label: 'Pickem Straight up', urlPart: 'pickem' },
+    { value: 3, label: 'Survivor Pool', urlPart: 'survivor'  },
+    { value: 4, label: 'All Bet Types', urlPart: 'allbets'  },
+    { value: 5, label: 'Squares', urlPart: 'squares'  },
+];
+
+export interface LeagueType {
+    value: number;
+    label: string;
+    urlPart: string;
+}
+
+export interface SportType {
+    value: number;
+    label: string;
+}
+
+export enum PageType {
+    MakePicksPage = "MakePicksPage",
+    WeekStandingsPage = "WeekStandingsPage",
+    LeagueStandingsPage = "LeagueStandingsPage",
+    OtherPage = "OtherPage"
 }

@@ -5,6 +5,7 @@ import PickemApiClientFactory from "../services/PickemApiClientFactory";
 import LeagueCard from './LeagueCard';
 import { Grid } from "@mui/material";
 import Loading from "./Loading";
+import React from "react";
 
 export default function MyLeagues() {
     const [currentLeagues, setCurrentLeagues] = useState<League[]>([]);
@@ -41,11 +42,11 @@ export default function MyLeagues() {
                 >
                     {currentLeagues.map((l) => {
                         const currentLeaguePicks = currentPicks.find(p => p.leagueId === l.id);
-                        return <>
+                        return <React.Fragment key={l.id}>
                             <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                                <LeagueCard league={l} picksSubmitted={currentLeaguePicks != null} />
+                                <LeagueCard key={l.id} league={l} picksSubmitted={currentLeaguePicks != null} />
                             </Grid>
-                        </>;
+                        </React.Fragment>;
                     })}
                 </Grid>
             }
