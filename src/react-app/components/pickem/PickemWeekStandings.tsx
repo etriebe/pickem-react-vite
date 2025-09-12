@@ -124,7 +124,7 @@ export default function PickemWeekStandings() {
                     renderCell: (params) => {
                         return renderWeekResultsCell(params, league, weekResults);
                     },
-                    valueGetter: (value, row) => {
+                    valueGetter: (_, row) => {
                         if (!row) {
                             return 0;
                         }
