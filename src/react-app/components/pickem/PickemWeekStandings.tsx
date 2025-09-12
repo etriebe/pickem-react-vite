@@ -112,7 +112,15 @@ export default function PickemWeekStandings() {
                     renderCell: (params) => {
                         return renderUserCell(params, leagueUserMapping);
                     },
+                    valueGetter: (_, row) => {
+                        if (!row) {
+                            return "";
+                        }
+
+                        return row.userName ?? row.email;
+                    },
                     disableColumnMenu: true,
+                    sortable: true,
                     pinnable: true,
                 },
                 {
