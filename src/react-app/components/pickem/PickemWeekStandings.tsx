@@ -80,8 +80,8 @@ export default function PickemWeekStandings() {
                 continue;
             }
             else {
-                if (pick.success) {
-                    maximumPoints += pick.totalPoints!;
+                if (pickResult.success && pickResult.totalPoints) {
+                    maximumPoints += pickResult.totalPoints!;
                 }
             }
         }
