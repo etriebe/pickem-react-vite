@@ -60,24 +60,28 @@ export default function PickemWeekStandings() {
         return <PickemWeekStandingsHeaderTeamCell game={game} currentLeague={league!} isSmallScreen={isSmallScreen} />;
     };
 
-    const renderWeekResultsCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>, league: LeagueDTO, weekResults: SpreadWeekResultDTO[]): React.ReactNode => {
+    const renderWeekResultsCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>, league: LeagueDTO, weekResults: SpreadWeekResultDTO[], picks: SpreadWeekPickDTO[]): React.ReactNode => {
         const userId = params.row.id;
         const userWeekResult = weekResults.find(wr => wr.userId === userId);
-
+        const userPicks = picks.find(p => p.userId === userId);
         let maximumPoints = 0;
         if (!userWeekResult?.pickResults) {
             return <>0 / 0</>;
         }
-        for (const pick of userWeekResult?.pickResults!) {
-            if (pick.isFinal) {
-                if (pick.success) {
-                    maximumPoints += pick.totalPoints!;
-                }
-            }
-            else {
+        for (const pick of userPicks?.gamePicks!) {
+            const pickResult = userWeekResult.pickResults?.find(pr => pr.gameId === pick.gameID);
+
+            // There is no pick result yet so game is still in progress
+            if (!pickResult) {
                 maximumPoints += 1;
                 if (pick.isKeyPick) {
                     maximumPoints += league.settings?.keyPickBonus!;
+                }
+                continue;
+            }
+            else {
+                if (pick.success) {
+                    maximumPoints += pick.totalPoints!;
                 }
             }
         }
@@ -130,7 +134,7 @@ export default function PickemWeekStandings() {
                     minWidth: userColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderCell: (params) => {
-                        return renderWeekResultsCell(params, league, weekResults);
+                        return renderWeekResultsCell(params, league, weekResults, picks);
                     },
                     valueGetter: (_, row) => {
                         if (!row) {
