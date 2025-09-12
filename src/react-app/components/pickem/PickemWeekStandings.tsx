@@ -209,6 +209,9 @@ export default function PickemWeekStandings() {
                                 '& .MuiDataGrid-columnHeaders': {
                                     borderBottom: '1px solid #7e7e7eff', // Darker row border
                                 },
+                                '& .MuiDataGrid-columnHeader': {
+                                    padding: 0,
+                                },
                                 "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
                                     outline: "none !important",
                                 },
