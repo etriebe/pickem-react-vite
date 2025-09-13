@@ -82,15 +82,15 @@ function App() {
               <Header />
 
               <Routes>
-                <Route path="/" element={ isAuthenticated ? <MyLeagues /> : <MainGrid />}/>
-                <Route path="/myleagues" element={ <MyLeagues />} />
-                <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/createleague" element={isAuthenticated ? <CreateLeague /> : <SignIn />} />
-                <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={<PickemMakePicks />} />
-                <Route path="/pickem/week/:leagueId/:weekNumber" element={<PickemWeekStandings />} />
-                <Route path="/pickem/standings/:leagueId" element={<PickemLeagueStandings />} />
-                <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
+                <Route path="/" element={ isAuthenticated ? <MyLeagues /> : <MainGrid />} />
+                <Route path="/myleagues" element={ isAuthenticated ?  <MyLeagues /> : <SignIn />} />
+                <Route path="/signin" element={ isAuthenticated ? <SignIn /> : <SignIn />} />
+                <Route path="/signup" element={ isAuthenticated ? <SignUp /> : <SignIn />} />
+                <Route path="/createleague" element={ isAuthenticated ? <CreateLeague /> : <SignIn />} />
+                <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={ isAuthenticated ? <PickemMakePicks /> : <SignIn />} />
+                <Route path="/pickem/week/:leagueId/:weekNumber" element={ isAuthenticated ? <PickemWeekStandings /> : <SignIn />} />
+                <Route path="/pickem/standings/:leagueId" element={ isAuthenticated ? <PickemLeagueStandings /> : <SignIn />} />
+                <Route path="/resetpassword/:resetCode" element={ isAuthenticated ? <ResetPassword /> : <SignIn />} />
               </Routes>
             </Stack>
           </Box>
