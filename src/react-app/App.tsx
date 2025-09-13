@@ -25,6 +25,9 @@ import PickemWeekStandings from './components/pickem/PickemWeekStandings';
 import ResetPassword from './components/ResetPassword';
 import CreateLeague from './components/CreateLeague';
 import PickemLeagueStandings from './components/pickem/PickemLeagueStandings';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient()
 
 function App() {
   const [isAuthenticated, setAuthenticated] = useState(false);
@@ -54,48 +57,50 @@ function App() {
 
   return (
     <>
-      <AppTheme>
-        <CssBaseline enableColorScheme />
-        <Box sx={{ display: 'flex' }}>
-          <SideMenu isAuthenticated={isAuthenticated} email={email} username={username} />
-          <AppNavbar isAuthenticated={isAuthenticated} email={email} username={username} />
-          {/* Main content */}
-          <Box
-            component="main"
-            sx={(theme) => ({
-              flexGrow: 1,
-              backgroundColor: theme.vars
-                ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
-                : alpha(theme.palette.background.default, 1),
-              overflow: 'auto',
-            })}
-          >
-            <Stack
-              spacing={2}
-              sx={{
-                alignItems: 'center',
-                mx: 3,
-                pb: 5,
-                mt: { xs: 8, md: 0 },
-              }}
+      <QueryClientProvider client={queryClient}>
+        <AppTheme>
+          <CssBaseline enableColorScheme />
+          <Box sx={{ display: 'flex' }}>
+            <SideMenu isAuthenticated={isAuthenticated} email={email} username={username} />
+            <AppNavbar isAuthenticated={isAuthenticated} email={email} username={username} />
+            {/* Main content */}
+            <Box
+              component="main"
+              sx={(theme) => ({
+                flexGrow: 1,
+                backgroundColor: theme.vars
+                  ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
+                  : alpha(theme.palette.background.default, 1),
+                overflow: 'auto',
+              })}
             >
-              <Header />
+              <Stack
+                spacing={2}
+                sx={{
+                  alignItems: 'center',
+                  mx: 3,
+                  pb: 5,
+                  mt: { xs: 8, md: 0 },
+                }}
+              >
+                <Header />
 
-              <Routes>
-                <Route path="/" element={ isAuthenticated ? <MyLeagues /> : <MainGrid />} />
-                <Route path="/myleagues" element={ isAuthenticated ?  <MyLeagues /> : <SignIn />} />
-                <Route path="/signin" element={ isAuthenticated ? <SignIn /> : <SignIn />} />
-                <Route path="/signup" element={ isAuthenticated ? <SignUp /> : <SignIn />} />
-                <Route path="/createleague" element={ isAuthenticated ? <CreateLeague /> : <SignIn />} />
-                <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={ isAuthenticated ? <PickemMakePicks /> : <SignIn />} />
-                <Route path="/pickem/week/:leagueId/:weekNumber" element={ isAuthenticated ? <PickemWeekStandings /> : <SignIn />} />
-                <Route path="/pickem/standings/:leagueId" element={ isAuthenticated ? <PickemLeagueStandings /> : <SignIn />} />
-                <Route path="/resetpassword/:resetCode" element={ isAuthenticated ? <ResetPassword /> : <SignIn />} />
-              </Routes>
-            </Stack>
+                <Routes>
+                  <Route path="/" element={isAuthenticated ? <MyLeagues /> : <MainGrid />} />
+                  <Route path="/myleagues" element={isAuthenticated ? <MyLeagues /> : <SignIn />} />
+                  <Route path="/signin" element={isAuthenticated ? <SignIn /> : <SignIn />} />
+                  <Route path="/signup" element={isAuthenticated ? <SignUp /> : <SignIn />} />
+                  <Route path="/createleague" element={isAuthenticated ? <CreateLeague /> : <SignIn />} />
+                  <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={isAuthenticated ? <PickemMakePicks /> : <SignIn />} />
+                  <Route path="/pickem/week/:leagueId/:weekNumber" element={isAuthenticated ? <PickemWeekStandings /> : <SignIn />} />
+                  <Route path="/pickem/standings/:leagueId" element={isAuthenticated ? <PickemLeagueStandings /> : <SignIn />} />
+                  <Route path="/resetpassword/:resetCode" element={isAuthenticated ? <ResetPassword /> : <SignIn />} />
+                </Routes>
+              </Stack>
+            </Box>
           </Box>
-        </Box>
-      </AppTheme>
+        </AppTheme>
+      </QueryClientProvider>
     </>
   );
 }
