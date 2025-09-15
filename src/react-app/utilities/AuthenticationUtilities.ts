@@ -16,16 +16,15 @@ export class AuthenticationUtilities {
     }
   }
 
-  static async login(email: string, password: string): Promise<ApiResponse> {
+  static async login(email: string, password: string, rememberMe: boolean): Promise<ApiResponse> {
     const pickemClient = PickemApiClientFactory.createClient();
     let requestInfo = new LoginRequest();
     requestInfo.email = email;
     requestInfo.password = password;
     const useCookies = true;
-    const useSessionCookies = true;
     try
     {
-        const responseToken = await pickemClient.login(useCookies, useSessionCookies, requestInfo);
+        const responseToken = await pickemClient.login(useCookies, !rememberMe, requestInfo);
         console.log(JSON.stringify(responseToken));
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('email', email);

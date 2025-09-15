@@ -91,14 +91,15 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     const data = new FormData(event.currentTarget);
     event.preventDefault(); // Prevent default form submission
     const email = data.get('email') as string;
-    try {      
-      const loginResult = await AuthenticationUtilities.login(email, data.get('password') as string);
-      
+    const rememberMe = (event.currentTarget.querySelector("input#rememberMe") as HTMLInputElement | null)?.checked;
+    try {
+      const loginResult = await AuthenticationUtilities.login(email, data.get('password') as string, rememberMe ?? false);
+
       if (loginResult.result) {
         // Redirect to My Leagues page on successful login
         console.log('Login successful:', JSON.stringify(loginResult));
         window.location.href = '/myleagues';
-      } else {        
+      } else {
         console.log('Login failed:', JSON.stringify(loginResult));
         setPasswordError(true);
         setPasswordErrorMessage(`Failed to login: ${loginResult.message}`);
@@ -187,10 +188,12 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
                 color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
+            <FormControl>
+              <FormControlLabel
+                control={<Checkbox id='rememberMe' color="primary" />}
+                label="Remember me"
+              />
+            </FormControl>
             <ForgotPassword open={open} handleClose={handleClose} />
             <Button
               type="submit"
@@ -212,14 +215,14 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
           </Box>
           <Divider>or</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {<Button
+            {/* {<Button
               fullWidth
               variant="outlined"
               onClick={() => handleClickSigninWithGoogle()}
               startIcon={<GoogleIcon />}
             >
               Sign in with Google
-            </Button>}
+            </Button>} */}
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}
               <Link
