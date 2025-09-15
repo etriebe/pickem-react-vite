@@ -17,8 +17,6 @@ import AppTheme from '../theme/AppTheme';
 import ForgotPassword from './ForgotPassword';
 import SiteLogo from './SiteLogo';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
-import PickemApiClientFactory from '../services/PickemApiClientFactory';
-import { GoogleIcon } from './CustomIcons';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -71,12 +69,6 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
 
   const handleClickOpen = () => {
     setOpen(true);
-  };
-
-  const handleClickSigninWithGoogle = async () => {
-    const pickemClient = PickemApiClientFactory.createClient();
-    await pickemClient.performExternalLogin('Google', window.location.origin);
-
   };
 
   const handleClose = () => {
