@@ -6,7 +6,7 @@ import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { MaterialReactTable, MRT_ColumnDef } from 'material-react-table';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsTeamCell';
+import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsHeaderTeamCell';
 import TeamIcon from '../TeamIcon';
 import Loading from '../Loading';
 import { Typography } from '@mui/material';
@@ -21,6 +21,7 @@ export default function PickemWeekStandings() {
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
     const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
+    const weekPointsColumnWidth = 120;
     const gameColumnWidth = isSmallScreen ? 95 : 95;
 
     const renderUserCell = (row: UserInfo, userMapping: UserInfo[]): React.ReactNode => {
@@ -104,12 +105,34 @@ export default function PickemWeekStandings() {
                     header: 'User',
                     size: userColumnWidth,
                     Cell: ({ row }) => renderUserCell(row.original, leagueUserMapping),
+                    sortingFn: (a, b) => {
+                        const userIdA = a.original.id;
+                        const userIdB = b.original.id;
+                        const userNameA = leagueUserMapping?.find(u => u.id === userIdA)?.userName || "";
+                        const userNameB = leagueUserMapping?.find(u => u.id === userIdB)?.userName || "";
+                        if (userNameA === userNameB) {
+                            return 0;
+                        }
+                        return userNameA.localeCompare(userNameB);
+                    },
+                    enableColumnActions: false,
                 },
                 {
                     accessorKey: 'weekPoints',
-                    header: 'Week Points',
-                    size: userColumnWidth,
+                    header: 'Points',
+                    size: weekPointsColumnWidth,
                     Cell: ({ row }) => renderWeekResultsCell(row.original, league, weekResults, picks),
+                    sortingFn: (a, b) => {
+                        const userIdA = a.original.id;
+                        const userIdB = b.original.id;
+                        const aPoints = weekResults.find(wr => wr.userId === userIdA)?.totalPoints || 0;
+                        const bPoints = weekResults.find(wr => wr.userId === userIdB)?.totalPoints || 0;
+                        if (aPoints === bPoints) {
+                            return 0;
+                        }
+                        return aPoints > bPoints ? -1 : 1;
+                    },
+                    enableColumnActions: false,
                 },
             ];
 
@@ -117,11 +140,11 @@ export default function PickemWeekStandings() {
                 columnList.push({
                     accessorKey: `game_${game.id}`,
                     header: `${game.awayTeam?.abbreviation} @ ${game.homeTeam?.abbreviation}`,
-                    Header: ({ column }) => ( renderGameHeader(game, league) ),
-                    
+                    Header: ({ }) => (renderGameHeader(game, league)),
                     size: gameColumnWidth,
                     Cell: ({ row }) => renderGamePickCell(row.original, league, picks, game, weekResults),
-                    
+                    enableColumnActions: false,
+                    enableSorting: false,
                 });
             }
 
@@ -152,7 +175,9 @@ export default function PickemWeekStandings() {
                         initialState={{
                             sorting: [{ id: 'weekPoints', desc: true }],
                         }}
-                        muiTableContainerProps={{ sx: { maxHeight: 600 } }}
+                        enablePagination={false}
+                        rowCount={userMapping?.length ?? 0}
+                        muiTableContainerProps={{ sx: { maxHeight: 'auto' } }}
                         muiTableHeadCellProps={{ sx: { fontWeight: 'bold', fontSize: '1rem', background: '#f5f5f5' } }}
                         muiTableBodyCellProps={{ sx: { padding: '4px', fontSize: '0.95rem' } }}
                     />

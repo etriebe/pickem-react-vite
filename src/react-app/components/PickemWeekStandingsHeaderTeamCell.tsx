@@ -43,9 +43,13 @@ export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague 
     return <>
         <div className={gameHeaderClass}>
             <div className="AwayTeam">
-                {game.awayTeam?.abbreviation}
-                <div className="AwayScore">
-                    {game.result?.awayScore}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div className="TeamAbbreviation">
+                        {game.awayTeam?.abbreviation}
+                    </div>
+                    <div className="AwayScore">
+                        {game.result?.awayScore}
+                    </div>
                 </div>
                 <div className="TeamIconHeaderDiv">
                     <TeamIcon imagePath={awayImagePath} altText={awayAltText} />
