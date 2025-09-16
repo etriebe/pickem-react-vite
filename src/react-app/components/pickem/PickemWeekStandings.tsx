@@ -20,9 +20,21 @@ export default function PickemWeekStandings() {
     const weekNumberConverted = parseInt(weekNumber!);
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
     const [dataLoaded, setDataLoaded] = useState(false);
+    const [tableMaxHeight, setTableMaxHeight] = useState<string>("600px");
     const userColumnWidth = 100;
     const weekPointsColumnWidth = 90;
     const gameColumnWidth = isSmallScreen ? 110 : 110;
+    // Responsive table height
+    React.useEffect(() => {
+        function updateHeight() {
+            // Subtract header and some margin (adjust as needed)
+            const offset = isSmallScreen ? 300 : 300;
+            setTableMaxHeight(`${window.innerHeight - offset}px`);
+        }
+        updateHeight();
+        window.addEventListener('resize', updateHeight);
+        return () => window.removeEventListener('resize', updateHeight);
+    }, [isSmallScreen]);
 
     const renderUserCell = (row: UserInfo, userMapping: UserInfo[]): React.ReactNode => {
         const userId = row.id;
@@ -165,7 +177,7 @@ export default function PickemWeekStandings() {
         <>
             <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
             <Typography variant='h5'>{weekDescription} Standings</Typography>
-            <div style={{ height: '100%', width: '90%' }}>
+            <div style={{ height: '100%', width: '100%' }}>
                 {!dataLoaded ? (
                     <Loading />
                 ) : (
@@ -183,7 +195,7 @@ export default function PickemWeekStandings() {
                         }}
                         enablePagination={false}
                         rowCount={userMapping?.length ?? 0}
-                        muiTableContainerProps={{ sx: { maxHeight: '800px' } }}
+                        muiTableContainerProps={{ sx: { maxHeight: tableMaxHeight } }}
                         muiTableHeadCellProps={{ sx: { fontWeight: 'bold', fontSize: '1rem', background: '#f5f5f5' } }}
                         muiTableBodyCellProps={{ sx: { padding: '4px', fontSize: '0.95rem' } }}
                     />
