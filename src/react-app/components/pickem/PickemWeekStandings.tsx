@@ -183,7 +183,7 @@ export default function PickemWeekStandings() {
                         }}
                         enablePagination={false}
                         rowCount={userMapping?.length ?? 0}
-                        muiTableContainerProps={{ sx: { maxHeight: '80%' } }}
+                        muiTableContainerProps={{ sx: { maxHeight: '800px' } }}
                         muiTableHeadCellProps={{ sx: { fontWeight: 'bold', fontSize: '1rem', background: '#f5f5f5' } }}
                         muiTableBodyCellProps={{ sx: { padding: '4px', fontSize: '0.95rem' } }}
                     />
