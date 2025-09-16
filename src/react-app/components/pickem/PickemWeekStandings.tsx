@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
 import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
-import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
+import { MaterialReactTable, MRT_ColumnDef } from 'material-react-table';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsTeamCell';
@@ -13,7 +13,7 @@ import { Typography } from '@mui/material';
 
 export default function PickemWeekStandings() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
-    const [columns, setColumns] = useState<GridColDef<UserInfo>[]>([]);
+    const [columns, setColumns] = useState<MRT_ColumnDef<UserInfo>[]>([]);
     const [userMapping, setUserMapping] = useState<UserInfo[]>();
     const [weekDescription, setWeekDescription] = useState("");
     const { leagueId, weekNumber } = useParams();
@@ -23,26 +23,19 @@ export default function PickemWeekStandings() {
     const userColumnWidth = 100;
     const gameColumnWidth = isSmallScreen ? 95 : 95;
 
-    const renderUserCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
-        userMapping: UserInfo[]): React.ReactNode => {
-        const userId = params.row.id;
-        let userName = SiteUtilities.getShortenedUserNameFromId(userMapping, userId, params.row.email);
+    const renderUserCell = (row: UserInfo, userMapping: UserInfo[]): React.ReactNode => {
+        const userId = row.id;
+        let userName = SiteUtilities.getShortenedUserNameFromId(userMapping, userId, row.email);
         return <div className='centerDivContainer standingsUserName'><span>{userName}</span></div>;
     }
 
-    const renderGamePickCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
-        league: LeagueDTO,
-        picks: SpreadWeekPickDTO[],
-        game: GameDTO,
-        weekResults: SpreadWeekResultDTO[]): React.ReactNode => {
-        const userId = params.row.id;
+    const renderGamePickCell = (row: UserInfo, league: LeagueDTO, picks: SpreadWeekPickDTO[], game: GameDTO, weekResults: SpreadWeekResultDTO[]): React.ReactNode => {
+        const userId = row.id;
         const userPicks = picks?.find(p => p.userId === userId);
         const gamePick = userPicks?.gamePicks?.find(gp => gp.gameID === game.id);
-
         if (!gamePick) {
             return <></>;
         }
-
         const teamPicked = gamePick.sidePicked === 0 ? game.homeTeam : game.awayTeam;
         const pickImagePath = SiteUtilities.getTeamIconPathFromTeam(teamPicked!, league!);
         const pickAltText = SiteUtilities.getAltTextFromTeam(teamPicked!);
@@ -60,8 +53,8 @@ export default function PickemWeekStandings() {
         return <PickemWeekStandingsHeaderTeamCell game={game} currentLeague={league!} isSmallScreen={isSmallScreen} />;
     };
 
-    const renderWeekResultsCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>, league: LeagueDTO, weekResults: SpreadWeekResultDTO[], picks: SpreadWeekPickDTO[]): React.ReactNode => {
-        const userId = params.row.id;
+    const renderWeekResultsCell = (row: UserInfo, league: LeagueDTO, weekResults: SpreadWeekResultDTO[], picks: SpreadWeekPickDTO[]): React.ReactNode => {
+        const userId = row.id;
         const userWeekResult = weekResults.find(wr => wr.userId === userId);
         const userPicks = picks.find(p => p.userId === userId);
         let maximumPoints = 0;
@@ -70,8 +63,6 @@ export default function PickemWeekStandings() {
         }
         for (const pick of userPicks?.gamePicks!) {
             const pickResult = userWeekResult.pickResults?.find(pr => pr.gameId === pick.gameID);
-
-            // There is no pick result yet so game is still in progress
             if (!pickResult || !pickResult?.isFinal) {
                 maximumPoints += 1;
                 if (pick.isKeyPick) {
@@ -107,82 +98,31 @@ export default function PickemWeekStandings() {
             const leagueUserMapping = await pickemClient.getUserMappingForLeague(leagueId);
             const weekResults = await pickemClient.getAllTempSpreadWeekResults(leagueId, weekNumberConverted);
 
-            const columnList: GridColDef<(UserInfo[])[number]>[] = [
+            const columnList: MRT_ColumnDef<UserInfo>[] = [
                 {
-                    field: 'user',
-                    headerName: 'User',
-                    width: userColumnWidth,
-                    minWidth: userColumnWidth,
-                    cellClassName: "centerDivContainer",
-                    renderHeader: () => {
-                        return <div className='weekStandingsHeader'>User</div>;
-                    },
-                    renderCell: (params) => {
-                        return renderUserCell(params, leagueUserMapping);
-                    },
-                    valueGetter: (_, row) => {
-                        if (!row) {
-                            return "";
-                        }
-
-                        return row.userName ?? row.email;
-                    },
-                    disableColumnMenu: true,
-                    sortable: true,
-                    pinnable: true,
+                    accessorKey: 'user',
+                    header: 'User',
+                    size: userColumnWidth,
+                    Cell: ({ row }) => renderUserCell(row.original, leagueUserMapping),
                 },
                 {
-                    field: 'weekPoints',
-                    width: userColumnWidth,
-                    minWidth: userColumnWidth,
-                    cellClassName: "centerDivContainer",
-                    renderHeader: () => {
-                        return <div className='weekStandingsHeader'>Week<br/>Points</div>;
-                    },
-                    renderCell: (params) => {
-                        return renderWeekResultsCell(params, league, weekResults, picks);
-                    },
-                    valueGetter: (_, row) => {
-                        if (!row) {
-                            return 0;
-                        }
-
-                        const userId = row.id;
-                        const userWeekResult = weekResults.find(wr => wr.userId === userId);
-                        return userWeekResult?.totalPoints ?? 0;
-                    },
-                    sortable: true,
-                    disableColumnMenu: true,
+                    accessorKey: 'weekPoints',
+                    header: 'Week Points',
+                    size: userColumnWidth,
+                    Cell: ({ row }) => renderWeekResultsCell(row.original, league, weekResults, picks),
                 },
             ];
 
             for (const game of games!) {
-                const gameColumn: GridColDef<(UserInfo[])[number]> = {
-                    field: `game_${game.id}`,
-                    headerName: `${game.awayTeam?.abbreviation} @ ${game.homeTeam?.abbreviation}`,
-                    renderHeader: () => {
-                        return renderGameHeader(game, league);
-                    },
-                    width: gameColumnWidth,
-                    minWidth: gameColumnWidth,
-                    cellClassName: "centerDivContainer",
-                    renderCell: (params) => {
-                        return renderGamePickCell(params, league, picks, game, weekResults);
-                    },
-                    valueGetter: (_, row) => {
-                        if (!row) {
-                            return 0;
-                        }
-
-                        const userId = row.id;
-                        const userPicks = picks?.find(p => p.userId === userId);
-                        const gamePick = userPicks?.gamePicks?.find(gp => gp.gameID === game.id);
-                        return gamePick?.sidePicked ?? -1;
-                    },
-                    disableColumnMenu: true,
-                    sortable: true,
-                };
-                columnList.push(gameColumn);
+                columnList.push({
+                    accessorKey: `game_${game.id}`,
+                    header: `${game.awayTeam?.abbreviation} @ ${game.homeTeam?.abbreviation}`,
+                    Header: ({ column }) => ( renderGameHeader(game, league) ),
+                    
+                    size: gameColumnWidth,
+                    Cell: ({ row }) => renderGamePickCell(row.original, league, picks, game, weekResults),
+                    
+                });
             }
 
             setWeekDescription(description);
@@ -199,57 +139,24 @@ export default function PickemWeekStandings() {
             <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
             <Typography variant='h5'>{weekDescription} Standings</Typography>
             <div style={{ height: '100%', width: '90%' }}>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                    }}
-                >
-                    {!dataLoaded ?
-                        <Loading /> :
-                        <DataGrid
-                            sx={{
-                                border: '1px solid #7e7e7eff', // Darker gray border
-                                '& .MuiDataGrid-row': {
-                                    borderBottom: '1px solid #7e7e7eff', // Darker row border
-                                },
-                                '& .MuiDataGrid-iconSeparator': {
-                                    color: '#7e7e7eff', // Darker row border
-                                },
-                                '& .MuiDataGrid-columnHeaders': {
-                                    borderBottom: '1px solid #7e7e7eff', // Darker row border
-                                },
-                                '& .MuiDataGrid-columnHeader': {
-                                    padding: 0,
-                                },
-                                "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                                    outline: "none !important",
-                                },
-                                '& .MuiIconButton-root': {
-                                    fontSize: '0.8rem',
-                                    padding: '2px',
-                                    width: '24px',
-                                    height: '24px',
-                                },
-                                '& .MuiSvgIcon-root': {
-                                    fontSize: '1rem',
-                                },
-                            }}
-                            rows={userMapping}
-                            columns={columns}
-                            rowSelection={false}
-                            columnHeaderHeight={175}
-                            scrollbarSize={10}
-                            getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
-                            initialState={{
-                                sorting: {
-                                    sortModel: [{ field: 'weekPoints', sort: 'desc' }],
-                                },
-                            }}
-                        />
-                    }
-                </div>
-                {/** Visualize max and min container height */}
+                {!dataLoaded ? (
+                    <Loading />
+                ) : (
+                    <MaterialReactTable
+                        columns={columns}
+                        data={userMapping ?? []}
+                        enableRowSelection={false}
+                        enableColumnPinning
+                        enableColumnResizing
+                        enableStickyHeader
+                        initialState={{
+                            sorting: [{ id: 'weekPoints', desc: true }],
+                        }}
+                        muiTableContainerProps={{ sx: { maxHeight: 600 } }}
+                        muiTableHeadCellProps={{ sx: { fontWeight: 'bold', fontSize: '1rem', background: '#f5f5f5' } }}
+                        muiTableBodyCellProps={{ sx: { padding: '4px', fontSize: '0.95rem' } }}
+                    />
+                )}
             </div>
 
         </>
