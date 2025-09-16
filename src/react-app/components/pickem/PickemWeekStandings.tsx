@@ -22,8 +22,8 @@ export default function PickemWeekStandings() {
     const [dataLoaded, setDataLoaded] = useState(false);
     const [tableMaxHeight, setTableMaxHeight] = useState<string>("600px");
     const userColumnWidth = 100;
-    const weekPointsColumnWidth = 90;
-    const gameColumnWidth = isSmallScreen ? 110 : 110;
+    const weekPointsColumnWidth = isSmallScreen ? 70 : 90;
+    const gameColumnWidth = isSmallScreen ? 100 : 100;
     // Responsive table height
     React.useEffect(() => {
         function updateHeight() {
@@ -134,6 +134,7 @@ export default function PickemWeekStandings() {
                 {
                     accessorKey: 'weekPoints',
                     header: 'Points',
+                    Header: ({ }) => { return isSmallScreen ? 'Pts' : 'Points'; },
                     size: weekPointsColumnWidth,
                     Cell: ({ row }) => renderWeekResultsCell(row.original, league, weekResults, picks),
                     sortingFn: (a, b) => {
