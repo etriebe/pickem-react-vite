@@ -184,7 +184,7 @@ export default function PickemWeekStandings() {
                     <Loading />
                 ) : (
                     <MantineProvider
-                        theme={{ ...globalTheme, primaryColor: 'red', primaryShade: 5 }}
+                        theme={{ ...globalTheme }}
                     >
                         <MantineReactTable
                             columns={columns}
