@@ -22,7 +22,7 @@ export default function PickemWeekStandings() {
     const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
     const weekPointsColumnWidth = 120;
-    const gameColumnWidth = isSmallScreen ? 95 : 95;
+    const gameColumnWidth = isSmallScreen ? 110 : 110;
 
     const renderUserCell = (row: UserInfo, userMapping: UserInfo[]): React.ReactNode => {
         const userId = row.id;

@@ -60,100 +60,100 @@
 
 .HomeTeam,
 .AwayTeam {
-margin-left: 1px;
-margin-right: auto;
-margin-top: 1px;
-text-align: left;
-padding: 0px 5px;
-width: 60px;
+    margin-left: 1px;
+    margin-right: auto;
+    margin-top: 1px;
+    text-align: left;
+    padding: 0px 5px;
+    width: 60px;
 }
 
 .HomeScore,
 .AwayScore {
-float: right;
-margin-right: 1px;
-width: 15px;
+    float: right;
+    margin-right: 1px;
+    width: 15px;
 }
 
 .HomeTeam {
-border-bottom: solid;
+    border-bottom: solid;
 }
 
 .PickStatus,
 .CurrentUserScore {
-font-weight: 700;
+    font-weight: 700;
 }
 
 .CurrentUserScore,
 .UserPick {
-text-align: center;
+    text-align: center;
 }
 
 .Spread,
 .GameStatus {
-text-align: center;
+    text-align: center;
 }
 
 .GameStatus {
-font-size: 70%;
+    font-size: 70%;
 }
 
 .PickSuccess {
-color: green;
-font-weight: 700;
+    color: green;
+    font-weight: 700;
 }
 
 .PickFailure {
-color: red;
-font-weight: 700;
+    color: red;
+    font-weight: 700;
 }
 
-.IconPickSuccess {
-}
+.IconPickSuccess {}
 
 .IconPickFailure {
-filter: grayscale(1);
+    filter: grayscale(1);
 }
 
 .GameHeader {
-font-weight: 700;
+    font-weight: 700;
+    width: 100px;
 }
 
 .GameFinal {
-background-color: #474747;
-color: white;
+    background-color: #474747;
+    color: white;
 }
 
 .superscript {
-vertical-align: super;
-position: relative;
-top: -0.5em;
-font-size: 60%;
-display: inline;
+    vertical-align: super;
+    position: relative;
+    top: -0.5em;
+    font-size: 60%;
+    display: inline;
 }
 
 .TeamIconHeader {
-max-width: 40px;
-max-height: 40px;
-width: auto;
-height: auto;
+    max-width: 40px;
+    max-height: 40px;
+    width: auto;
+    height: auto;
 }
 
 .TeamIconHeaderDiv {
-width: 40px;
-height: 40px;
+    width: 40px;
+    height: 40px;
 }
 
 .TeamIconPick {
-max-width: 30px;
-max-height: 30px;
-width: auto;
-height: auto;
+    max-width: 30px;
+    max-height: 30px;
+    width: auto;
+    height: auto;
 }
 
 .TeamIconPickDiv {
-width: 30px;
-height: 30px;
+    width: 30px;
+    height: 30px;
 }
 
 .standingsUserName {
