@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
 import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
-import { MaterialReactTable, MRT_ColumnDef } from 'material-react-table';
+import { MantineReactTable, MRT_ColumnDef, } from 'mantine-react-table';
+import { MantineProvider, useMantineTheme } from '@mantine/core';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsHeaderTeamCell';
@@ -118,8 +119,8 @@ export default function PickemWeekStandings() {
                     accessorKey: 'user',
                     header: 'User',
                     size: userColumnWidth,
-                    Cell: ({ row }) => renderUserCell(row.original, leagueUserMapping),
-                    sortingFn: (a, b) => {
+                    Cell: ({ row }: any) => renderUserCell(row.original, leagueUserMapping),
+                    sortingFn: (a: any, b: any) => {
                         const userIdA = a.original.id;
                         const userIdB = b.original.id;
                         const userNameA = leagueUserMapping?.find(u => u.id === userIdA)?.userName || "";
@@ -133,11 +134,10 @@ export default function PickemWeekStandings() {
                 },
                 {
                     accessorKey: 'weekPoints',
-                    header: 'Points',
-                    Header: ({ }) => { return isSmallScreen ? 'Pts' : 'Points'; },
+                    header: isSmallScreen ? 'Pts' : 'Points',
                     size: weekPointsColumnWidth,
-                    Cell: ({ row }) => renderWeekResultsCell(row.original, league, weekResults, picks),
-                    sortingFn: (a, b) => {
+                    Cell: ({ row }: any) => renderWeekResultsCell(row.original, league, weekResults, picks),
+                    sortingFn: (a: any, b: any) => {
                         const userIdA = a.original.id;
                         const userIdB = b.original.id;
                         const aPoints = weekResults.find(wr => wr.userId === userIdA)?.totalPoints || 0;
@@ -145,7 +145,7 @@ export default function PickemWeekStandings() {
                         if (aPoints === bPoints) {
                             return 0;
                         }
-                        return aPoints > bPoints ? -1 : 1;
+                        return aPoints > bPoints ? 1 : -1;
                     },
                     enableColumnActions: false,
                 },
@@ -155,13 +155,12 @@ export default function PickemWeekStandings() {
                 columnList.push({
                     accessorKey: `game_${game.id}`,
                     header: `${game.awayTeam?.abbreviation} @ ${game.homeTeam?.abbreviation}`,
-                    Header: ({ }) => (renderGameHeader(game, league)),
+                    Header: () => renderGameHeader(game, league) as any,
                     size: gameColumnWidth,
-                    Cell: ({ row }) => renderGamePickCell(row.original, league, picks, game, weekResults),
+                    Cell: ({ row }: any) => renderGamePickCell(row.original, league, picks, game, weekResults),
                     enableColumnActions: false,
                     enableSorting: false,
                     enableResizing: false,
-                    muiTableBodyCellProps: { sx: { display: 'inline-flex', placeItems: 'center' } },
                 });
             }
 
@@ -174,6 +173,8 @@ export default function PickemWeekStandings() {
         fetchData();
     }, []);
 
+    const globalTheme = useMantineTheme(); //(optional) if you already have a theme defined in your app root, you can import here
+
     return (
         <>
             <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
@@ -182,24 +183,31 @@ export default function PickemWeekStandings() {
                 {!dataLoaded ? (
                     <Loading />
                 ) : (
-                    <MaterialReactTable
-                        columns={columns}
-                        data={userMapping ?? []}
-                        enableRowSelection={false}
-                        enableColumnPinning
-                        enableColumnResizing
-                        enableStickyHeader
-                        initialState={{
-                            sorting: [{ id: 'weekPoints', desc: true }],
-                            columnPinning: { left: ['user', 'weekPoints'], right: [] },
-                            density: 'compact',
-                        }}
-                        enablePagination={false}
-                        rowCount={userMapping?.length ?? 0}
-                        muiTableContainerProps={{ sx: { maxHeight: tableMaxHeight } }}
-                        muiTableHeadCellProps={{ sx: { fontWeight: 'bold', fontSize: '1rem', background: '#f5f5f5' } }}
-                        muiTableBodyCellProps={{ sx: { padding: '4px', fontSize: '0.95rem' } }}
-                    />
+                    <MantineProvider
+                        theme={{ ...globalTheme, primaryColor: 'red', primaryShade: 5 }}
+                    >
+                        <MantineReactTable
+                            columns={columns}
+                            data={userMapping ?? []}
+                            enableRowSelection={false}
+                            enableColumnPinning
+                            enableColumnResizing
+                            initialState={{
+                                sorting: [{ id: 'weekPoints', desc: true }],
+                                columnPinning: { left: ['user', 'weekPoints'], right: [] },
+                            }}
+                            enablePagination={false}
+                            rowCount={userMapping?.length ?? 0}
+                            mantineTableProps={{
+                                horizontalSpacing: 'xs',
+                                verticalSpacing: 'xs',
+                                withBorder: true,
+                                style: { maxHeight: tableMaxHeight, overflow: 'auto', backgroundColor: 'var(--template-palette-background-default)' },
+                            }}
+                            mantinePaperProps={{ style: { backgroundColor: 'var(--template-palette-background-default)' } }}
+                        />
+                    </MantineProvider>
+
                 )}
             </div>
 
