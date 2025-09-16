@@ -21,7 +21,7 @@ export default function PickemWeekStandings() {
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
     const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
-    const weekPointsColumnWidth = 120;
+    const weekPointsColumnWidth = 90;
     const gameColumnWidth = isSmallScreen ? 110 : 110;
 
     const renderUserCell = (row: UserInfo, userMapping: UserInfo[]): React.ReactNode => {
@@ -60,7 +60,9 @@ export default function PickemWeekStandings() {
         const userPicks = picks.find(p => p.userId === userId);
         let maximumPoints = 0;
         if (!userWeekResult?.pickResults) {
-            return <>0 / 0</>;
+            return <div className='centerDivContainer'>
+                0 / 0
+            </div>;
         }
         for (const pick of userPicks?.gamePicks!) {
             const pickResult = userWeekResult.pickResults?.find(pr => pr.gameId === pick.gameID);
@@ -79,7 +81,7 @@ export default function PickemWeekStandings() {
         }
         const totalPoints = userWeekResult?.totalPoints;
         return <>
-            <div>
+            <div className='centerDivContainer'>
                 {totalPoints} / {maximumPoints}
             </div>
         </>;
@@ -145,6 +147,8 @@ export default function PickemWeekStandings() {
                     Cell: ({ row }) => renderGamePickCell(row.original, league, picks, game, weekResults),
                     enableColumnActions: false,
                     enableSorting: false,
+                    enableResizing: false,
+                    muiTableBodyCellProps: { sx: { display: 'inline-flex', placeItems: 'center' } },
                 });
             }
 
@@ -174,10 +178,12 @@ export default function PickemWeekStandings() {
                         enableStickyHeader
                         initialState={{
                             sorting: [{ id: 'weekPoints', desc: true }],
+                            columnPinning: { left: ['user', 'weekPoints'], right: [] },
+                            density: 'compact',
                         }}
                         enablePagination={false}
                         rowCount={userMapping?.length ?? 0}
-                        muiTableContainerProps={{ sx: { maxHeight: 'auto' } }}
+                        muiTableContainerProps={{ sx: { maxHeight: '80%' } }}
                         muiTableHeadCellProps={{ sx: { fontWeight: 'bold', fontSize: '1rem', background: '#f5f5f5' } }}
                         muiTableBodyCellProps={{ sx: { padding: '4px', fontSize: '0.95rem' } }}
                     />

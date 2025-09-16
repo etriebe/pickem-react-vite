@@ -6,6 +6,8 @@
 .centerDivContainer {
     display: inline-flex;
     place-items: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .teamPickContainer {
@@ -60,9 +62,9 @@
 
 .HomeTeam,
 .AwayTeam {
-    margin-left: 1px;
+    margin-left: auto;
     margin-right: auto;
-    margin-top: 1px;
+    margin-top: auto;
     text-align: left;
     padding: 0px 5px;
     width: 60px;
@@ -116,7 +118,7 @@
 
 .GameHeader {
     font-weight: 700;
-    width: 100px;
+    width: 80px;
 }
 
 .GameFinal {
