@@ -1,7 +1,7 @@
-import { IconButton, Typography } from "@mui/material";
+import { ActionIcon, Text } from '@mantine/core';
 import { SiteUtilities } from "../utilities/SiteUtilities";
 import { LeagueDTO } from "../services/PickemApiClient";
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
 type LeagueNavigationBreadcrumbsProps = {
     league: LeagueDTO;
@@ -22,17 +22,17 @@ export default function LeagueNavigationBreadcrumbs({ league, currentWeekNumber,
             <div className="NavigationBreadcrumbsContainer">
                 {previousWeekNumber >= league.startingWeekNumber! &&
                     <div className="NavigationBreadcrumbs">
-                        <IconButton href={previousWeekURL} size="small" sx={{ alignSelf: 'center' }} >
-                            <ChevronLeft />
-                        </IconButton>
+                        <ActionIcon component="a" href={previousWeekURL} size="sm">
+                            <IconChevronLeft />
+                        </ActionIcon>
                     </div>
                 }
-                <Typography variant='h5'>{navigationTitle}</Typography>
+                <Text size="lg" weight={700}>{navigationTitle}</Text>
                 {nextWeekNumber <= league.endingWeekNumber! &&
                     <div className="NavigationBreadcrumbs">
-                        <IconButton href={nextWeekURL} size="small" sx={{ alignSelf: 'center' }} >
-                            <ChevronRight />
-                        </IconButton>
+                        <ActionIcon component="a" href={nextWeekURL} size="sm">
+                            <IconChevronRight />
+                        </ActionIcon>
                     </div>
                 }
             </div>

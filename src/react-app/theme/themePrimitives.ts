@@ -1,34 +1,29 @@
-import { createTheme, alpha, PaletteMode, Shadows } from '@mui/material/styles';
+// Lightweight replacements so theme primitives don't depend on MUI
+type PaletteMode = 'light' | 'dark';
 
-declare module '@mui/material/Paper' {
-  interface PaperPropsVariantOverrides {
-    highlighted: true;
-  }
-}
-declare module '@mui/material/styles' {
-  interface ColorRange {
-    50: string;
-    100: string;
-    200: string;
-    300: string;
-    400: string;
-    500: string;
-    600: string;
-    700: string;
-    800: string;
-    900: string;
-  }
-
-  interface PaletteColor extends ColorRange {}
-
-  interface Palette {
-    baseShadow: string;
-  }
+function pxToRem(px: number) {
+  return `${px / 16}rem`;
 }
 
-const defaultTheme = createTheme();
+function alpha(color: string, opacity: number) {
+  // Support hsl(...) -> hsla(..., opacity)
+  const hslMatch = color.match(/^hsl\((.+)\)$/i);
+  if (hslMatch) {
+    return `hsla(${hslMatch[1]}, ${opacity})`;
+  }
+  const hslaMatch = color.match(/^hsla\((.+),\s*([0-9.]+)\)$/i);
+  if (hslaMatch) {
+    // replace existing alpha
+    return `hsla(${hslaMatch[1]}, ${opacity})`;
+  }
+  // As a fallback, return rgba(0,0,0,opacity) — callers mainly use hsl colors in this project
+  return `rgba(0,0,0,${opacity})`;
+}
 
-const customShadows: Shadows = [...defaultTheme.shadows];
+// Create a default shadows array similar in length to MUI's shadows (25 entries)
+const defaultThemeShadows: string[] = Array.from({ length: 25 }).map(() => 'none');
+
+const customShadows: string[] = [...defaultThemeShadows];
 
 export const brand = {
   50: 'hsl(210, 100%, 95%)',
@@ -185,49 +180,49 @@ export const getDesignTokens = (mode: PaletteMode) => {
     typography: {
       fontFamily: 'Roboto, Helvetica, Arial, Inter, sans-serif',
       h1: {
-        fontSize: defaultTheme.typography.pxToRem(48),
+        fontSize: pxToRem(48),
         fontWeight: 600,
         lineHeight: 1.2,
         letterSpacing: -0.5,
       },
       h2: {
-        fontSize: defaultTheme.typography.pxToRem(36),
+        fontSize: pxToRem(36),
         fontWeight: 600,
         lineHeight: 1.2,
       },
       h3: {
-        fontSize: defaultTheme.typography.pxToRem(30),
+        fontSize: pxToRem(30),
         lineHeight: 1.2,
       },
       h4: {
-        fontSize: defaultTheme.typography.pxToRem(24),
+        fontSize: pxToRem(24),
         fontWeight: 600,
         lineHeight: 1.5,
       },
       h5: {
-        fontSize: defaultTheme.typography.pxToRem(20),
+        fontSize: pxToRem(20),
         fontWeight: 600,
       },
       h6: {
-        fontSize: defaultTheme.typography.pxToRem(18),
+        fontSize: pxToRem(18),
         fontWeight: 600,
       },
       subtitle1: {
-        fontSize: defaultTheme.typography.pxToRem(18),
+        fontSize: pxToRem(18),
       },
       subtitle2: {
-        fontSize: defaultTheme.typography.pxToRem(14),
+        fontSize: pxToRem(14),
         fontWeight: 500,
       },
       body1: {
-        fontSize: defaultTheme.typography.pxToRem(14),
+        fontSize: pxToRem(14),
       },
       body2: {
-        fontSize: defaultTheme.typography.pxToRem(14),
+        fontSize: pxToRem(14),
         fontWeight: 400,
       },
       caption: {
-        fontSize: defaultTheme.typography.pxToRem(12),
+        fontSize: pxToRem(12),
         fontWeight: 400,
       },
     },
@@ -342,50 +337,50 @@ export const colorSchemes = {
 
 export const typography = {
   fontFamily: 'Roboto, Helvetica, Arial, Inter, sans-serif',
-  h1: {
-    fontSize: defaultTheme.typography.pxToRem(48),
+      h1: {
+        fontSize: pxToRem(48),
     fontWeight: 600,
     lineHeight: 1.2,
     letterSpacing: -0.5,
   },
-  h2: {
-    fontSize: defaultTheme.typography.pxToRem(36),
+      h2: {
+        fontSize: pxToRem(36),
     fontWeight: 600,
     lineHeight: 1.2,
   },
-  h3: {
-    fontSize: defaultTheme.typography.pxToRem(30),
+      h3: {
+        fontSize: pxToRem(30),
     lineHeight: 1.2,
   },
-  h4: {
-    fontSize: defaultTheme.typography.pxToRem(24),
+      h4: {
+        fontSize: pxToRem(24),
     fontWeight: 600,
     lineHeight: 1.5,
   },
-  h5: {
-    fontSize: defaultTheme.typography.pxToRem(20),
+      h5: {
+        fontSize: pxToRem(20),
     fontWeight: 600,
   },
-  h6: {
-    fontSize: defaultTheme.typography.pxToRem(18),
+      h6: {
+        fontSize: pxToRem(18),
     fontWeight: 600,
   },
-  subtitle1: {
-    fontSize: defaultTheme.typography.pxToRem(18),
+      subtitle1: {
+        fontSize: pxToRem(18),
   },
-  subtitle2: {
-    fontSize: defaultTheme.typography.pxToRem(14),
+      subtitle2: {
+        fontSize: pxToRem(14),
     fontWeight: 500,
   },
-  body1: {
-    fontSize: defaultTheme.typography.pxToRem(14),
+      body1: {
+        fontSize: pxToRem(14),
   },
-  body2: {
-    fontSize: defaultTheme.typography.pxToRem(14),
+      body2: {
+        fontSize: pxToRem(14),
     fontWeight: 400,
   },
-  caption: {
-    fontSize: defaultTheme.typography.pxToRem(12),
+      caption: {
+        fontSize: pxToRem(12),
     fontWeight: 400,
   },
 };
@@ -394,10 +389,11 @@ export const shape = {
   borderRadius: 8,
 };
 
+// Build a defaultShadows array using our local defaultThemeShadows
 // @ts-ignore
-const defaultShadows: Shadows = [
+const defaultShadows = [
   'none',
   'var(--template-palette-baseShadow)',
-  ...defaultTheme.shadows.slice(2),
+  ...defaultThemeShadows.slice(2),
 ];
 export const shadows = defaultShadows;

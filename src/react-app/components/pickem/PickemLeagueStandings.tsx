@@ -3,33 +3,30 @@ import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
 import { LeagueDTO, UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
-import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { MantineReactTable, MRT_ColumnDef } from 'mantine-react-table';
+import { MantineProvider, useMantineTheme, Title, Text } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import Loading from '../Loading';
-import { Typography } from '@mui/material';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
 
 export default function PickemLeagueStandings() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
-    const [columns, setColumns] = useState<GridColDef<UserInfo>[]>([]);
+    const [columns, setColumns] = useState<MRT_ColumnDef<UserInfo>[]>([]);
     const [userMapping, setUserMapping] = useState<UserInfo[]>();
     const { leagueId } = useParams();
-    const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
     const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
     const weekColumnWidth = isSmallScreen ? 75 : 75;
 
-    const renderUserCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
-        userMapping: UserInfo[]): React.ReactNode => {
-        const userId = params.row.id;
-        let userName = SiteUtilities.getShortenedUserNameFromId(userMapping, userId, params.row.email);
+    const renderUserCell = (row: UserInfo, userMapping: UserInfo[]): React.ReactNode => {
+        const userId = row.id;
+        let userName = SiteUtilities.getShortenedUserNameFromId(userMapping, userId, row.email);
         return <div className='centerDivContainer standingsUserName'><span>{userName}</span></div>;
     }
 
-    const renderWeekResultCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
-        weekResults: SpreadWeekResultDTO[],
-        weekNumber: number): React.ReactNode => {
-        const userId = params.row.id;
+    const renderWeekResultCell = (row: UserInfo, weekResults: SpreadWeekResultDTO[], weekNumber: number): React.ReactNode => {
+        const userId = row.id;
         const userWeekResult = weekResults.find(wr => wr.userId === userId && wr.weekNumber === weekNumber);
 
         if (!userWeekResult) {
@@ -66,77 +63,52 @@ export default function PickemLeagueStandings() {
             const weekNumber = -1; // Use -1 to get all week results
             const weekResults = await pickemClient.getSpreadWeekResult(leagueId, weekNumber);
 
-            const columnList: GridColDef<(UserInfo[])[number]>[] = [
+            const columnList: MRT_ColumnDef<UserInfo>[] = [
                 {
-                    field: 'user',
-                    headerName: 'User',
-                    width: userColumnWidth,
-                    minWidth: userColumnWidth,
-                    cellClassName: "centerDivContainer",
-                    renderCell: (params) => {
-                        return renderUserCell(params, leagueUserMapping);
+                    accessorKey: 'userName',
+                    header: 'User',
+                    size: userColumnWidth,
+                    Cell: ({ row }: any) => renderUserCell(row.original, leagueUserMapping),
+                    enableColumnActions: false,
+                    sortingFn: (a: any, b: any) => {
+                        const userIdA = a.original.id;
+                        const userIdB = b.original.id;
+                        const userNameA = leagueUserMapping?.find(u => u.id === userIdA)?.userName || "";
+                        const userNameB = leagueUserMapping?.find(u => u.id === userIdB)?.userName || "";
+                        if (userNameA === userNameB) return 0;
+                        return userNameA.localeCompare(userNameB);
                     },
-                    valueGetter: (_, row) => {
-                        if (!row) {
-                            return "";
-                        }
-
-                        return row.userName ?? row.email;
-                    },
-                    disableColumnMenu: true,
-                    sortable: true,
-                    pinnable: true,
                 },
                 {
-                    field: 'seasonPoints',
-                    headerName: 'Season Points',
-                    width: userColumnWidth,
-                    minWidth: userColumnWidth,
-                    cellClassName: "centerDivContainer",
-                    renderCell: (params) => {
-                        const userId = params.row.id;
-                        if (!userId) {
-                            return <>0</>;
-                        }
+                    accessorKey: 'seasonPoints',
+                    header: isSmallScreen ? 'Pts' : 'Season Points',
+                    size: userColumnWidth,
+                    Cell: ({ row }: any) => {
+                        const userId = row.original.id;
+                        if (!userId) return <>0</>;
                         return renderSeasonResultsCell(weekResults, userId);
                     },
-                    valueGetter: (_, row) => {
-                        if (!row) {
-                            return 0;
-                        }
-
-                        const userId = row.id;
-                        const userWeekResults = weekResults.filter(wr => wr.userId === userId);
-                        return getTotalPointsForSeason(userWeekResults);
+                    sortingFn: (a: any, b: any) => {
+                        const userIdA = a.original.id;
+                        const userIdB = b.original.id;
+                        const aPoints = weekResults.find(wr => wr.userId === userIdA)?.totalPoints || 0;
+                        const bPoints = weekResults.find(wr => wr.userId === userIdB)?.totalPoints || 0;
+                        if (aPoints === bPoints) return 0;
+                        return aPoints > bPoints ? 1 : -1;
                     },
-                    sortable: true,
-                    disableColumnMenu: true,
+                    enableColumnActions: false,
                 },
             ];
 
             for (let weekNumber = league.startingWeekNumber!; weekNumber <= league.endingWeekNumber!; weekNumber++) {
-                const weekColumn: GridColDef<(UserInfo[])[number]> = {
-                    field: `week_${weekNumber}`,
-                    headerName: `Week ${weekNumber}`,
-                    width: weekColumnWidth,
-                    minWidth: weekColumnWidth,
-                    cellClassName: "centerDivContainer",
-                    renderCell: (params) => {
-                        return renderWeekResultCell(params, weekResults, weekNumber);
-                    },
-                    valueGetter: (_, row) => {
-                        if (!row) {
-                            return 0;
-                        }
-
-                        const userId = row.id;
-                        const userWeekResult = weekResults.find(wr => wr.userId === userId && wr.weekNumber === weekNumber);
-                        return userWeekResult?.totalPoints ?? 0;
-                    },
-                    disableColumnMenu: true,
-                    sortable: true,
-                };
-                columnList.push(weekColumn);
+                columnList.push({
+                    accessorKey: `week_${weekNumber}`,
+                    header: `Week ${weekNumber}`,
+                    size: weekColumnWidth,
+                    Cell: ({ row }: any) => renderWeekResultCell(row.original, weekResults, weekNumber),
+                    enableColumnActions: false,
+                    enableSorting: true,
+                } as MRT_ColumnDef<UserInfo>);
             }
 
             setUserMapping(leagueUserMapping);
@@ -149,8 +121,8 @@ export default function PickemLeagueStandings() {
 
     return (
         <>
-            <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
-            <Typography variant='h5'>Season Standings</Typography>
+            <Title order={4}>{currentLeague?.leagueName}</Title>
+            <Text size="lg">Season Standings</Text>
             <div style={{ height: '100%', width: '90%' }}>
                 <div
                     style={{
@@ -160,46 +132,25 @@ export default function PickemLeagueStandings() {
                 >
                     {!dataLoaded ?
                         <Loading /> :
-                        <DataGrid
-                            sx={{
-                                border: '1px solid #7e7e7eff', // Darker gray border
-                                '& .MuiDataGrid-row': {
-                                    borderBottom: '1px solid #7e7e7eff', // Darker row border
-                                },
-                                '& .MuiDataGrid-iconSeparator': {
-                                    color: '#7e7e7eff', // Darker row border
-                                },
-                                '& .MuiDataGrid-columnHeaders': {
-                                    borderBottom: '1px solid #7e7e7eff', // Darker row border
-                                },
-                                '& .MuiDataGrid-columnHeader': {
-                                    padding: 0,
-                                },
-                                "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                                    outline: "none !important",
-                                },
-                                '& .MuiIconButton-root': {
-                                    fontSize: '0.8rem',
-                                    padding: '2px',
-                                    width: '24px',
-                                    height: '24px',
-                                },
-                                '& .MuiSvgIcon-root': {
-                                    fontSize: '1rem',
-                                },
-                            }}
-                            rows={userMapping}
-                            columns={columns}
-                            rowSelection={false}
-                            columnHeaderHeight={175}
-                            scrollbarSize={10}
-                            getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
-                            initialState={{
-                                sorting: {
-                                    sortModel: [{ field: 'seasonPoints', sort: 'desc' }],
-                                },
-                            }}
-                        />
+                        <MantineProvider theme={{ ...useMantineTheme() }}>
+                            <MantineReactTable
+                                columns={columns}
+                                data={userMapping ?? []}
+                                enableRowSelection={false}
+                                enableColumnPinning
+                                enableColumnResizing
+                                initialState={{ sorting: [{ id: 'seasonPoints', desc: true }], columnPinning: { left: ['userName', 'seasonPoints'], right: [] } }}
+                                enablePagination={false}
+                                rowCount={userMapping?.length ?? 0}
+                                mantineTableProps={{
+                                    horizontalSpacing: 'xs',
+                                    verticalSpacing: 'xs',
+                                    withBorder: true,
+                                    style: { maxHeight: '70vh', overflow: 'auto', backgroundColor: 'var(--template-palette-background-default)' },
+                                }}
+                                mantinePaperProps={{ style: { backgroundColor: 'var(--template-palette-background-default)' } }}
+                            />
+                        </MantineProvider>
                     }
                 </div>
                 {/** Visualize max and min container height */}

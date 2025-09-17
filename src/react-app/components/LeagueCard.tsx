@@ -1,9 +1,5 @@
 import { League } from '../services/PickemApiClient';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+import { Card, Button, Text, Group, Stack } from '@mantine/core';
 import { SiteUtilities } from '../utilities/SiteUtilities';
 import { LeagueUtilities } from '../utilities/LeagueUtilities';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
@@ -25,32 +21,24 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
     const userInfo = AuthenticationUtilities.getUserInfoFromLocalStorage();
     const isAdmin = league.leagueAdminIds?.find(a => a === userInfo.id);
     return (
-        <>
-            <Card sx={{  }}>
-                <CardContent>
-                    <Typography variant="h5" component="div">
-                        {league.leagueName} - {leagueYear}
-                    </Typography>
-                    <Typography variant="caption" gutterBottom>
-                        {weekDescription}
-                    </Typography>
-                    <Typography variant="body2">
-                        Picks: {pickStatus}
-                    </Typography>
-                </CardContent>
-                <CardActions>
-                    <Button size="small" href={leagueStandingLink}>League Standings</Button>
-                </CardActions>
-                <CardActions>
-                    <Button size="small" href={weekStandingLink}>Week Standings</Button>
-                </CardActions>
-                <CardActions>
-                    {isOffSeason ?
-                        <Button size="large">Renew League{!isAdmin && " - Notify League Admin"} </Button> :
-                        <Button size="large" href={myPicksLink}>Make Picks</Button>
-                    }
-                </CardActions>
-            </Card>
-        </>
+        <Card shadow="sm" radius="md" withBorder>
+          <Stack spacing="xs">
+            <div>
+              <Text weight={700} size="lg">{league.leagueName} - {leagueYear}</Text>
+              <Text color="dimmed" size="xs">{weekDescription}</Text>
+              <Text size="sm">Picks: {pickStatus}</Text>
+            </div>
+
+            <Group spacing="xs">
+              <Button component="a" variant="light" size="sm" href={leagueStandingLink}>League Standings</Button>
+              <Button component="a" variant="light" size="sm" href={weekStandingLink}>Week Standings</Button>
+              {isOffSeason ? (
+                <Button variant="filled" size="md">Renew League{!isAdmin && ' - Notify League Admin'}</Button>
+              ) : (
+                <Button component="a" variant="filled" size="md" href={myPicksLink}>Make Picks</Button>
+              )}
+            </Group>
+          </Stack>
+        </Card>
     );
 }

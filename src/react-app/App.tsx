@@ -4,10 +4,7 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import Stack from '@mui/material/Stack';
-import { alpha } from '@mui/material/styles';
+import { Box, Stack } from '@mantine/core';
 import { useState, useEffect } from "react";
 import { Route, Routes } from "react-router";
 import "./App.css";
@@ -59,28 +56,23 @@ function App() {
     <>
       <QueryClientProvider client={queryClient}>
         <AppTheme>
-          <CssBaseline enableColorScheme />
           <Box sx={{ display: 'flex' }}>
             <SideMenu isAuthenticated={isAuthenticated} email={email} username={username} />
             <AppNavbar isAuthenticated={isAuthenticated} email={email} username={username} />
             {/* Main content */}
             <Box
               component="main"
-              sx={(theme) => ({
+              sx={{
                 flexGrow: 1,
-                backgroundColor: theme.vars
-                  ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
-                  : alpha(theme.palette.background.default, 1),
                 overflow: 'auto',
-              })}
+              }}
             >
               <Stack
-                spacing={2}
+                spacing="md"
                 sx={{
                   alignItems: 'center',
-                  mx: 3,
-                  pb: 5,
-                  mt: { xs: 8, md: 0 },
+                  mx: 12,
+                  pb: 20,
                 }}
               >
                 <Header />

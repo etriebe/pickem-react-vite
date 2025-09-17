@@ -1,13 +1,7 @@
-import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
-import Drawer, { drawerClasses } from '@mui/material/Drawer';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
+import { Drawer, Stack, Group, Avatar, Divider, Text, Anchor, Button, Box } from '@mantine/core';
+import { IconLogout, IconBell } from '@tabler/icons-react';
 import MenuButton from './MenuButton';
 import MenuContent from './MenuContent';
-import { Button, Link } from '@mui/material';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
 
 interface SideMenuMobileProps {
@@ -22,70 +16,40 @@ export default function SideMenuMobile({ open, isAuthenticated, username, email,
   const handleLogOut = async () => {
     await AuthenticationUtilities.logout();
   };
+
   return (
-    <Drawer
-      anchor="right"
-      open={open}
-      onClose={toggleDrawer(false)}
-      sx={{
-        zIndex: (theme) => theme.zIndex.drawer + 1,
-        [`& .${drawerClasses.paper}`]: {
-          backgroundImage: 'none',
-          backgroundColor: 'background.paper',
-        },
-      }}
-    >
-      <Stack
-        sx={{
-          maxWidth: '70dvw',
-          height: '100%',
-        }}
-      >
-        <Stack direction="row" sx={{ p: 2, pb: 0, gap: 1 }}>
-          <Stack
-            direction="row"
-            sx={{ gap: 1, alignItems: 'center', flexGrow: 1, p: 1 }}
-          >
-            <Avatar
-              sizes="small"
-              alt="Riley Carter"
-              src="/static/images/avatar/7.jpg"
-              sx={{ width: 24, height: 24 }}
-            />
-            {
-              isAuthenticated ?
-                <>
-                  <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
-                    {username}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    {email}
-                  </Typography>
-                </>
-                :
-                <Link
-                  href="/signin"
-                  variant="body2"
-                  sx={{ alignSelf: 'center' }}
-                >
-                  Sign in
-                </Link>
-            }
-          </Stack>
+    <Drawer opened={!!open} onClose={toggleDrawer(false)} position="right" size="70vw" zIndex={1100} overlayProps={{ opacity: 0.5 }}>
+      <Stack style={{ height: '100%', maxWidth: '70dvw' }} spacing="sm">
+        <Group position="apart" noWrap style={{ padding: 12, paddingBottom: 0 }}>
+          <Group spacing="xs" style={{ alignItems: 'center', flexGrow: 1 }}>
+            <Avatar size={24} alt={username ?? 'User'} src="/static/images/avatar/7.jpg" />
+            {isAuthenticated ? (
+              <Box>
+                <Text size="sm" weight={500} style={{ lineHeight: '16px' }}>{username}</Text>
+                <Text size="xs" color="dimmed">{email}</Text>
+              </Box>
+            ) : (
+              <Anchor href="/signin" size="sm">Sign in</Anchor>
+            )}
+          </Group>
+
           <MenuButton showBadge>
-            <NotificationsRoundedIcon />
+            <IconBell />
           </MenuButton>
-        </Stack>
+        </Group>
+
         <Divider />
-        <Stack sx={{ flexGrow: 1 }}>
+
+        <Stack style={{ flexGrow: 1 }}>
           <MenuContent />
           <Divider />
         </Stack>
-        <Stack sx={{ p: 2 }}>
-          <Button variant="outlined" fullWidth onClick={handleLogOut} startIcon={<LogoutRoundedIcon />}>
+
+        <Box style={{ padding: 12 }}>
+          <Button variant="outline" fullWidth onClick={handleLogOut} leftIcon={<IconLogout /> }>
             Logout
           </Button>
-        </Stack>
+        </Box>
       </Stack>
     </Drawer>
   );

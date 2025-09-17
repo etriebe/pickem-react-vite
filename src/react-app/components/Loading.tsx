@@ -1,19 +1,10 @@
-import { Box, CircularProgress, Typography } from '@mui/material'
-import { Component } from 'react'
+import { Group, Loader, Text } from '@mantine/core';
 
-type Props = {}
-
-type State = {}
-
-export default class Loading extends Component<Props, State> {
-    state = {}
-
-    render() {
-        return (
-            <Box sx={{ display: 'flex' }}>
-                <Typography variant="h6" sx={{ marginRight: 2 }}>Loading...</Typography>
-                <CircularProgress  />
-            </Box>
-        )
-    }
+export default function Loading() {
+    return (
+        <Group>
+            <Text weight={600} style={{ marginRight: 8 }}>Loading...</Text>
+            <Loader size="sm" />
+        </Group>
+    );
 }

@@ -4,13 +4,13 @@ import { useParams } from 'react-router';
 import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { MantineReactTable, MRT_ColumnDef, } from 'mantine-react-table';
-import { MantineProvider, useMantineTheme } from '@mantine/core';
+import { MantineProvider, useMantineTheme, Title } from '@mantine/core';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { useMediaQuery } from '@mantine/hooks';
 import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsHeaderTeamCell';
 import TeamIcon from '../TeamIcon';
 import Loading from '../Loading';
-import { Typography } from '@mui/material';
+// replaced MUI Typography with Mantine Title
 
 export default function PickemWeekStandings() {
     const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
@@ -19,7 +19,8 @@ export default function PickemWeekStandings() {
     const [weekDescription, setWeekDescription] = useState("");
     const { leagueId, weekNumber } = useParams();
     const weekNumberConverted = parseInt(weekNumber!);
-    const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
+    const theme = useMantineTheme();
+    const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [tableMaxHeight, setTableMaxHeight] = useState<string>("600px");
     const userColumnWidth = 100;
@@ -173,12 +174,12 @@ export default function PickemWeekStandings() {
         fetchData();
     }, []);
 
-    const globalTheme = useMantineTheme(); //(optional) if you already have a theme defined in your app root, you can import here
+    const globalTheme = theme; //(optional) if you already have a theme defined in your app root, you can import here
 
     return (
         <>
-            <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
-            <Typography variant='h5'>{weekDescription} Standings</Typography>
+            <Title order={4}>{currentLeague?.leagueName}</Title>
+            <Title order={5}>{weekDescription} Standings</Title>
             <div style={{ height: '100%', width: '100%' }}>
                 {!dataLoaded ? (
                     <Loading />

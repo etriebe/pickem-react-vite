@@ -1,27 +1,21 @@
-import { useColorScheme } from '@mui/material/styles';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectProps } from '@mui/material/Select';
+import { Select } from '@mantine/core';
+import useColorScheme from './useColorScheme';
 
-export default function ColorModeSelect(props: SelectProps) {
+export default function ColorModeSelect(props: any) {
   const { mode, setMode } = useColorScheme();
-  if (!mode) {
-    return null;
-  }
+  if (!mode) return null;
+
   return (
     <Select
+      data={[
+        { value: 'system', label: 'System' },
+        { value: 'light', label: 'Light' },
+        { value: 'dark', label: 'Dark' },
+      ]}
       value={mode}
-      onChange={(event) =>
-        setMode(event.target.value as 'system' | 'light' | 'dark')
-      }
-      SelectDisplayProps={{
-        // @ts-ignore
-        'data-screenshot': 'toggle-mode',
-      }}
+  onChange={(val: string | null) => val && setMode(val as any)}
+      sx={{ minWidth: 120 }}
       {...props}
-    >
-      <MenuItem value="system">System</MenuItem>
-      <MenuItem value="light">Light</MenuItem>
-      <MenuItem value="dark">Dark</MenuItem>
-    </Select>
+    />
   );
 }

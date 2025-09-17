@@ -1,33 +1,10 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import MuiToolbar from '@mui/material/Toolbar';
-import { tabsClasses } from '@mui/material/Tabs';
-import Typography from '@mui/material/Typography';
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
+import { Header, Group, Box, Title, MediaQuery } from '@mantine/core';
+import { IconMenu2, IconDashboard } from '@tabler/icons-react';
 import SideMenuMobile from './SideMenuMobile';
 import MenuButton from './MenuButton';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 import { SideMenuProps } from './SideMenu';
-
-const Toolbar = styled(MuiToolbar)({
-  width: '100%',
-  padding: '12px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'start',
-  justifyContent: 'center',
-  gap: '12px',
-  flexShrink: 0,
-  [`& ${tabsClasses.flexContainer}`]: {
-    gap: '8px',
-    p: '8px',
-    pb: 0,
-  },
-});
 
 export default function AppNavbar({ isAuthenticated, username, email } : SideMenuProps ) {
   const [open, setOpen] = React.useState(false);
@@ -37,70 +14,47 @@ export default function AppNavbar({ isAuthenticated, username, email } : SideMen
   };
 
   return (
-    <AppBar
-      position="fixed"
-      sx={{
-        display: { xs: 'auto', md: 'none' },
-        boxShadow: 0,
-        bgcolor: 'background.paper',
-        backgroundImage: 'none',
-        borderBottom: '1px solid',
-        borderColor: 'divider',
-        top: 'var(--template-frame-height, 0px)',
-      }}
-    >
-      <Toolbar variant="regular">
-        <Stack
-          direction="row"
-          sx={{
-            alignItems: 'center',
-            flexGrow: 1,
-            width: '100%',
-            gap: 1,
-          }}
-        >
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ justifyContent: 'center', mr: 'auto' }}
-          >
+    // show only on small screens (hide on md and up)
+    <MediaQuery largerThan="md" styles={{ display: 'none' }}>
+      <Header height={64} fixed style={{ borderBottom: '1px solid var(--mantine-color-gray-3)', top: 'var(--template-frame-height, 0px)', background: 'var(--template-background-paper, white)' }}>
+        <Group sx={{ height: '100%' }} px="md" position="apart">
+          <Group spacing="xs" style={{ alignItems: 'center' }}>
             <CustomIcon />
-            <Typography variant="h4" component="h1" sx={{ color: 'text.primary' }}>
-              Just Pick'em
-            </Typography>
-          </Stack>
-          <ColorModeIconDropdown />
-          <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
-            <MenuRoundedIcon />
-          </MenuButton>
-          <SideMenuMobile open={open} toggleDrawer={toggleDrawer} isAuthenticated={isAuthenticated} email={email} username={username} />
-        </Stack>
-      </Toolbar>
-    </AppBar>
+            <Title order={4} style={{ margin: 0 }}>Just Pick'em</Title>
+          </Group>
+
+          <Group spacing="xs">
+            <ColorModeIconDropdown />
+            {/* <MenuButton aria-label="menu" >
+              <IconMenu2 />
+            </MenuButton> */}
+            <SideMenuMobile open={open} toggleDrawer={toggleDrawer} isAuthenticated={isAuthenticated} email={email} username={username} />
+          </Group>
+        </Group>
+      </Header>
+    </MediaQuery>
   );
 }
 
 export function CustomIcon() {
   return (
-    <Box
-      sx={{
+  <Box
+      style={{
         width: '1.5rem',
         height: '1.5rem',
-        bgcolor: 'black',
+        background: 'black',
         borderRadius: '999px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center',
-        backgroundImage:
-          'linear-gradient(135deg, hsl(210, 98%, 60%) 0%, hsl(210, 100%, 35%) 100%)',
+        backgroundImage: 'linear-gradient(135deg, hsl(210, 98%, 60%) 0%, hsl(210, 100%, 35%) 100%)',
         color: 'hsla(210, 100%, 95%, 0.9)',
-        border: '1px solid',
-        borderColor: 'hsl(210, 100%, 55%)',
+        border: '1px solid hsl(210, 100%, 55%)',
         boxShadow: 'inset 0 2px 5px rgba(255, 255, 255, 0.3)',
       }}
-    >
-      <DashboardRoundedIcon color="inherit" sx={{ fontSize: '1rem' }} />
+      >
+      <IconDashboard size={16} />
     </Box>
   );
 }

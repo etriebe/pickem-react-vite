@@ -1,15 +1,13 @@
-import SvgIcon from '@mui/material/SvgIcon';
-
 export function SitemarkIcon() {
   return (
-    <SvgIcon sx={{ height: 21, width: 100 }}>
-      <svg
-        width={86}
-        height={19}
-        viewBox="0 0 86 19"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+    <svg
+      width={86}
+      height={19}
+      viewBox="0 0 86 19"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ height: 21, width: 100 }}
+    >
         <path
           fill="#B4C0D3"
           d="m.787 12.567 6.055-2.675 3.485 2.006.704 6.583-4.295-.035.634-4.577-.74-.422-3.625 2.817-2.218-3.697Z"
@@ -47,20 +45,18 @@ export function SitemarkIcon() {
           d="M72.106 14.97V7.11h1.835v2.595c.088-.74.31-1.338.665-1.791.481-.603 1.174-.904 2.08-.904h.303v1.98h-.578c-.635 0-1.127.172-1.473.516-.347.334-.52.822-.52 1.463v4.001h-2.312ZM79.92 11.298h.767l2.499 3.672h2.6l-3.169-4.51 2.606-3.35h-2.427l-2.875 3.737V4.5h-2.312v10.47h2.312v-3.672Z"
         />
       </svg>
-    </SvgIcon>
   );
 }
 
 export function GoogleIcon() {
   return (
-    <SvgIcon>
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
         <path
           d="M15.68 8.18182C15.68 7.61455 15.6291 7.06909 15.5345 6.54545H8V9.64364H12.3055C12.1164 10.64 11.5491 11.4836 10.6982 12.0509V14.0655H13.2945C14.8073 12.6691 15.68 10.6182 15.68 8.18182Z"
           fill="#4285F4"
@@ -78,6 +74,5 @@ export function GoogleIcon() {
           fill="#EA4335"
         />
       </svg>
-    </SvgIcon>
   );
 }

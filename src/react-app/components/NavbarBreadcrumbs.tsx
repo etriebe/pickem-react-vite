@@ -1,19 +1,7 @@
-import { styled } from '@mui/material/styles';
-import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
-import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+import { Breadcrumbs, Anchor } from '@mantine/core';
+import { IconChevronRight } from '@tabler/icons-react';
 import { PageType, SiteUtilities } from '../utilities/SiteUtilities';
 import { Link } from 'react-router';
-
-const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
-  margin: theme.spacing(1, 0),
-  [`& .${breadcrumbsClasses.separator}`]: {
-    color: (theme.vars || theme).palette.action.disabled,
-    margin: 1,
-  },
-  [`& .${breadcrumbsClasses.ol}`]: {
-    alignItems: 'center',
-  },
-}));
 
 export default function NavbarBreadcrumbs() {
   const currentUrl = window.location.pathname;
@@ -33,21 +21,20 @@ export default function NavbarBreadcrumbs() {
     }
   }
 
+  const items = [
+    { to: '/', label: 'Home' },
+    ...(currentPageType !== PageType.LeagueStandingsPage && leagueStandingLink ? [{ to: leagueStandingLink, label: 'League Standings' }] : []),
+    ...(currentPageType !== PageType.WeekStandingsPage && weekStandingLink ? [{ to: weekStandingLink, label: 'Week Standings' }] : []),
+    ...(currentPageType !== PageType.MakePicksPage && makePicksLink ? [{ to: makePicksLink, label: 'Make Picks' }] : []),
+  ];
+
   return (
-    <StyledBreadcrumbs
-      aria-label="breadcrumb"
-      separator={<NavigateNextRoundedIcon fontSize="small" />}
-    >
-      <Link to='/'>Home</Link>
-      {currentPageType !== PageType.LeagueStandingsPage && leagueStandingLink && 
-        <Link to={leagueStandingLink}>League Standings</Link>
-      }
-      {currentPageType !== PageType.WeekStandingsPage && weekStandingLink && 
-        <Link to={weekStandingLink}>Week Standings</Link>
-      }
-      {currentPageType !== PageType.MakePicksPage && makePicksLink && 
-        <Link to={makePicksLink}>Make Picks</Link>
-      }
-    </StyledBreadcrumbs>
+    <Breadcrumbs separator={<IconChevronRight size={14} />}>
+      {items.map((it) => (
+        <Anchor<'a'> component={Link as any} to={it.to} key={it.to} sx={{ display: 'inline-flex', alignItems: 'center' }}>
+          {it.label}
+        </Anchor>
+      ))}
+    </Breadcrumbs>
   );
 }

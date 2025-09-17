@@ -1,12 +1,4 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import MuiCard from '@mui/material/Card';
-import CssBaseline from '@mui/material/CssBaseline';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import Stack from '@mui/material/Stack';
-import { styled } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
+import { Box, Button, Card as MantineCard, Stack, TextInput, PasswordInput } from '@mantine/core';
 import * as React from 'react';
 import AppTheme from '../theme/AppTheme';
 import SiteLogo from './SiteLogo';
@@ -14,47 +6,13 @@ import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import { useParams } from 'react-router';
 import { ResetPasswordRequest } from '../services/PickemApiClient';
 
-const Card = styled(MuiCard)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignSelf: 'center',
-  width: '100%',
-  padding: theme.spacing(4),
-  gap: theme.spacing(2),
-  margin: 'auto',
-  [theme.breakpoints.up('sm')]: {
-    maxWidth: '450px',
-  },
-  boxShadow:
-    'hsla(225, 80%, 47%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-  ...theme.applyStyles('dark', {
-    boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-  }),
-}));
+const Card = (props: any) => (
+  <MantineCard shadow="sm" radius="md" withBorder style={{ padding: 24, width: '100%', maxWidth: 450, margin: 'auto' }} {...props} />
+);
 
-const ResetPasswordContainer = styled(Stack)(({ theme }) => ({
-  height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
-  minHeight: '100%',
-  padding: theme.spacing(2),
-  [theme.breakpoints.up('sm')]: {
-    padding: theme.spacing(4),
-  },
-  '&::before': {
-    content: '""',
-    display: 'block',
-    position: 'absolute',
-    zIndex: -1,
-    inset: 0,
-    backgroundImage:
-      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-    ...theme.applyStyles('dark', {
-      backgroundImage:
-        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-    }),
-  },
-}));
+const ResetPasswordContainer = (props: any) => (
+  <Stack style={{ minHeight: '100vh', padding: 16 }} justify="space-between" spacing="xl" {...props} />
+);
 
 export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
   const [emailError, setEmailError] = React.useState(false);
@@ -124,77 +82,54 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
 
   return (
     <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
-      <ResetPasswordContainer direction="column" justifyContent="space-between">
-        <Card variant="outlined">
+      <ResetPasswordContainer>
+        <Card>
           <SiteLogo />
           <Box
             component="form"
             onSubmit={handleSubmit}
-            method='post'
+            method="post"
             noValidate
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
-              gap: 2,
-            }}
+            style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 12 }}
           >
-            <FormControl>
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <TextField
-                error={emailError}
-                helperText={emailErrorMessage}
-                id="email"
-                type="email"
-                name="email"
-                placeholder="your@email.com"
-                autoComplete="email"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-                color={emailError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="password"
-                placeholder="••••••"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                required
-                fullWidth
-                variant="outlined"
-                color={passwordError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="confirmpassword">Confirm Password</FormLabel>
-              <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="confirmpassword"
-                placeholder="••••••"
-                type="password"
-                id="confirmpassword"
-                autoComplete="confirm-password"
-                required
-                fullWidth
-                variant="outlined"
-                color={passwordError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={validateInputs}
-            >
+            <TextInput
+              id="email"
+              name="email"
+              type="email"
+              placeholder="your@email.com"
+              autoComplete="email"
+              autoFocus
+              required
+              label="Email"
+              error={emailError}
+              description={emailError ? emailErrorMessage : undefined}
+            />
+
+            <PasswordInput
+              id="password"
+              name="password"
+              placeholder="••••••"
+              type="password"
+              autoComplete="current-password"
+              required
+              label="Password"
+              error={passwordError}
+              description={passwordError ? passwordErrorMessage : undefined}
+            />
+
+            <PasswordInput
+              id="confirmpassword"
+              name="confirmpassword"
+              placeholder="••••••"
+              type="password"
+              autoComplete="confirm-password"
+              required
+              label="Confirm Password"
+              error={passwordError}
+              description={passwordError ? passwordErrorMessage : undefined}
+            />
+
+            <Button type="submit" fullWidth onClick={validateInputs}>
               Reset Password
             </Button>
           </Box>

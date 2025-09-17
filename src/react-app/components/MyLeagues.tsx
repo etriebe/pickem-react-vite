@@ -1,9 +1,8 @@
 import { LeagueUtilities } from '../utilities/LeagueUtilities';
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
 import LeagueCard from './LeagueCard';
-import { Grid } from "@mui/material";
+import { Grid } from '@mantine/core';
 import Loading from "./Loading";
-import React from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
 
 export default function MyLeagues() {
@@ -45,19 +44,14 @@ export default function MyLeagues() {
     else if (leaguesQuery.isSuccess && allFinished) {
         return (
             <>
-                <Grid
-                    container
-                    spacing={2}
-                    padding={2}
-                    sx={{ mb: (theme) => theme.spacing(2), width: '100%' }}
-                >
+                <Grid gutter="md" p="md">
                     {leaguesQuery.data.map((l) => {
                         const currentLeaguePicks = picksQuery.data.find(p => p?.leagueId === l.id);
-                        return <React.Fragment key={l.id}>
-                            <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                                <LeagueCard key={l.id} league={l} picksSubmitted={currentLeaguePicks != null} />
-                            </Grid>
-                        </React.Fragment>;
+                        return (
+                            <Grid.Col key={l.id} xs={12} sm={6} lg={4}>
+                                <LeagueCard league={l} picksSubmitted={currentLeaguePicks != null} />
+                            </Grid.Col>
+                        );
                     })}
                 </Grid>
             </>

@@ -1,22 +1,16 @@
-import Badge, { badgeClasses } from '@mui/material/Badge';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import { Indicator, ActionIcon } from '@mantine/core';
+import type { ActionIconProps } from '@mantine/core';
 
-export interface MenuButtonProps extends IconButtonProps {
+export interface MenuButtonProps extends ActionIconProps {
   showBadge?: boolean;
 }
 
-export default function MenuButton({
-  showBadge = false,
-  ...props
-}: MenuButtonProps) {
+export default function MenuButton({ showBadge = false, children, ...props }: MenuButtonProps) {
   return (
-    <Badge
-      color="error"
-      variant="dot"
-      invisible={!showBadge}
-      sx={{ [`& .${badgeClasses.badge}`]: { right: 2, top: 2 } }}
-    >
-      <IconButton size="small" {...props} />
-    </Badge>
+    <Indicator inline position="top-end" offset={4} color="red" disabled={!showBadge} size={8}>
+      <ActionIcon size="sm" {...props}>
+        {children}
+      </ActionIcon>
+    </Indicator>
   );
 }

@@ -1,25 +1,16 @@
-import Stack from '@mui/material/Stack';
+import { Group, MediaQuery, Box } from '@mantine/core';
 import NavbarBreadcrumbs from './NavbarBreadcrumbs';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 
 export default function Header() {
   return (
-    <Stack
-      direction="row"
-      sx={{
-        display: { xs: 'none', md: 'flex' },
-        width: '100%',
-        alignItems: { xs: 'flex-start', md: 'center' },
-        justifyContent: 'space-between',
-        maxWidth: { sm: '100%', md: '1700px' },
-        pt: 1.5,
-      }}
-      spacing={2}
-    >
-      <NavbarBreadcrumbs />
-      <Stack direction="row" sx={{ gap: 1 }}>
-        <ColorModeIconDropdown />
-      </Stack>
-    </Stack>
+    <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
+      <Group position="apart" style={{ width: '100%', alignItems: 'center', paddingTop: 12, maxWidth: '1700px' }}>
+        <NavbarBreadcrumbs />
+        <Box style={{ display: 'flex', gap: 8 }}>
+          <ColorModeIconDropdown />
+        </Box>
+      </Group>
+    </MediaQuery>
   );
 }
