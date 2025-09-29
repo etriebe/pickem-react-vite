@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Routes, Route } from 'react-router'
+import { useState } from 'react';
+import { Routes, Route } from 'react-router';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
 import MyLeagues from './MyLeagues';
 import PickemMakePicks from './pickem/PickemMakePicks';
