@@ -182,9 +182,9 @@ export class SiteUtilities {
     static getGameHeaderStatusDescription(game: GameDTO): string {
         switch (game.result?.status) {
             case 0: // scheduled
-                return `${SiteUtilities.getWeekStandingsHeaderGameTime(game.gameStartTime!)}`;
+                return SiteUtilities.getWeekStandingsHeaderGameTime(game.gameStartTime!);
             case 1: // in progress
-                return `${game.result?.currentPeriod!} - ${game.result?.periodTimeRemaining!}`;
+                return SiteUtilities.getWeekStandingsHeaderGameTimeInProgress(game);
             case 2: // final
                 return "FINAL";
             case 3: // canceled

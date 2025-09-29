@@ -111,8 +111,13 @@ export default function PickemWeekStandings() {
                             if (gameAStatus === 1) { // in progress
                                 return -1;
                             }
-                            if (gameAStatus === 2) { // final
-                                return -1;
+                            if (gameAStatus === 2) { // Game A is final
+                                if (gameBStatus === 1) { // Game B is in progress
+                                    return 1;
+                                }
+                                else {
+                                    return -1;
+                                }
                             }
                             return gameAStatus - gameBStatus;
                         }
