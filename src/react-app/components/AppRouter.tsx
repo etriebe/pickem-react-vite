@@ -27,7 +27,8 @@ function AppRouter({ }: Props) {
     const [email, setEmail] = useState("");
 
     const isAuthenticatedQuery = useQuery({
-        queryKey: ['auth'], queryFn: async () => {
+        queryKey: ['auth'], 
+        queryFn: async () => {
             const result = await AuthenticationUtilities.isAuthenticated();
             setAuthenticated(result);
             if (result) {
@@ -44,6 +45,7 @@ function AppRouter({ }: Props) {
             }
             return result;
         },
+        staleTime: 60 * 60 * 1000, // 5 minutes
     });
 
     return (
