@@ -102,7 +102,28 @@ export default function PickemWeekStandings() {
             const picks = await pickemClient.getAllSpreadWeekPicks(leagueId, weekNumberConverted);
             const returnOnlyGamesThatHaveStarted = false;
             let games = await pickemClient.queryGames(weekNumberConverted, league.year, league.sport, returnOnlyGamesThatHaveStarted);
-            games = games.sort((a, b) => (a.gameStartTime && b.gameStartTime) ? a.gameStartTime.getTime() - b.gameStartTime.getTime() : 0);
+            games = games.sort((a, b) => {
+                if (a.gameStartTime && b.gameStartTime) {
+                    if (a.result && b.result) {
+                        const gameAStatus = a.result.status;
+                        const gameBStatus = b.result.status;
+                        if (gameAStatus !== undefined && gameBStatus !== undefined && gameAStatus !== gameBStatus) {
+                            if (gameAStatus === 1) { // in progress
+                                return -1;
+                            }
+                            if (gameAStatus === 2) { // final
+                                return -1;
+                            }
+                            return gameAStatus - gameBStatus;
+                        }
+                    }
+
+                    return a.gameStartTime.getTime() - b.gameStartTime.getTime();
+                }
+                else {
+                    return 0;
+                }
+            });
             const longDescription = true;
             const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!, longDescription);
             const leagueUserMapping = await pickemClient.getUserMappingForLeague(leagueId);
@@ -138,7 +159,7 @@ export default function PickemWeekStandings() {
                     minWidth: userColumnWidth,
                     cellClassName: "centerDivContainer",
                     renderHeader: () => {
-                        return <div className='weekStandingsHeader'>Week<br/>Points</div>;
+                        return <div className='weekStandingsHeader'>Week<br />Points</div>;
                     },
                     renderCell: (params) => {
                         return renderWeekResultsCell(params, league, weekResults, picks);
