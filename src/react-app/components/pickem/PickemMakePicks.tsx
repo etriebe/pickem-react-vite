@@ -44,8 +44,9 @@ export default function PickemMakePicks() {
             cellType === MakePicksColumnType.HomeTeam) {
             let cellText = isSmallScreen ? `${teamChosen.abbreviation}` : `${teamChosen.name}`;
 
+            const gameSpread = currentLeague?.settings?.lockSpreadsDuringWeek ? params.row.spreadAtLockTime : params.row.currentSpread;
             if (cellType === MakePicksColumnType.HomeTeam) {
-                cellText += ` (${SiteUtilities.getFormattedSpreadAmount(params.row.currentSpread!)})`
+                cellText += ` (${SiteUtilities.getFormattedSpreadAmount(gameSpread!)})`
             }
 
             if (currentPicks && currentPicks.gamePicks) {
