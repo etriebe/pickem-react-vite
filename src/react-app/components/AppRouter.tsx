@@ -22,37 +22,35 @@ import { alpha } from '@mui/material/styles';
 type Props = {}
 
 function AppRouter({ }: Props) {
-    const [isAuthenticated, setAuthenticated] = useState(false);
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
 
     const isAuthenticatedQuery = useQuery({
-        queryKey: ['auth'], 
+        queryKey: ['auth'],
         queryFn: async () => {
-            const result = await AuthenticationUtilities.isAuthenticated();
-            setAuthenticated(result);
-            if (result) {
-                let userInfo = AuthenticationUtilities.getUserInfoFromLocalStorage();
-                if (!userInfo.email || !userInfo.id || !userInfo.userName) {
-                    userInfo = await AuthenticationUtilities.getUserInfo();
-                }
-                const username = userInfo.userName ?? userInfo.email!;
-                setUsername(username);
-                setEmail(userInfo.email!)
-            }
-            else {
-                console.log(`Not authenticated. ${result}`);
-            }
+            const result = AuthenticationUtilities.isAuthenticated();
             return result;
         },
-        staleTime: 60 * 60 * 1000, // 5 minutes
+        staleTime: 60 * 60 * 1000, // 60 minutes
     });
+
+    const userId = isAuthenticatedQuery?.data;
+    
+    const userInfoQuery = useQuery({
+        queryKey: ['userinfo', userId],
+        queryFn: async () => {
+            const result = AuthenticationUtilities.getUserInfo();
+            return result;
+        },
+        enabled: !!userId,
+        staleTime: 60 * 60 * 1000, // 60 minutes
+    });
+
+    const isAuthenticated = isAuthenticatedQuery.isSuccess && isAuthenticatedQuery.data != undefined && isAuthenticatedQuery.data !== '';
 
     return (
         <>
             <Box sx={{ display: 'flex' }}>
-                <SideMenu isAuthenticated={isAuthenticated} email={email} username={username} />
-                <AppNavbar isAuthenticated={isAuthenticated} email={email} username={username} />
+                <SideMenu isAuthenticated={isAuthenticatedQuery.isSuccess} email={userInfoQuery.data?.email} username={userInfoQuery.data?.userName} />
+                <AppNavbar isAuthenticated={isAuthenticatedQuery.isSuccess} email={userInfoQuery.data?.email} username={userInfoQuery.data?.userName} />
                 {/* Main content */}
                 <Box
                     component="main"
