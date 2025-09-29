@@ -104,6 +104,15 @@ export class SiteUtilities {
         return formattedDate;
     }
 
+    static getWeekStandingsHeaderGameTimeInProgress(game: GameDTO): string {
+        let periodSuffix = SiteUtilities.getNumberWithOrdinalSuffix(game.result?.currentPeriod!);
+        if (game.sport === 3) { // MLB
+            
+            return `${game.result?.currentPeriod!}${periodSuffix}`;
+        }
+        return `${game.result?.currentPeriod!}${periodSuffix} - ${game.result?.periodTimeRemaining!}`
+    }
+
     static getWeekStandingsHeaderGameTime(gameStart: Date): string {
         let options: Intl.DateTimeFormatOptions = {
             month: "numeric",
@@ -115,6 +124,20 @@ export class SiteUtilities {
 
         const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStart);
         return formattedDate;
+    }
+
+    static getNumberWithOrdinalSuffix(n: number): string {
+        let suffix = "th";
+        if (n === 1) {
+            suffix = "st";
+        }
+        else if (n === 2) {
+            suffix = "nd";
+        }
+        else if (n === 3) {
+            suffix = "rd";
+        }
+        return suffix;
     }
 
     static getFormattedSpreadAmount(currentSpread: Spread): string {
@@ -161,7 +184,7 @@ export class SiteUtilities {
             case 0: // scheduled
                 return `${SiteUtilities.getWeekStandingsHeaderGameTime(game.gameStartTime!)}`;
             case 1: // in progress
-                return game.result?.timeLeft! + " - " + game.result?.currentQuarter;
+                return `${game.result?.currentPeriod!} - ${game.result?.periodTimeRemaining!}`;
             case 2: // final
                 return "FINAL";
             case 3: // canceled
@@ -173,16 +196,7 @@ export class SiteUtilities {
             default:
                 break;
         }
-        if (game.result?.status === 0) {
-
-        }
-        else if (game.result?.status === 1) { // in progress
-
-        }
-        else if (game.result?.status === 1) { // in progress
-            return game.result?.timeLeft! + " - " + game.result?.currentQuarter;
-        }
-        return game.result?.timeLeft ?? "";
+        return "ERROR";
     }
 
     static getPageTypeFromUrl(url: string): PageType {
