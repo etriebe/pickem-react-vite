@@ -72,7 +72,7 @@ export class SiteUtilities {
         else {
             const requestedWeek = season.weekStartTimes[weekNumber - 1];
             if (longDescription && requestedWeek.weekStartTime && requestedWeek.weekEndTime) {
-                return `${requestedWeek.weekDescription!}: ${requestedWeek.weekStartTime?.toLocaleDateString()} - ${requestedWeek.weekEndTime?.toLocaleDateString()}`;
+                return `${requestedWeek.weekDescription!}: ${(new Date(requestedWeek.weekStartTime).toLocaleDateString())} - ${(new Date(requestedWeek.weekEndTime).toLocaleDateString())}`;
             }
             else {
                 return requestedWeek.weekDescription!;

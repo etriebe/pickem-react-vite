@@ -12,6 +12,7 @@ export default function MyLeagues() {
             const leagues = LeagueUtilities.getLeaguesForCurrentUser(false);
             return leagues;
         },
+        staleTime: 1000 * 60 * 60, // 1 hour
     });
     const picksQuery = useQueries({
         queries: leaguesQuery && leaguesQuery.data

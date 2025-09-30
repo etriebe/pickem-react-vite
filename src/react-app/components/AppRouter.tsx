@@ -17,30 +17,42 @@ import SideMenu from "./SideMenu";
 import AppNavbar from "./AppNavbar";
 import Header from "./Header";
 import { alpha } from '@mui/material/styles';
+import { QueryCache } from '@tanstack/react-query';
 
 type Props = {}
 
 function AppRouter({ }: Props) {
 
+    const queryCache = new QueryCache({
+    onError: (error) => {
+        console.log(error)
+    },
+    onSuccess: (data) => {
+        console.log(data)
+    },
+    onSettled: (data, error) => {
+        console.log(data, error)
+    },
+    });
+    const callback = (event: { type: any; query: any; }) => {
+    console.log(event.type, event.query)
+    }
+
+    const unsubscribe = queryCache.subscribe(callback)
+
     const isAuthenticatedQuery = useQuery({
         queryKey: ['auth'],
-        queryFn: async () => {
-            const result = AuthenticationUtilities.isAuthenticated();
-            return result;
-        },
-        staleTime: 60 * 60 * 1000, // 60 minutes
+        queryFn: AuthenticationUtilities.isAuthenticated,
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     const userId = isAuthenticatedQuery?.data;
     
     const userInfoQuery = useQuery({
         queryKey: ['userinfo', userId],
-        queryFn: async () => {
-            const result = AuthenticationUtilities.getUserInfo();
-            return result;
-        },
+        queryFn: AuthenticationUtilities.getUserInfo,
         enabled: !!userId,
-        staleTime: 60 * 60 * 1000, // 60 minutes
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     const isAuthenticated = isAuthenticatedQuery.isSuccess && isAuthenticatedQuery.data != undefined && isAuthenticatedQuery.data !== '';

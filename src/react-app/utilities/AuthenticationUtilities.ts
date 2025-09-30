@@ -3,7 +3,7 @@ import { LoginRequest, UserInfo } from "../services/PickemApiClient";
 import { ApiResponse } from './ApiUtilities';
 
 export class AuthenticationUtilities {
-  static async isAuthenticated(): Promise<string | undefined> {
+  static async isAuthenticated(): Promise<string> {
     const pickemClient = PickemApiClientFactory.createClient();
     try {
         return await pickemClient.isAuthorized();
@@ -11,7 +11,7 @@ export class AuthenticationUtilities {
     catch (err) {
       console.error(`IsAuthorized threw an excpetion: ${err}`);
       // AuthenticationUtilities.clearLocalStorage();
-      return undefined;
+      return "";
     }
   }
 
