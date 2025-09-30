@@ -17,51 +17,23 @@ import SideMenu from "./SideMenu";
 import AppNavbar from "./AppNavbar";
 import Header from "./Header";
 import { alpha } from '@mui/material/styles';
-import { QueryCache } from '@tanstack/react-query';
 
 type Props = {}
 
 function AppRouter({ }: Props) {
-
-    const queryCache = new QueryCache({
-    onError: (error) => {
-        console.log(error)
-    },
-    onSuccess: (data) => {
-        console.log(data)
-    },
-    onSettled: (data, error) => {
-        console.log(data, error)
-    },
-    });
-    const callback = (event: { type: any; query: any; }) => {
-    console.log(event.type, event.query)
-    }
-
-    const unsubscribe = queryCache.subscribe(callback)
-
-    const isAuthenticatedQuery = useQuery({
-        queryKey: ['auth'],
-        queryFn: AuthenticationUtilities.isAuthenticated,
-        staleTime: 1000 * 60 * 5, // 5 minutes
-    });
-
-    const userId = isAuthenticatedQuery?.data;
     
     const userInfoQuery = useQuery({
-        queryKey: ['userinfo', userId],
+        queryKey: ['userinfo'],
         queryFn: AuthenticationUtilities.getUserInfo,
-        enabled: !!userId,
-        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
-    const isAuthenticated = isAuthenticatedQuery.isSuccess && isAuthenticatedQuery.data != undefined && isAuthenticatedQuery.data !== '';
+    const isAuthenticated = userInfoQuery.isSuccess && userInfoQuery.data != undefined;
 
     return (
         <>
             <Box sx={{ display: 'flex' }}>
-                <SideMenu isAuthenticated={isAuthenticatedQuery.isSuccess} email={userInfoQuery.data?.email} username={userInfoQuery.data?.userName} />
-                <AppNavbar isAuthenticated={isAuthenticatedQuery.isSuccess} email={userInfoQuery.data?.email} username={userInfoQuery.data?.userName} />
+                <SideMenu isAuthenticated={userInfoQuery.isSuccess} email={userInfoQuery.data?.email} username={userInfoQuery.data?.userName} />
+                <AppNavbar isAuthenticated={userInfoQuery.isSuccess} email={userInfoQuery.data?.email} username={userInfoQuery.data?.userName} />
                 {/* Main content */}
                 <Box
                     component="main"
@@ -84,9 +56,9 @@ function AppRouter({ }: Props) {
                     >
                         <Header />
 
-                        {isAuthenticatedQuery.isPending && <Loading />}
-                        {isAuthenticatedQuery.isError && <SignIn />}
-                        {isAuthenticatedQuery.isSuccess &&
+                        {userInfoQuery.isPending && <Loading />}
+                        {userInfoQuery.isError && <SignIn />}
+                        {userInfoQuery.isSuccess &&
                             <Routes>
                                 <Route path="/" element={isAuthenticated ? <MyLeagues /> : <MainGrid />} />
                                 <Route path="/myleagues" element={isAuthenticated ? <MyLeagues /> : <SignIn />} />

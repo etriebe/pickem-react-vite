@@ -34,7 +34,6 @@ export default function MyLeagues() {
                 }
             }, 
         });
-
     const allFinished = !picksQuery.pending;
 
     if (leaguesQuery.isPending) {
