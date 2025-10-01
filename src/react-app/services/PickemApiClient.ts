@@ -2038,6 +2038,55 @@ export class Client {
         }
         return Promise.resolve<WeatherForecast[]>(null as any);
     }
+
+    /**
+     * @param leagueId (optional) 
+     * @param weekNumber (optional) 
+     * @return OK
+     */
+    getWeekStandings(leagueId: string | undefined, weekNumber: number | undefined): Promise<PickemWeekStandingsResponse> {
+        let url_ = this.baseUrl + "/api/pickempage/GetWeekStandings?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        if (weekNumber === null)
+            throw new globalThis.Error("The parameter 'weekNumber' cannot be null.");
+        else if (weekNumber !== undefined)
+            url_ += "weekNumber=" + encodeURIComponent("" + weekNumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetWeekStandings(_response);
+        });
+    }
+
+    protected processGetWeekStandings(response: Response): Promise<PickemWeekStandingsResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PickemWeekStandingsResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PickemWeekStandingsResponse>(null as any);
+    }
 }
 
 export class AccessTokenResponse implements IAccessTokenResponse {
@@ -3419,6 +3468,102 @@ export interface IMoneyline2 {
     timeOfMeasurement?: Date;
     homeTeamPrice?: number;
     awayTeamPrice?: number;
+
+    [key: string]: any;
+}
+
+export class PickemWeekStandingsResponse implements IPickemWeekStandingsResponse {
+    league?: LeagueDTO;
+    picks?: SpreadWeekPickDTO[];
+    results?: SpreadWeekResultDTO[];
+    games?: GameDTO[];
+    users?: UserInfo[];
+
+    [key: string]: any;
+
+    constructor(data?: IPickemWeekStandingsResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : undefined as any;
+            if (Array.isArray(_data["picks"])) {
+                this.picks = [] as any;
+                for (let item of _data["picks"])
+                    this.picks!.push(SpreadWeekPickDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["results"])) {
+                this.results = [] as any;
+                for (let item of _data["results"])
+                    this.results!.push(SpreadWeekResultDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["games"])) {
+                this.games = [] as any;
+                for (let item of _data["games"])
+                    this.games!.push(GameDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(UserInfo.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PickemWeekStandingsResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new PickemWeekStandingsResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        if (Array.isArray(this.picks)) {
+            data["picks"] = [];
+            for (let item of this.picks)
+                data["picks"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.results)) {
+            data["results"] = [];
+            for (let item of this.results)
+                data["results"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.games)) {
+            data["games"] = [];
+            for (let item of this.games)
+                data["games"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IPickemWeekStandingsResponse {
+    league?: LeagueDTO;
+    picks?: SpreadWeekPickDTO[];
+    results?: SpreadWeekResultDTO[];
+    games?: GameDTO[];
+    users?: UserInfo[];
 
     [key: string]: any;
 }
