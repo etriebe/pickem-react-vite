@@ -62,6 +62,9 @@ export class SiteUtilities {
     }
 
     static getWeekDescriptionFromWeekNumber(season: SeasonDateInformation, weekNumber: number, longDescription: boolean): string {
+        if (season == null) {
+            return "";
+        }
         if (weekNumber > season.weekStartTimes?.length! || weekNumber < 1) {
             throw new Error(`Invalid weekNumber requested: ${weekNumber}`);
         }
@@ -122,8 +125,17 @@ export class SiteUtilities {
             hour12: true,
         };
 
-        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStart);
-        return formattedDate;
+        if (gameStart === null || gameStart === undefined) {
+            return "";
+        }
+        try {
+            const gameStartDate = new Date(gameStart);
+            const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStartDate);
+            return formattedDate;
+        }
+        catch (e) {
+            return "";
+        }
     }
 
     static getNumberWithOrdinalSuffix(n: number): string {

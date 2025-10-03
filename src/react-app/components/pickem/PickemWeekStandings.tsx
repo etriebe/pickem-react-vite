@@ -14,14 +14,14 @@ import { LeagueUtilities } from '../../utilities/LeagueUtilities';
 import { useQuery } from '@tanstack/react-query';
 
 export default function PickemWeekStandings() {
-    const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
-    const [columns, setColumns] = useState<GridColDef<UserInfo>[]>([]);
-    const [userMapping, setUserMapping] = useState<UserInfo[]>();
-    const [weekDescription, setWeekDescription] = useState("");
+    // const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
+    // const [columns, setColumns] = useState<GridColDef<UserInfo>[]>([]);
+    // const [userMapping, setUserMapping] = useState<UserInfo[]>();
+    // const [weekDescription, setWeekDescription] = useState("");
     const { leagueId, weekNumber } = useParams();
     const weekNumberConverted = parseInt(weekNumber!);
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
-    const [dataLoaded, setDataLoaded] = useState(false);
+    // const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
     const gameColumnWidth = isSmallScreen ? 95 : 95;
 
@@ -105,137 +105,126 @@ export default function PickemWeekStandings() {
 
     let games = weekStandingsQuery.data?.games ?? [];
     games = games.sort((a, b) => {
-                if (a.gameStartTime && b.gameStartTime) {
-                    if (a.result && b.result) {
-                        const gameAStatus = a.result.status;
-                        const gameBStatus = b.result.status;
-                        if (gameAStatus !== undefined && gameBStatus !== undefined && gameAStatus !== gameBStatus) {
-                            if (gameAStatus === 1) { // in progress
+        try {
+            if (a.gameStartTime && b.gameStartTime) {
+                if (a.result && b.result) {
+                    const gameAStatus = a.result.status;
+                    const gameBStatus = b.result.status;
+                    if (gameAStatus !== undefined && gameBStatus !== undefined && gameAStatus !== gameBStatus) {
+                        if (gameAStatus === 1) { // in progress
+                            return -1;
+                        }
+                        if (gameAStatus === 2) { // Game A is final
+                            if (gameBStatus === 1) { // Game B is in progress
+                                return 1;
+                            }
+                            else {
                                 return -1;
                             }
-                            if (gameAStatus === 2) { // Game A is final
-                                if (gameBStatus === 1) { // Game B is in progress
-                                    return 1;
-                                }
-                                else {
-                                    return -1;
-                                }
-                            }
-                            return gameAStatus - gameBStatus;
                         }
+                        return gameAStatus - gameBStatus;
                     }
+                }
 
-                    return a.gameStartTime.getTime() - b.gameStartTime.getTime();
-                }
-                else {
-                    return 0;
-                }
-            });
+                const aGameStartTime = new Date(a.gameStartTime);
+                const bGameStartTime = new Date(b.gameStartTime);
+                return aGameStartTime.getTime() - bGameStartTime.getTime();
+            }
+            else {
+                return 0;
+            }
+        }
+        catch (e) {
+            console.error("Error sorting games in PickemWeekStandings: ", e);
+            return 0;
+        }
+    });
 
     const columnList: GridColDef<(UserInfo[])[number]>[] = [
-    {
-        field: 'user',
-        headerName: 'User',
-        width: userColumnWidth,
-        minWidth: userColumnWidth,
-        cellClassName: "centerDivContainer",
-        renderHeader: () => {
-            return <div className='weekStandingsHeader'>User</div>;
-        },
-        renderCell: (params) => {
-            return renderUserCell(params, leagueUserMapping);
-        },
-        valueGetter: (_, row) => {
-            if (!row) {
-                return "";
-            }
+        {
+            field: 'user',
+            headerName: 'User',
+            width: userColumnWidth,
+            minWidth: userColumnWidth,
+            cellClassName: "centerDivContainer",
+            renderHeader: () => {
+                return <div className='weekStandingsHeader'>User</div>;
+            },
+            renderCell: (params) => {
+                return renderUserCell(params, weekStandingsQuery.data?.users ?? []);
+            },
+            valueGetter: (_, row) => {
+                if (!row) {
+                    return "";
+                }
 
-            return row.userName ?? row.email;
+                return row.userName ?? row.email;
+            },
+            disableColumnMenu: true,
+            sortable: true,
+            pinnable: true,
         },
-        disableColumnMenu: true,
-        sortable: true,
-        pinnable: true,
-    },
-    {
-        field: 'weekPoints',
-        width: userColumnWidth,
-        minWidth: userColumnWidth,
-        cellClassName: "centerDivContainer",
-        renderHeader: () => {
-            return <div className='weekStandingsHeader'>Week<br />Points</div>;
+        {
+            field: 'weekPoints',
+            width: userColumnWidth,
+            minWidth: userColumnWidth,
+            cellClassName: "centerDivContainer",
+            renderHeader: () => {
+                return <div className='weekStandingsHeader'>Week<br />Points</div>;
+            },
+            renderCell: (params) => {
+                return renderWeekResultsCell(params, weekStandingsQuery.data?.league!, weekStandingsQuery.data?.results!, weekStandingsQuery.data?.picks!);
+            },
+            valueGetter: (_, row) => {
+                if (!row) {
+                    return 0;
+                }
+
+                const userId = row.id;
+                const userWeekResult = weekStandingsQuery.data?.results!.find(wr => wr.userId === userId);
+                return userWeekResult?.totalPoints ?? 0;
+            },
+            sortable: true,
+            disableColumnMenu: true,
         },
-        renderCell: (params) => {
-            return renderWeekResultsCell(params, league, weekResults, picks);
-        },
-        valueGetter: (_, row) => {
-            if (!row) {
-                return 0;
-            }
+    ];
 
-            const userId = row.id;
-            const userWeekResult = weekResults.find(wr => wr.userId === userId);
-            return userWeekResult?.totalPoints ?? 0;
-        },
-        sortable: true,
-        disableColumnMenu: true,
-    },
-];
+    for (const game of games!) {
+        const gameColumn: GridColDef<(UserInfo[])[number]> = {
+            field: `game_${game.id}`,
+            headerName: `${game.awayTeam?.abbreviation} @ ${game.homeTeam?.abbreviation}`,
+            renderHeader: () => {
+                return renderGameHeader(game, weekStandingsQuery.data?.league!);
+            },
+            width: gameColumnWidth,
+            minWidth: gameColumnWidth,
+            cellClassName: "centerDivContainer",
+            renderCell: (params) => {
+                return renderGamePickCell(params, weekStandingsQuery.data?.league!, weekStandingsQuery.data?.picks!, game, weekStandingsQuery.data?.results!);
+            },
+            valueGetter: (_, row) => {
+                if (!row) {
+                    return 0;
+                }
 
-for (const game of games!) {
-    const gameColumn: GridColDef<(UserInfo[])[number]> = {
-        field: `game_${game.id}`,
-        headerName: `${game.awayTeam?.abbreviation} @ ${game.homeTeam?.abbreviation}`,
-        renderHeader: () => {
-            return renderGameHeader(game, league);
-        },
-        width: gameColumnWidth,
-        minWidth: gameColumnWidth,
-        cellClassName: "centerDivContainer",
-        renderCell: (params) => {
-            return renderGamePickCell(params, league, picks, game, weekResults);
-        },
-        valueGetter: (_, row) => {
-            if (!row) {
-                return 0;
-            }
+                const userId = row.id;
+                const userPicks = weekStandingsQuery.data?.picks!.find(p => p.userId === userId);
+                const gamePick = userPicks?.gamePicks?.find(gp => gp.gameID === game.id);
+                return gamePick?.sidePicked ?? -1;
+            },
+            disableColumnMenu: true,
+            sortable: true,
+        };
+        columnList.push(gameColumn);
+    }
 
-            const userId = row.id;
-            const userPicks = picks?.find(p => p.userId === userId);
-            const gamePick = userPicks?.gamePicks?.find(gp => gp.gameID === game.id);
-            return gamePick?.sidePicked ?? -1;
-        },
-        disableColumnMenu: true,
-        sortable: true,
-    };
-    columnList.push(gameColumn);
-}
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const pickemClient = PickemApiClientFactory.createClient();
-            const league = await pickemClient.getLeagueById(leagueId);
-            setCurrentLeague(league);
-
-            const longDescription = true;
-            const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!, longDescription);
-            const leagueUserMapping = await pickemClient.getUserMappingForLeague(leagueId);
-            const weekResults = await pickemClient.getAllTempSpreadWeekResults(leagueId, weekNumberConverted);
-
-            
-
-            setWeekDescription(description);
-            setUserMapping(leagueUserMapping);
-            setColumns(columnList);
-            setDataLoaded(true);
-        }
-
-        fetchData();
-    }, []);
+    const longDescription = true;
+    const description = SiteUtilities.getWeekDescriptionFromWeekNumber(weekStandingsQuery.data?.league!.seasonInformation!, weekStandingsQuery.data?.league!.currentWeekNumber!, longDescription);
 
     return (
         <>
-            <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
-            <Typography variant='h5'>{weekDescription} Standings</Typography>
+            <Typography variant='h4'>{weekStandingsQuery.data?.league?.leagueName}</Typography>
+            <Typography variant='h5'>{description} Standings</Typography>
             <div style={{ height: '100%', width: '90%' }}>
                 <div
                     style={{
@@ -243,7 +232,7 @@ for (const game of games!) {
                         flexDirection: 'column',
                     }}
                 >
-                    {!dataLoaded ?
+                    {weekStandingsQuery.isPending ?
                         <Loading /> :
                         <DataGrid
                             sx={{
@@ -273,8 +262,8 @@ for (const game of games!) {
                                     fontSize: '1rem',
                                 },
                             }}
-                            rows={userMapping}
-                            columns={columns}
+                            rows={weekStandingsQuery.data?.users}
+                            columns={columnList}
                             rowSelection={false}
                             columnHeaderHeight={175}
                             scrollbarSize={10}
