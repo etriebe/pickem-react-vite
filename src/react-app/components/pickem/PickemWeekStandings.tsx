@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
 import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
@@ -10,7 +9,6 @@ import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsTeamCell';
 import TeamIcon from '../TeamIcon';
 import Loading from '../Loading';
 import { Typography } from '@mui/material';
-import { LeagueUtilities } from '../../utilities/LeagueUtilities';
 import { useQuery } from '@tanstack/react-query';
 
 export default function PickemWeekStandings() {

@@ -1,6 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
 import { AuthenticationUtilities } from "./AuthenticationUtilities";
-import { queryClient } from "../main";
 
 export class QueryUtilities {
     static createGetUserInfoQueryOptions(userId: string | undefined  ) {
