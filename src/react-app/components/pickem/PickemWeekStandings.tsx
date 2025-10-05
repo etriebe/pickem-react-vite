@@ -74,7 +74,7 @@ export default function PickemWeekStandings() {
             // There is no pick result yet so game is still in progress
             if (!pickResult || !pickResult?.isFinal) {
                 maximumPoints += 1;
-                if (pick.isKeyPick) {
+                if (pick.isKeyPicked) {
                     maximumPoints += league.settings?.keyPickBonus!;
                 }
                 continue;
