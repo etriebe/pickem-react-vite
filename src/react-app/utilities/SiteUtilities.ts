@@ -35,6 +35,17 @@ export class SiteUtilities {
         }
     }
 
+    static getNavigationLinkForPageType(pageType: PageType, leagueType: number, leagueId: string, weekNumber: number): string {
+        switch (pageType) {
+            case PageType.MakePicksPage:
+                return SiteUtilities.getMakePicksLink(leagueType, leagueId, weekNumber);
+            case PageType.WeekStandingsPage:
+                return SiteUtilities.getWeekStandingLink(leagueType, leagueId, weekNumber);
+            default:
+                return SiteUtilities.getLeagueStandingLink(leagueType, leagueId);
+        }
+    }
+
     static getMakePicksLink(leagueType: number, leagueId: string, weekNumber: number): string {
         switch (leagueType) {
             // both 1 and 2 are pickem against the spread and pickem straight up and have the same pick pages

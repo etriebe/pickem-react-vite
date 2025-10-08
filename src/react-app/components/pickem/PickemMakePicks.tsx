@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO, ApiException } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
-import { SiteUtilities } from '../../utilities/SiteUtilities';
+import { PageType, SiteUtilities } from '../../utilities/SiteUtilities';
 import { Typography, Snackbar, SnackbarCloseReason, Button, Paper } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MakePicksTeamCell from '../MakePicksTeamCell';
@@ -250,7 +250,7 @@ export default function PickemMakePicks() {
             const returnOnlyGamesThatHaveStarted = false;
             const games = await pickemClient.queryGames(weekNumberConverted, league.year, league.sport, returnOnlyGamesThatHaveStarted);
             const longDescription = true;
-            const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!, longDescription);
+            const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, weekNumberConverted, longDescription);
 
             setCurrentLeague(league);
             setCurrentPicks(picks);
@@ -284,7 +284,9 @@ export default function PickemMakePicks() {
             <LeagueNavigationBreadcrumbs
                 league={currentLeague!}
                 currentWeekNumber={weekNumberConverted}
-                navigationTitle={weekDescription} />
+                navigationTitle={weekDescription}
+                pageType={PageType.MakePicksPage}
+            />
             <Snackbar
                 open={open}
                 autoHideDuration={5000}

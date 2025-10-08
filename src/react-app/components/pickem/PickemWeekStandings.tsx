@@ -3,13 +3,14 @@ import { useParams } from 'react-router';
 import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
-import { SiteUtilities } from '../../utilities/SiteUtilities';
+import { PageType, SiteUtilities } from '../../utilities/SiteUtilities';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsTeamCell';
 import TeamIcon from '../TeamIcon';
 import Loading from '../Loading';
 import { Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
+import LeagueNavigationBreadcrumbs from '../LeagueNavigationBreadcrumbs';
 
 export default function PickemWeekStandings() {
     // const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
@@ -217,12 +218,18 @@ export default function PickemWeekStandings() {
     }
 
     const longDescription = true;
-    const description = SiteUtilities.getWeekDescriptionFromWeekNumber(weekStandingsQuery.data?.league!.seasonInformation!, weekStandingsQuery.data?.league!.currentWeekNumber!, longDescription);
+    const description = SiteUtilities.getWeekDescriptionFromWeekNumber(weekStandingsQuery.data?.league!.seasonInformation!, weekNumberConverted, longDescription);
+    const pageTitle = `${description} Standings`;
 
     return (
         <>
             <Typography variant='h4'>{weekStandingsQuery.data?.league?.leagueName}</Typography>
-            <Typography variant='h5'>{description} Standings</Typography>
+            <LeagueNavigationBreadcrumbs
+                league={weekStandingsQuery.data?.league!}
+                currentWeekNumber={weekNumberConverted}
+                navigationTitle={pageTitle}
+                pageType={PageType.WeekStandingsPage}
+            />
             <div style={{ height: '100%', width: '90%' }}>
                 <div
                     style={{
