@@ -217,6 +217,28 @@ export default function PickemWeekStandings() {
         columnList.push(gameColumn);
     }
 
+    const seasonColumn: GridColDef<(UserInfo[])[number]> = {
+        field: `seasonPoints`,
+        headerName: `Season`,
+        renderHeader: () => {
+            return <div className='weekStandingsHeader'>Season</div>;
+        },
+        width: gameColumnWidth,
+        minWidth: gameColumnWidth,
+        cellClassName: "centerDivContainer",
+        renderCell: (params) => {
+            let seasonPoints = getSeasonPoints(params.row.id);
+            return <div className='centerDivContainer'>{seasonPoints}</div>;
+        },
+        valueGetter: (_, row) => {
+            let seasonPoints = getSeasonPoints(row.id);
+            return seasonPoints;
+        },
+        disableColumnMenu: true,
+        sortable: true,
+    };
+    columnList.push(seasonColumn);
+
     const longDescription = true;
     const description = SiteUtilities.getWeekDescriptionFromWeekNumber(weekStandingsQuery.data?.league!.seasonInformation!, weekNumberConverted, longDescription);
     const pageTitle = `${description} Standings`;
@@ -286,5 +308,19 @@ export default function PickemWeekStandings() {
 
         </>
     );
+
+    function getSeasonPoints(userId: string | undefined) {
+        if (!userId) {
+            return 0;
+        }
+        const userSeason = weekStandingsQuery.data?.league!.userSeasons?.find(us => us.userId === userId);
+        const userWeekResult = weekStandingsQuery.data?.results!.find(wr => wr.userId === userId);
+        let seasonPoints = userSeason?.totalPoints ?? 0;
+        if (!userSeason?.processedWeekResults?.find(wr => wr === userWeekResult?.id)) {
+            const weekPoints = userWeekResult?.totalPoints ?? 0;
+            seasonPoints += weekPoints;
+        }
+        return seasonPoints;
+    }
 }
 
