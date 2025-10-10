@@ -139,7 +139,8 @@ export class SiteUtilities {
             };
         }
 
-        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStart);
+        const gameStartDate = new Date(gameStart);
+        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStartDate);
         return formattedDate;
     }
 
