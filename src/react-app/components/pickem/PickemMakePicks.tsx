@@ -227,7 +227,7 @@ export default function PickemMakePicks() {
         }
 
         setCurrentPicks(currentPicks);
-        setSelectedPicksCount(currentPicks.gamePicks.length);
+        setSelectedPicksCount(getSelectedPicksCount(currentPicks));
         setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
         apiRef.current?.selectRow(params.id);
         apiRef.current?.autosizeColumns();
