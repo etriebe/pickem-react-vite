@@ -239,6 +239,28 @@ export default function PickemWeekStandings() {
     };
     columnList.push(seasonColumn);
 
+    const trophyColumn: GridColDef<(UserInfo[])[number]> = {
+        field: `trophy`,
+        headerName: `Trophies`,
+        renderHeader: () => {
+            return <div className='weekStandingsHeader'>Trophies</div>;
+        },
+        width: gameColumnWidth,
+        minWidth: gameColumnWidth,
+        cellClassName: "centerDivContainer",
+        renderCell: (params) => {
+            let trophyString = getTrophyString(params.row.id);
+            return <div className='centerDivContainer'>{trophyString}</div>;
+        },
+        valueGetter: (_, row) => {
+            let seasonPoints = getSeasonPoints(row.id);
+            return seasonPoints;
+        },
+        disableColumnMenu: true,
+        sortable: true,
+    };
+    columnList.push(trophyColumn);
+
     const longDescription = true;
     const description = SiteUtilities.getWeekDescriptionFromWeekNumber(weekStandingsQuery.data?.league!.seasonInformation!, weekNumberConverted, longDescription);
     const pageTitle = `${description} Standings`;
@@ -321,6 +343,18 @@ export default function PickemWeekStandings() {
             seasonPoints += weekPoints;
         }
         return seasonPoints;
+    }
+
+    function getTrophyString(userId: string | undefined) {
+        if (!userId) {
+            return '';
+        }
+        const userWeekResult = weekStandingsQuery.data?.results!.find(wr => wr.userId === userId);
+        let trophies: string[] = [];
+        if (userWeekResult?.trophies) {
+            userWeekResult?.trophies.map(t => trophies.push(SiteUtilities.ConvertTrophyToEmoji(t)));
+        }
+        return trophies.join('');
     }
 }
 
