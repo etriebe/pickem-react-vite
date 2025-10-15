@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { useState, useEffect } from "react";
 import { useParams } from 'react-router';
-import { LeagueDTO, UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
+import { UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
 import useMediaQuery from '@mui/material/useMediaQuery';
