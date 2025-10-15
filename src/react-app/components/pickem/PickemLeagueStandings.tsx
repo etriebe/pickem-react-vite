@@ -27,12 +27,17 @@ export default function PickemLeagueStandings() {
         weekNumber: number): React.ReactNode => {
         const userId = params.row.id;
         const userWeekResult = weekResults.find(wr => wr.userId === userId && wr.weekNumber === weekNumber);
+        let trophies: string[] = [];
+        if (userWeekResult?.trophies) {
+            userWeekResult?.trophies.map(t => trophies.push(SiteUtilities.ConvertTrophyToEmoji(t)));
+        }
+        const trophyString = trophies.join('');
 
         if (!userWeekResult) {
             return <>-</>;
         }
         return <div className='centerDivContainer'>
-            {userWeekResult.totalPoints}
+            {userWeekResult.totalPoints}{trophyString}
         </div>;
     }
 
