@@ -95,7 +95,7 @@ export default function PickemWeekStandings() {
     };
 
     const weekStandingsQuery = useQuery({
-        queryKey: ['weekstandings'],
+        queryKey: ['weekstandings', leagueId, weekNumberConverted],
         queryFn: async () => {
             const pickemClient = PickemApiClientFactory.createClient();
             return pickemClient.getWeekStandings(leagueId!, weekNumberConverted);

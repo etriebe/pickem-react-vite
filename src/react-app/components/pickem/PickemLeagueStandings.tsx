@@ -8,14 +8,11 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Loading from '../Loading';
 import { Typography } from '@mui/material';
 import { SiteUtilities } from '../../utilities/SiteUtilities';
+import { useQuery } from '@tanstack/react-query';
 
 export default function PickemLeagueStandings() {
-    const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
-    const [columns, setColumns] = useState<GridColDef<UserInfo>[]>([]);
-    const [userMapping, setUserMapping] = useState<UserInfo[]>();
     const { leagueId } = useParams();
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
-    const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
     const weekColumnWidth = isSmallScreen ? 75 : 75;
 
@@ -56,100 +53,92 @@ export default function PickemLeagueStandings() {
         </>;
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
+    const leagueStandingsQuery = useQuery({
+        queryKey: ['leaguestandings', leagueId],
+        queryFn: async () => {
             const pickemClient = PickemApiClientFactory.createClient();
-            const league = await pickemClient.getLeagueById(leagueId);
-            setCurrentLeague(league);
+            return pickemClient.getLeagueStandings(leagueId!);
+        },
+    });
 
-            const leagueUserMapping = await pickemClient.getUserMappingForLeague(leagueId);
-            const weekNumber = -1; // Use -1 to get all week results
-            const weekResults = await pickemClient.getSpreadWeekResult(leagueId, weekNumber);
+    const columnList: GridColDef<(UserInfo[])[number]>[] = [
+        {
+            field: 'user',
+            headerName: 'User',
+            width: userColumnWidth,
+            minWidth: userColumnWidth,
+            cellClassName: "centerDivContainer",
+            renderCell: (params) => {
+                return renderUserCell(params, leagueStandingsQuery.data?.users || []);
+            },
+            valueGetter: (_, row) => {
+                if (!row) {
+                    return "";
+                }
 
-            const columnList: GridColDef<(UserInfo[])[number]>[] = [
-                {
-                    field: 'user',
-                    headerName: 'User',
-                    width: userColumnWidth,
-                    minWidth: userColumnWidth,
-                    cellClassName: "centerDivContainer",
-                    renderCell: (params) => {
-                        return renderUserCell(params, leagueUserMapping);
-                    },
-                    valueGetter: (_, row) => {
-                        if (!row) {
-                            return "";
-                        }
+                return row.userName ?? row.email;
+            },
+            disableColumnMenu: true,
+            sortable: true,
+            pinnable: true,
+        },
+        {
+            field: 'seasonPoints',
+            headerName: 'Season Points',
+            width: userColumnWidth,
+            minWidth: userColumnWidth,
+            cellClassName: "centerDivContainer",
+            renderCell: (params) => {
+                const userId = params.row.id;
+                if (!userId) {
+                    return <>0</>;
+                }
+                return renderSeasonResultsCell(leagueStandingsQuery.data?.results!, userId);
+            },
+            valueGetter: (_, row) => {
+                if (!row) {
+                    return 0;
+                }
 
-                        return row.userName ?? row.email;
-                    },
-                    disableColumnMenu: true,
-                    sortable: true,
-                    pinnable: true,
-                },
-                {
-                    field: 'seasonPoints',
-                    headerName: 'Season Points',
-                    width: userColumnWidth,
-                    minWidth: userColumnWidth,
-                    cellClassName: "centerDivContainer",
-                    renderCell: (params) => {
-                        const userId = params.row.id;
-                        if (!userId) {
-                            return <>0</>;
-                        }
-                        return renderSeasonResultsCell(weekResults, userId);
-                    },
-                    valueGetter: (_, row) => {
-                        if (!row) {
-                            return 0;
-                        }
+                const userId = row.id;
+                const userWeekResults = leagueStandingsQuery.data?.results!.filter(wr => wr.userId === userId);
+                return getTotalPointsForSeason(userWeekResults || []);
+            },
+            sortable: true,
+            disableColumnMenu: true,
+        },
+    ];
 
-                        const userId = row.id;
-                        const userWeekResults = weekResults.filter(wr => wr.userId === userId);
-                        return getTotalPointsForSeason(userWeekResults);
-                    },
-                    sortable: true,
-                    disableColumnMenu: true,
-                },
-            ];
+    const startingWeekNumber = leagueStandingsQuery.data?.league!.startingWeekNumber!;
+    const endingWeekNumber = leagueStandingsQuery.data?.league!.endingWeekNumber!;
+    for (let weekNumber = startingWeekNumber; weekNumber <= endingWeekNumber; weekNumber++) {
+        const weekColumn: GridColDef<(UserInfo[])[number]> = {
+            field: `week_${weekNumber}`,
+            headerName: `Week ${weekNumber}`,
+            width: weekColumnWidth,
+            minWidth: weekColumnWidth,
+            cellClassName: "centerDivContainer",
+            renderCell: (params) => {
+                return renderWeekResultCell(params, leagueStandingsQuery.data?.results!, weekNumber);
+            },
+            valueGetter: (_, row) => {
+                if (!row) {
+                    return 0;
+                }
 
-            for (let weekNumber = league.startingWeekNumber!; weekNumber <= league.endingWeekNumber!; weekNumber++) {
-                const weekColumn: GridColDef<(UserInfo[])[number]> = {
-                    field: `week_${weekNumber}`,
-                    headerName: `Week ${weekNumber}`,
-                    width: weekColumnWidth,
-                    minWidth: weekColumnWidth,
-                    cellClassName: "centerDivContainer",
-                    renderCell: (params) => {
-                        return renderWeekResultCell(params, weekResults, weekNumber);
-                    },
-                    valueGetter: (_, row) => {
-                        if (!row) {
-                            return 0;
-                        }
-
-                        const userId = row.id;
-                        const userWeekResult = weekResults.find(wr => wr.userId === userId && wr.weekNumber === weekNumber);
-                        return userWeekResult?.totalPoints ?? 0;
-                    },
-                    disableColumnMenu: true,
-                    sortable: true,
-                };
-                columnList.push(weekColumn);
-            }
-
-            setUserMapping(leagueUserMapping);
-            setColumns(columnList);
-            setDataLoaded(true);
-        }
-
-        fetchData();
-    }, []);
+                const userId = row.id;
+                const userWeekResult = leagueStandingsQuery.data?.results!.find(wr => wr.userId === userId && wr.weekNumber === weekNumber);
+                return userWeekResult?.totalPoints ?? 0;
+            },
+            disableColumnMenu: true,
+            sortable: true,
+        };
+        columnList.push(weekColumn);
+    }
 
     return (
         <>
-            <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
+            <Typography variant='h4'>{leagueStandingsQuery.data?.league?.leagueName}</Typography>
             <Typography variant='h5'>Season Standings</Typography>
             <div style={{ height: '100%', width: '90%' }}>
                 <div
@@ -158,7 +147,7 @@ export default function PickemLeagueStandings() {
                         flexDirection: 'column',
                     }}
                 >
-                    {!dataLoaded ?
+                    {leagueStandingsQuery.isPending ?
                         <Loading /> :
                         <DataGrid
                             sx={{
@@ -188,8 +177,8 @@ export default function PickemLeagueStandings() {
                                     fontSize: '1rem',
                                 },
                             }}
-                            rows={userMapping}
-                            columns={columns}
+                            rows={leagueStandingsQuery.data?.users || []}
+                            columns={columnList}
                             rowSelection={false}
                             columnHeaderHeight={175}
                             scrollbarSize={10}
