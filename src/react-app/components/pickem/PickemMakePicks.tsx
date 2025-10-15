@@ -21,7 +21,6 @@ enum MakePicksColumnType {
 }
 
 export default function PickemMakePicks() {
-    const [currentPicks, setCurrentPicks] = useState<SpreadWeekPickDTO>();
     const [selectedPicksCount, setSelectedPicksCount] = useState(0);
     const [selectedKeyPicksCount, setSelectedKeyPicksCount] = useState(0);
     const { leagueId, weekNumber } = useParams();
@@ -45,6 +44,7 @@ export default function PickemMakePicks() {
 
     const longDescription = true;
     const weekDescription = `${SiteUtilities.getWeekDescriptionFromWeekNumber(makePicksQuery.data?.league!.seasonInformation!, weekNumberConverted, longDescription)} Picks`;
+    let currentPicks = makePicksQuery.data?.picks!;
 
     const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): React.ReactNode => {
         const teamChosen = (params.value as TeamDTO);
@@ -190,7 +190,6 @@ export default function PickemMakePicks() {
                 }
                 currentPick.isKeyPicked = !currentPick.isKeyPicked;
             }
-            setCurrentPicks(currentPicks);
             setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
             return;
         }
@@ -204,7 +203,6 @@ export default function PickemMakePicks() {
             }
             currentPick = createPickObject(currentGame, params.value as TeamDTO);
             currentPicks.gamePicks.push(currentPick);
-            setCurrentPicks(currentPicks);
         }
         else {
             console.log(`Side picked: ${currentPick.sidePicked}`);
@@ -223,10 +221,8 @@ export default function PickemMakePicks() {
                 currentPick = createPickObject(currentGame, params.value as TeamDTO);
                 currentPicks.gamePicks.push(currentPick);
             }
-            setCurrentPicks(currentPicks);
         }
 
-        setCurrentPicks(currentPicks);
         setSelectedPicksCount(getSelectedPicksCount(currentPicks));
         setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
         apiRef.current?.selectRow(params.id);
