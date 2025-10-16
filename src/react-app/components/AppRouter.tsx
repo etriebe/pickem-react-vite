@@ -29,8 +29,6 @@ function AppRouter({ }: Props) {
         retry: false
     });
 
-    const isAuthenticated = userInfoQuery.isSuccess && userInfoQuery.data != undefined;
-
     return (
         <>
             <Box sx={{ display: 'flex' }}>
