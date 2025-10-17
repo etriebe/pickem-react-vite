@@ -52,7 +52,7 @@ function EditUserSettings({ }: Props) {
                     <Typography variant="h4" gutterBottom>User Settings</Typography>
                     <form onSubmit={handleSubmit}>
                         <Grid container spacing={2}>
-                            <Grid size={6}>
+                            <Grid size={{ xs: 12, md: 6}}>
                                 <TextField
                                     label="User Name"
                                     name="username"
@@ -64,7 +64,7 @@ function EditUserSettings({ }: Props) {
                                     InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
-                            <Grid size={6}>
+                            <Grid size={{ xs: 12, md: 6}}>
                                 <TextField
                                     label="Discord User Id"
                                     name="discorduserid"
@@ -76,7 +76,7 @@ function EditUserSettings({ }: Props) {
                                     InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
-                            <Grid size={6}>
+                            <Grid size={{ xs: 12, md: 6}}>
                                 <TextField
                                     select
                                     label="Time Zone:"
