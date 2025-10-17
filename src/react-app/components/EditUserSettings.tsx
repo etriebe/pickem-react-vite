@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
 import Loading from "./Loading";
-import { Box, Button, Grid, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Box, Button, Grid, MenuItem, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { timezones } from "../utilities/TimeZoneUtilities";
 import { UserSettings } from "../services/PickemApiClient";
