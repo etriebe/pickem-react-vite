@@ -8,8 +8,6 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import { Add as AddIcon }  from '@mui/icons-material';
 import { Search as SearchIcon }  from '@mui/icons-material';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
-import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
 
 const mainListItems = [
   { text: 'My Leagues', icon: <HomeRoundedIcon />, path: '/' },
@@ -19,8 +17,6 @@ const mainListItems = [
 
 const secondaryListItems = [
   { text: 'Settings', icon: <SettingsRoundedIcon />, path: '/settings' },
-  { text: 'About', icon: <InfoRoundedIcon />, path: '/about' },
-  { text: 'Feedback', icon: <HelpRoundedIcon />, path: '/feedback' },
 ];
 
 export default function MenuContent() {
