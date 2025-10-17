@@ -95,7 +95,7 @@ function EditUserSettings({ }: Props) {
                             </Grid>
                             <Grid size={{ xs: 12, sm: 12, lg: 12 }}>
                                 <Button type="submit" variant="contained" color="primary" fullWidth>
-                                    Create League
+                                    Save
                                 </Button>
                             </Grid>
                         </Grid>
