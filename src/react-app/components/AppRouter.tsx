@@ -17,7 +17,7 @@ import SideMenu from "./SideMenu";
 import AppNavbar from "./AppNavbar";
 import Header from "./Header";
 import { alpha } from '@mui/material/styles';
-import UserSettings from './UserSettings';
+import EditUserSettings from './EditUserSettings';
 
 type Props = {}
 
@@ -75,7 +75,7 @@ function AppRouter({ }: Props) {
                                 <Route path="/pickem/week/:leagueId/:weekNumber" element={<PickemWeekStandings />} />
                                 <Route path="/pickem/standings/:leagueId" element={<PickemLeagueStandings />} />
                                 <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
-                                <Route path="/usersettings" element={<UserSettings />} />
+                                <Route path="/settings" element={<EditUserSettings />} />
                             </Routes>
                         }
                     </Stack>

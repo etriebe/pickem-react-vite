@@ -5430,6 +5430,7 @@ export interface IUserSeasonDTO {
 
 export class UserSettings implements IUserSettings {
     userId!: string;
+    userName?: string;
     partitionKey?: string;
     discordUserId!: string;
     timeZoneInfoId!: string;
@@ -5453,6 +5454,7 @@ export class UserSettings implements IUserSettings {
                     this[property] = _data[property];
             }
             this.userId = _data["userId"];
+            this.userName = _data["userName"];
             this.partitionKey = _data["partitionKey"];
             this.discordUserId = _data["discordUserId"];
             this.timeZoneInfoId = _data["timeZoneInfoId"];
@@ -5474,6 +5476,7 @@ export class UserSettings implements IUserSettings {
                 data[property] = this[property];
         }
         data["userId"] = this.userId;
+        data["userName"] = this.userName;
         data["partitionKey"] = this.partitionKey;
         data["discordUserId"] = this.discordUserId;
         data["timeZoneInfoId"] = this.timeZoneInfoId;
@@ -5484,6 +5487,7 @@ export class UserSettings implements IUserSettings {
 
 export interface IUserSettings {
     userId: string;
+    userName?: string;
     partitionKey?: string;
     discordUserId: string;
     timeZoneInfoId: string;
