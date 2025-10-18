@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import { CreateLeagueRequest, SeasonDateInformation2 } from '../services/PickemApiClient';
-import PickemApiClientFactory from '../services/PickemApiClientFactory';
-import { Sports, LeagueTypes } from '../utilities/SiteUtilities';
-import { LeagueUtilities } from '../utilities/LeagueUtilities';
+import { useQuery } from "@tanstack/react-query";
+import PickemApiClientFactory from "../services/PickemApiClientFactory";
+import Loading from "./Loading";
+import { Box, Button, Grid, MenuItem, TextField, Typography } from "@mui/material";
+import { useState } from "react";
+import { timezones } from "../utilities/TimeZoneUtilities";
+import { CreateLeagueRequest, SeasonDateInformation2, UserSettings } from "../services/PickemApiClient";
+import { LeagueUtilities } from "../utilities/LeagueUtilities";
+import { LeagueTypes, Sports } from "../utilities/SiteUtilities";
 
-export default function CreateLeague() {
+type Props = {}
+
+function EditLeague({ }: Props) {
     const [leagueName, setLeagueName] = useState('');
     const [leagueType, setLeagueType] = useState(1);
     const [sport, setSport] = useState(1);
@@ -26,31 +26,41 @@ export default function CreateLeague() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const pickemClient = PickemApiClientFactory.createClient();
-        const createLeagueRequest = new CreateLeagueRequest();
-        createLeagueRequest.leagueName = leagueName;
-        createLeagueRequest.leagueType = leagueType;
-        createLeagueRequest.sport = sport;
-        createLeagueRequest.startWeek = startWeek;
-        createLeagueRequest.endWeek = endWeek;
-        createLeagueRequest.totalPicks = totalPicks;
-        createLeagueRequest.keyPicks = keyPicks;
-        createLeagueRequest.keyPickBonus = keyPickBonus;
-        await pickemClient.createLeague(createLeagueRequest);
+        // const createLeagueRequest = new CreateLeagueRequest();
+        // createLeagueRequest.leagueName = leagueName;
+        // createLeagueRequest.leagueType = leagueType;
+        // createLeagueRequest.sport = sport;
+        // createLeagueRequest.startWeek = startWeek;
+        // createLeagueRequest.endWeek = endWeek;
+        // createLeagueRequest.totalPicks = totalPicks;
+        // createLeagueRequest.keyPicks = keyPicks;
+        // createLeagueRequest.keyPickBonus = keyPickBonus;
+        // await pickemClient.updateLeague()
         window.location.href = '/';
     };
 
+    const editLeagueQuery = useQuery({
+        queryKey: ['editleague'],
+        queryFn: async () => {
+            const pickemClient = PickemApiClientFactory.createClient();
+            return pickemClient.getUserSettingFromUserId();
+        },
+    });
+
+    /*
     useEffect(() => {
         const fetchData = async () => {
             const pickemClient = PickemApiClientFactory.createClient();
             const sportSeasonInformation = await pickemClient.getCurrentSportsSeasonInformation();
             setSportSeasonInformation(sportSeasonInformation);
-            const max = LeagueUtilities.getCurrentMaxWeeks(sportSeasonInformation, LeagueUtilities.getSportNameFromNumber(sport));
+            const max = getCurrentMaxWeeks(sportSeasonInformation, getSportNameFromNumber(sport));
             setEndWeek(max);
-            setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(max));
+            setEndingWeekNumberLabel(getEndingWeekLabel(max));
         }
 
         fetchData();
     }, []);
+    */
 
     return (
         <Box maxWidth={600} mx="auto" mt={4} sx={{
@@ -189,3 +199,5 @@ export default function CreateLeague() {
         </Box>
     );
 }
+
+export default EditLeague
