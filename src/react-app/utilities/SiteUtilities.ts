@@ -63,6 +63,10 @@ export class SiteUtilities {
         }
     }
 
+    static getEditLeagueLink(leagueId: string): string {
+        return `/editleague/${leagueId}`;
+    }
+
     static getEmojiForPickStatus(picksSubmitted: boolean): string {
         if (picksSubmitted) {
             return "✅ - Submitted";
@@ -98,14 +102,14 @@ export class SiteUtilities {
     }
 
     static getWeekDescriptionFromWeekNumber(season: SeasonDateInformation, weekNumber: number, longDescription: boolean): string {
-        if (season == null) {
+        if (season === undefined) {
             return "";
         }
         if (weekNumber > season.weekStartTimes?.length! || weekNumber < 1) {
             throw new Error(`Invalid weekNumber requested: ${weekNumber}`);
         }
 
-        if (season.weekStartTimes == null || season.weekStartTimes.length == 0) {
+        if (season.weekStartTimes === undefined || season.weekStartTimes.length === 0) {
             return `Week ${weekNumber}`;
         }
         else {
@@ -276,13 +280,18 @@ export class SiteUtilities {
 
     static getLeagueTypeFromUrl(url: string): LeagueType | undefined {
         const urlParts = url.split("/");
-        const leagueType = LeagueTypes.find(lt => urlParts[1] == lt.urlPart);
+        const leagueType = LeagueTypes.find(lt => urlParts[1] === lt.urlPart);
         if (leagueType) {
             return leagueType;
         }
         else {
             return undefined;
         }
+    }
+
+    static getLeagueTypeFromNumber(leagueTypeNumber: number): LeagueType | undefined {
+        const leagueType = LeagueTypes.find(lt => leagueTypeNumber === lt.value);
+        return leagueType;
     }
 
     static getWeekNumberFromUrl(url: string): number | undefined {

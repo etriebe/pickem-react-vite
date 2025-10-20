@@ -44,7 +44,7 @@ export default function CreateLeague() {
             const pickemClient = PickemApiClientFactory.createClient();
             const sportSeasonInformation = await pickemClient.getCurrentSportsSeasonInformation();
             setSportSeasonInformation(sportSeasonInformation);
-            const max = LeagueUtilities.getCurrentMaxWeeks(sportSeasonInformation, LeagueUtilities.getSportNameFromNumber(sport));
+            const max = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformation, LeagueUtilities.getSportNameFromNumber(sport));
             setEndWeek(max);
             setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(max));
         }
@@ -100,7 +100,7 @@ export default function CreateLeague() {
                                 setSport(Number(e.target.value));
                                 const sportNumber = Number(e.target.value);
                                 const sportName: string = LeagueUtilities.getSportNameFromNumber(sportNumber);
-                                const newMaxWeeks = LeagueUtilities.getCurrentMaxWeeks(sportSeasonInformation, sportName);
+                                const newMaxWeeks = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformation, sportName);
                                 setEndWeek(newMaxWeeks);
                                 setMaxWeeks(newMaxWeeks);
                                 setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(newMaxWeeks));

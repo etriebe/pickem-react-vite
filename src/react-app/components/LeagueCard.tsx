@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import { SiteUtilities } from '../utilities/SiteUtilities';
 import { LeagueUtilities } from '../utilities/LeagueUtilities';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
+import { Create, Settings, Autorenew, CalendarToday, FormatListNumbered } from '@mui/icons-material';
 
 export interface LeagueCardProps {
     league: League;
@@ -17,6 +18,7 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
     const weekStandingLink = SiteUtilities.getWeekStandingLink(league.type, league.id!, league.currentWeekNumber!);
     const leagueStandingLink = SiteUtilities.getLeagueStandingLink(league.type, league.id!);
     const myPicksLink = SiteUtilities.getMakePicksLink(league.type, league.id!, league.currentWeekNumber!);
+    const editLeagueLink = SiteUtilities.getEditLeagueLink(league.id!);
     const pickStatus = SiteUtilities.getEmojiForPickStatus(picksSubmitted);
     const longDescription = true;
     const weekDescription = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!, longDescription);
@@ -26,7 +28,7 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
     const isAdmin = league.leagueAdminIds?.find(a => a === userInfo.id);
     return (
         <>
-            <Card sx={{  }}>
+            <Card sx={{}}>
                 <CardContent>
                     <Typography variant="h5" component="div">
                         {league.leagueName} - {leagueYear}
@@ -39,17 +41,24 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button size="small" href={leagueStandingLink}>League Standings</Button>
+                    <Button size="small" startIcon={<FormatListNumbered />} href={leagueStandingLink}>League Standings</Button>
                 </CardActions>
                 <CardActions>
-                    <Button size="small" href={weekStandingLink}>Week Standings</Button>
+                    <Button size="small" startIcon={<CalendarToday />} href={weekStandingLink}>Week Standings</Button>
                 </CardActions>
                 <CardActions>
                     {isOffSeason ?
-                        <Button size="large">Renew League{!isAdmin && " - Notify League Admin"} </Button> :
-                        <Button size="large" href={myPicksLink}>Make Picks</Button>
+                        <Button size="large" startIcon={<Autorenew />}>Renew League{!isAdmin && " - Notify League Admin"} </Button> :
+                        <Button size="large" href={myPicksLink} startIcon={<Create />}>Make Picks</Button>
                     }
                 </CardActions>
+                {isAdmin &&
+                    <CardActions>
+                        <Button size="large" href={editLeagueLink} startIcon={<Settings />}>
+                            Edit League
+                        </Button>
+                    </CardActions>
+                }
             </Card>
         </>
     );

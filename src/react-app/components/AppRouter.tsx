@@ -18,6 +18,7 @@ import AppNavbar from "./AppNavbar";
 import Header from "./Header";
 import { alpha } from '@mui/material/styles';
 import EditUserSettings from './EditUserSettings';
+import EditLeague from './EditLeague';
 
 type Props = {}
 
@@ -76,6 +77,7 @@ function AppRouter({ }: Props) {
                                 <Route path="/pickem/standings/:leagueId" element={<PickemLeagueStandings />} />
                                 <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
                                 <Route path="/settings" element={<EditUserSettings />} />
+                                <Route path="/editleague/:leagueId" element={<EditLeague />} />
                             </Routes>
                         }
                     </Stack>

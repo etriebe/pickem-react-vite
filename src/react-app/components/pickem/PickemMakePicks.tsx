@@ -172,7 +172,7 @@ export default function PickemMakePicks() {
         let currentPick = currentPicks.gamePicks.find(g => g.gameID === params.row.id);
 
         if (params.field === "keyPick") {
-            if (currentPick == null) {
+            if (currentPick === undefined) {
                 setSnackbarMessage("You cannot select a key pick unless you have selected the game first.")
                 setOpen(true);
                 return;

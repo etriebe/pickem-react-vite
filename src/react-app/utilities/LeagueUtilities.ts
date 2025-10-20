@@ -31,7 +31,11 @@ export class LeagueUtilities {
       return Sports.find(s => s.value === sportNumber)?.label!;
   }
 
-  static getCurrentMaxWeeks(sportSeasonInformation: { [key: string]: SeasonDateInformation2; } | undefined, sportName: string) {
+  static getCurrentMaxWeeksForSport(sportSeasonInformation: { [key: string]: SeasonDateInformation2; } | undefined, sportName: string) {
       return sportSeasonInformation ? sportSeasonInformation[sportName].weekStartTimes?.length! : -1;
+  }
+
+  static getCurrentMaxWeeksForSeason(seasonInformation: SeasonDateInformation2 | undefined) {
+      return seasonInformation ? seasonInformation.weekStartTimes?.length! : -1;
   }
 }
