@@ -1,12 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
 import Loading from "./Loading";
-import { Box, Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField, Typography, useMediaQuery } from "@mui/material";
+import { Box, Button, Checkbox, FormControlLabel, Grid, TextField, Typography, useMediaQuery } from "@mui/material";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { timezones } from "../utilities/TimeZoneUtilities";
-import { CreateLeagueRequest, LeagueDTO, LeagueSettings, SeasonDateInformation2, UpdateLeagueSettingsRequest, UserInfo, UserSettings } from "../services/PickemApiClient";
+import { LeagueDTO, LeagueSettings, UpdateLeagueSettingsRequest, UserInfo } from "../services/PickemApiClient";
 import { LeagueUtilities } from "../utilities/LeagueUtilities";
-import { LeagueType, LeagueTypes, SiteUtilities, Sports } from "../utilities/SiteUtilities";
+import { LeagueType, SiteUtilities } from "../utilities/SiteUtilities";
 import { useParams } from "react-router";
 import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
 
@@ -14,7 +12,6 @@ type Props = {}
 
 function EditLeague({ }: Props) {
     const [leagueName, setLeagueName] = useState('');
-    const [sport, setSport] = useState(1);
     const [startWeek, setStartWeek] = useState(1);
     const [endWeek, setEndWeek] = useState(17);
     const [isArchived, setIsArchived] = useState(false);
@@ -32,6 +29,7 @@ function EditLeague({ }: Props) {
     const [users, setUsers] = useState<UserInfo[]>();
     const [leagueType, setLeagueType] = useState<LeagueType>();
     const [maxWeeks, setMaxWeeks] = useState(-1);
+    const [dataLoaded, setDataLoaded] = useState(false);
     const { leagueId } = useParams();
     const [endingWeekNumberLabel, setEndingWeekNumberLabel] = useState('');
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
@@ -140,6 +138,7 @@ function EditLeague({ }: Props) {
             setLockPicksAfterTheyAreMade(settings?.lockPicksAfterTheyAreMade!);
             setLockSpreadsDuringWeek(settings?.lockSpreadsDuringWeek!);
             setLeagueType(SiteUtilities.getLeagueTypeFromNumber(data.league?.type!));
+            setDataLoaded(true);
         }
 
         fetchData();
@@ -186,6 +185,10 @@ function EditLeague({ }: Props) {
             pinnable: true,
         },
     ];
+
+    if (!dataLoaded) {
+        return <Loading />;
+    }
 
     return (
         <Box maxWidth={600} mx="auto" mt={4} sx={{
@@ -280,7 +283,7 @@ function EditLeague({ }: Props) {
                             label="Is Archived"
                             control={<Checkbox />}
                             checked={isArchived}
-                            onChange={(event: SyntheticEvent<Element, Event>, checked: boolean) => { setIsArchived(checked); }}
+                            onChange={(_event: SyntheticEvent<Element, Event>, checked: boolean) => { setIsArchived(checked); }}
                         />
                     </Grid>
                     <Grid size={4}>
@@ -288,7 +291,7 @@ function EditLeague({ }: Props) {
                             label="Is Public"
                             control={<Checkbox />}
                             checked={isPublic}
-                            onChange={(event: SyntheticEvent<Element, Event>, checked: boolean) => { setIsPublic(checked); }}
+                            onChange={(_event: SyntheticEvent<Element, Event>, checked: boolean) => { setIsPublic(checked); }}
                         />
                     </Grid>
 
@@ -300,7 +303,7 @@ function EditLeague({ }: Props) {
                                     label="Allow Parlays"
                                     control={<Checkbox />}
                                     checked={allowParlays}
-                                    onChange={(event: SyntheticEvent<Element, Event>, checked: boolean) => { setAllowParlays(checked); }}
+                                    onChange={(_event: SyntheticEvent<Element, Event>, checked: boolean) => { setAllowParlays(checked); }}
                                 />
                             </Grid>
                             <Grid size={4}>
@@ -308,7 +311,7 @@ function EditLeague({ }: Props) {
                                     label="Allow Winnings For Betting"
                                     control={<Checkbox />}
                                     checked={allowWinningsForBetting}
-                                    onChange={(event: SyntheticEvent<Element, Event>, checked: boolean) => { setAllowWinningsForBetting(checked); }}
+                                    onChange={(_event: SyntheticEvent<Element, Event>, checked: boolean) => { setAllowWinningsForBetting(checked); }}
                                 />
                             </Grid>
                         </>
@@ -319,7 +322,7 @@ function EditLeague({ }: Props) {
                             label="Lock picks after they are made"
                             control={<Checkbox />}
                             checked={lockPicksAfterTheyAreMade}
-                            onChange={(event: SyntheticEvent<Element, Event>, checked: boolean) => { setLockPicksAfterTheyAreMade(checked); }}
+                            onChange={(_event: SyntheticEvent<Element, Event>, checked: boolean) => { setLockPicksAfterTheyAreMade(checked); }}
                         />
                     </Grid>
                     <Grid size={4}>
@@ -327,7 +330,7 @@ function EditLeague({ }: Props) {
                             label="Lock spreads during the week"
                             control={<Checkbox />}
                             checked={lockSpreadsDuringWeek}
-                            onChange={(event: SyntheticEvent<Element, Event>, checked: boolean) => { setLockSpreadsDuringWeek(checked); }}
+                            onChange={(_event: SyntheticEvent<Element, Event>, checked: boolean) => { setLockSpreadsDuringWeek(checked); }}
                         />
                     </Grid>
                     <Grid size={12}>
