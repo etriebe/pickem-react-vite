@@ -4,6 +4,7 @@ import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Snackbar, SnackbarCloseReason, Typography } from '@mui/material';
 import Loading from './Loading';
+import { SiteUtilities } from '../utilities/SiteUtilities';
 
 type Props = {}
 
@@ -51,10 +52,16 @@ function JoinLeague({ }: Props) {
     return (
         <>
             <Typography variant="h2">
-                Join league {leagueQuery.data?.leagueName}
+                Join "{leagueQuery.data?.leagueName}"
             </Typography>
             <Typography variant="body1">
                 # of Members: {leagueQuery.data?.userSeasons?.length}
+            </Typography>
+            <Typography variant="body1">
+                Sport: {SiteUtilities.getSportTypeFromNumber(leagueQuery.data?.sport!)?.label}
+            </Typography>
+            <Typography variant="body1">
+                League Type: {SiteUtilities.getLeagueTypeFromNumber(leagueQuery.data?.sport!)?.label}
             </Typography>
             <Button variant='contained' onClick={() => { handleJoinLeague() }}>
                 Join League

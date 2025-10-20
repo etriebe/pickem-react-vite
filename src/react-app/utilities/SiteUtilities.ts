@@ -298,6 +298,11 @@ export class SiteUtilities {
         return leagueType;
     }
 
+    static getSportTypeFromNumber(sportNumber: number): SportType | undefined {
+        const sportType = Sports.find(lt => sportNumber === lt.value);
+        return sportType;
+    }
+
     static getWeekNumberFromUrl(url: string): number | undefined {
         const urlParts = url.split("/");
         const weekNumberIndex = urlParts.findIndex(part => part === "makepicks" || part === "week") + 2;
