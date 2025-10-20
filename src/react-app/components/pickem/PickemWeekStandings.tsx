@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { LeagueDTO, SpreadWeekPickDTO, GameDTO, UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
-import { PageType, SiteUtilities } from '../../utilities/SiteUtilities';
+import { PageType, SiteUtilities, GRID_DEFAULT_SORT_ORDER } from '../../utilities/SiteUtilities';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import PickemWeekStandingsHeaderTeamCell from '../PickemWeekStandingsTeamCell';
 import TeamIcon from '../TeamIcon';
@@ -184,6 +184,7 @@ export default function PickemWeekStandings() {
                 return userWeekResult?.totalPoints ?? 0;
             },
             sortable: true,
+            sortingOrder: GRID_DEFAULT_SORT_ORDER,
             disableColumnMenu: true,
         },
     ];
@@ -236,6 +237,7 @@ export default function PickemWeekStandings() {
         },
         disableColumnMenu: true,
         sortable: true,
+        sortingOrder: GRID_DEFAULT_SORT_ORDER
     };
     columnList.push(seasonColumn);
 

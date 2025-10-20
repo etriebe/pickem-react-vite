@@ -6,7 +6,7 @@ import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } fr
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Loading from '../Loading';
 import { Typography } from '@mui/material';
-import { SiteUtilities } from '../../utilities/SiteUtilities';
+import { GRID_DEFAULT_SORT_ORDER, SiteUtilities } from '../../utilities/SiteUtilities';
 import { useQuery } from '@tanstack/react-query';
 
 export default function PickemLeagueStandings() {
@@ -113,6 +113,7 @@ export default function PickemLeagueStandings() {
                 return getTotalPointsForSeason(userWeekResults || []);
             },
             sortable: true,
+            sortingOrder: GRID_DEFAULT_SORT_ORDER,
             disableColumnMenu: true,
         },
     ];
@@ -142,6 +143,7 @@ export default function PickemLeagueStandings() {
             },
             disableColumnMenu: true,
             sortable: true,
+            sortingOrder: GRID_DEFAULT_SORT_ORDER,
         };
         columnList.push(weekColumn);
     }

@@ -1,3 +1,4 @@
+import { GridSortDirection } from '@mui/x-data-grid';
 import { GameDTO, LeagueDTO, SeasonDateInformation, Spread, TeamDTO, UserInfo } from '../services/PickemApiClient';
 
 export class SiteUtilities {
@@ -339,6 +340,8 @@ export const LeagueTypes: LeagueType[] = [
     { value: 4, label: 'All Bet Types', urlPart: 'allbets' },
     { value: 5, label: 'Squares', urlPart: 'squares' },
 ];
+
+export const GRID_DEFAULT_SORT_ORDER: GridSortDirection[] =  [ 'desc', 'asc' ];
 
 export interface LeagueType {
     value: number;
