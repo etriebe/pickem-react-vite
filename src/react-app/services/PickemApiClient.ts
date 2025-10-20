@@ -1480,6 +1480,50 @@ export class Client {
 
     /**
      * @param leagueId (optional) 
+     * @return OK
+     */
+    getLeagueByIdWithUserMapping(leagueId: string | undefined): Promise<LeagueWithUserMappingDTO> {
+        let url_ = this.baseUrl + "/api/leagues/GetLeagueByIdWithUserMapping?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetLeagueByIdWithUserMapping(_response);
+        });
+    }
+
+    protected processGetLeagueByIdWithUserMapping(response: Response): Promise<LeagueWithUserMappingDTO> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LeagueWithUserMappingDTO.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<LeagueWithUserMappingDTO>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
      * @param weekNumber (optional) 
      * @param leagueType (optional) 
      * @return OK
@@ -3389,6 +3433,66 @@ export interface ILeagueSettings {
     allowWinningsForBetting?: boolean;
     lockPicksAfterTheyAreMade?: boolean;
     lockSpreadsDuringWeek?: boolean;
+
+    [key: string]: any;
+}
+
+export class LeagueWithUserMappingDTO implements ILeagueWithUserMappingDTO {
+    league?: LeagueDTO;
+    users?: UserInfo[];
+
+    [key: string]: any;
+
+    constructor(data?: ILeagueWithUserMappingDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : undefined as any;
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(UserInfo.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): LeagueWithUserMappingDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new LeagueWithUserMappingDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface ILeagueWithUserMappingDTO {
+    league?: LeagueDTO;
+    users?: UserInfo[];
 
     [key: string]: any;
 }
