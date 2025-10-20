@@ -202,7 +202,7 @@ function EditLeague({ }: Props) {
             <Typography variant="h4" gutterBottom>Edit League</Typography>
             <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
-                    <Grid size={4}>
+                    <Grid size={6}>
                         <TextField
                             label="League Name"
                             value={leagueName}
@@ -239,7 +239,7 @@ function EditLeague({ }: Props) {
                         <Typography variant="caption" display="block" gutterBottom sx={{ ml: 1 }}>
                         </Typography>
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={6}>
                         <TextField
                             label="Total Number of Picks"
                             type="number"
@@ -252,7 +252,7 @@ function EditLeague({ }: Props) {
                             InputLabelProps={{ shrink: true }}
                         />
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={6}>
                         <TextField
                             label="Total Number of Key Picks"
                             type="number"
@@ -265,7 +265,7 @@ function EditLeague({ }: Props) {
                             InputLabelProps={{ shrink: true }}
                         />
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={6}>
                         <TextField
                             label="Key Pick Bonus"
                             type="number"
@@ -278,7 +278,7 @@ function EditLeague({ }: Props) {
                             InputLabelProps={{ shrink: true }}
                         />
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={6}>
                         <FormControlLabel
                             label="Is Archived"
                             control={<Checkbox />}
@@ -286,7 +286,7 @@ function EditLeague({ }: Props) {
                             onChange={(_event: SyntheticEvent<Element, Event>, checked: boolean) => { setIsArchived(checked); }}
                         />
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={6}>
                         <FormControlLabel
                             label="Is Public"
                             control={<Checkbox />}
@@ -298,7 +298,7 @@ function EditLeague({ }: Props) {
                     {
                         leagueType && leagueType.label === 'All Bet Types' &&
                         <>
-                            <Grid size={4}>
+                            <Grid size={6}>
                                 <FormControlLabel
                                     label="Allow Parlays"
                                     control={<Checkbox />}
@@ -306,7 +306,7 @@ function EditLeague({ }: Props) {
                                     onChange={(_event: SyntheticEvent<Element, Event>, checked: boolean) => { setAllowParlays(checked); }}
                                 />
                             </Grid>
-                            <Grid size={4}>
+                            <Grid size={6}>
                                 <FormControlLabel
                                     label="Allow Winnings For Betting"
                                     control={<Checkbox />}
@@ -317,7 +317,7 @@ function EditLeague({ }: Props) {
                         </>
                     }
 
-                    <Grid size={4}>
+                    <Grid size={6}>
                         <FormControlLabel
                             label="Lock picks after they are made"
                             control={<Checkbox />}
@@ -325,7 +325,7 @@ function EditLeague({ }: Props) {
                             onChange={(_event: SyntheticEvent<Element, Event>, checked: boolean) => { setLockPicksAfterTheyAreMade(checked); }}
                         />
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={6}>
                         <FormControlLabel
                             label="Lock spreads during the week"
                             control={<Checkbox />}
