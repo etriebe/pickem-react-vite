@@ -43,6 +43,7 @@ function EditLeague({ }: Props) {
         }
         await pickemClient.removeUserAsAdmin(leagueId, userId);
     };
+
     const handleMakeAdmin = async (userId: string) => {
         const pickemClient = PickemApiClientFactory.createClient();
         league?.leagueAdminIds?.push(userId);

@@ -19,6 +19,7 @@ import Header from "./Header";
 import { alpha } from '@mui/material/styles';
 import EditUserSettings from './EditUserSettings';
 import EditLeague from './EditLeague';
+import JoinLeague from './JoinLeague';
 
 type Props = {}
 
@@ -78,6 +79,7 @@ function AppRouter({ }: Props) {
                                 <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
                                 <Route path="/settings" element={<EditUserSettings />} />
                                 <Route path="/editleague/:leagueId" element={<EditLeague />} />
+                                <Route path="/joinleague/:leagueId" element={<JoinLeague />} />
                             </Routes>
                         }
                     </Stack>

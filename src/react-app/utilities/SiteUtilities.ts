@@ -63,6 +63,10 @@ export class SiteUtilities {
         }
     }
 
+    static getInviteLink(leagueId: string): string {
+        return `/joinleague/${leagueId}`;
+    }
+
     static getEditLeagueLink(leagueId: string): string {
         return `/editleague/${leagueId}`;
     }

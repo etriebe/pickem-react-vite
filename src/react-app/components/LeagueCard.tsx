@@ -7,7 +7,9 @@ import Typography from '@mui/material/Typography';
 import { SiteUtilities } from '../utilities/SiteUtilities';
 import { LeagueUtilities } from '../utilities/LeagueUtilities';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
-import { Create, Settings, Autorenew, CalendarToday, FormatListNumbered } from '@mui/icons-material';
+import { Create, Settings, Autorenew, CalendarToday, FormatListNumbered, Send } from '@mui/icons-material';
+import { Snackbar, SnackbarCloseReason } from '@mui/material';
+import { useState } from 'react';
 
 export interface LeagueCardProps {
     league: League;
@@ -26,6 +28,27 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
     const isOffSeason = LeagueUtilities.isOffSeason(league);
     const userInfo = AuthenticationUtilities.getUserInfoFromLocalStorage();
     const isAdmin = league.leagueAdminIds?.find(a => a === userInfo.id);
+    const [copyInviteMessage, setCopyInviteMessage] = useState('');
+    const [open, setOpen] = useState(false);
+
+    const copyLeagueInvite = async () => {
+        const fullCopyInviteLink = `${window.location.origin}${SiteUtilities.getInviteLink(league.id!)}`;
+        navigator.clipboard.writeText(fullCopyInviteLink);
+        setCopyInviteMessage("Copied invite link!");
+        setOpen(true);
+    };
+
+    const handleClose = (
+        _event: React.SyntheticEvent | Event,
+        reason?: SnackbarCloseReason,
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
+
     return (
         <>
             <Card sx={{}}>
@@ -40,6 +63,20 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
                         Picks: {pickStatus}
                     </Typography>
                 </CardContent>
+                {isAdmin &&
+                    <>
+                        <CardActions>
+                            <Button size="small" href={editLeagueLink} startIcon={<Settings />}>
+                                Edit League
+                            </Button>
+                        </CardActions>
+                        <CardActions>
+                            <Button size="small" onClick={() => { copyLeagueInvite() }} startIcon={<Send />}>
+                                Copy Invite
+                            </Button>
+                        </CardActions>
+                    </>
+                }
                 <CardActions>
                     <Button size="small" startIcon={<FormatListNumbered />} href={leagueStandingLink}>League Standings</Button>
                 </CardActions>
@@ -52,14 +89,13 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
                         <Button size="large" href={myPicksLink} startIcon={<Create />}>Make Picks</Button>
                     }
                 </CardActions>
-                {isAdmin &&
-                    <CardActions>
-                        <Button size="large" href={editLeagueLink} startIcon={<Settings />}>
-                            Edit League
-                        </Button>
-                    </CardActions>
-                }
             </Card>
+            <Snackbar
+                open={open}
+                autoHideDuration={5000}
+                onClose={handleClose}
+                message={copyInviteMessage}
+            />
         </>
     );
 }
