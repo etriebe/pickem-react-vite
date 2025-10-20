@@ -68,7 +68,9 @@ export default function PickemLeagueStandings() {
     const columnList: GridColDef<(UserInfo[])[number]>[] = [
         {
             field: 'user',
-            headerName: 'User',
+            renderHeader: () => {
+                return <div className='standingsHeader'>User</div>;
+            },
             width: userColumnWidth,
             minWidth: userColumnWidth,
             cellClassName: "centerDivContainer",
@@ -88,7 +90,9 @@ export default function PickemLeagueStandings() {
         },
         {
             field: 'seasonPoints',
-            headerName: 'Season Points',
+            renderHeader: () => {
+                return <div className='standingsHeader'>Season<br />Points</div>;
+            },
             width: userColumnWidth,
             minWidth: userColumnWidth,
             cellClassName: "centerDivContainer",
@@ -118,7 +122,9 @@ export default function PickemLeagueStandings() {
     for (let weekNumber = startingWeekNumber; weekNumber <= endingWeekNumber; weekNumber++) {
         const weekColumn: GridColDef<(UserInfo[])[number]> = {
             field: `week_${weekNumber}`,
-            headerName: `Week ${weekNumber}`,
+            renderHeader: () => {
+                return <div className='standingsHeader'>Week {weekNumber}</div>;
+            },
             width: weekColumnWidth,
             minWidth: weekColumnWidth,
             cellClassName: "centerDivContainer",

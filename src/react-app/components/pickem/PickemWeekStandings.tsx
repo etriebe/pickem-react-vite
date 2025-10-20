@@ -147,7 +147,7 @@ export default function PickemWeekStandings() {
             minWidth: userColumnWidth,
             cellClassName: "centerDivContainer",
             renderHeader: () => {
-                return <div className='weekStandingsHeader'>User</div>;
+                return <div className='standingsHeader'>User</div>;
             },
             renderCell: (params) => {
                 return renderUserCell(params, weekStandingsQuery.data?.users ?? []);
@@ -169,7 +169,7 @@ export default function PickemWeekStandings() {
             minWidth: userColumnWidth,
             cellClassName: "centerDivContainer",
             renderHeader: () => {
-                return <div className='weekStandingsHeader'>Week<br />Points</div>;
+                return <div className='standingsHeader'>Week<br />Points</div>;
             },
             renderCell: (params) => {
                 return renderWeekResultsCell(params, weekStandingsQuery.data?.league!, weekStandingsQuery.data?.results!, weekStandingsQuery.data?.picks!);
@@ -221,7 +221,7 @@ export default function PickemWeekStandings() {
         field: `seasonPoints`,
         headerName: `Season`,
         renderHeader: () => {
-            return <div className='weekStandingsHeader'>Season</div>;
+            return <div className='standingsHeader'>Season</div>;
         },
         width: gameColumnWidth,
         minWidth: gameColumnWidth,
@@ -243,7 +243,7 @@ export default function PickemWeekStandings() {
         field: `trophy`,
         headerName: `Trophies`,
         renderHeader: () => {
-            return <div className='weekStandingsHeader'>Trophies</div>;
+            return <div className='standingsHeader'>Trophies</div>;
         },
         width: gameColumnWidth,
         minWidth: gameColumnWidth,
