@@ -21,6 +21,7 @@ import EditUserSettings from './EditUserSettings';
 import EditLeague from './EditLeague';
 import JoinLeague from './JoinLeague';
 import ChangePassword from './ChangePassword';
+import BrowseLeagues from './BrowseLeagues';
 
 type Props = {}
 
@@ -66,6 +67,8 @@ function AppRouter({ }: Props) {
                                 <Route path="/signin" element={<SignIn />} />
                                 <Route path="/signup" element={<SignUp />} />
                                 <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
+                                <Route path="/browseleagues" element={<BrowseLeagues />} />
+                                <Route path="/joinleague/:leagueId" element={<SignIn />} />
                             </Routes>
                         }
                         {userInfoQuery.isSuccess &&
@@ -82,6 +85,7 @@ function AppRouter({ }: Props) {
                                 <Route path="/editleague/:leagueId" element={<EditLeague />} />
                                 <Route path="/joinleague/:leagueId" element={<JoinLeague />} />
                                 <Route path="/changepassword" element={<ChangePassword />} />
+                                <Route path="/browseleagues" element={<BrowseLeagues />} />
                             </Routes>
                         }
                     </Stack>
