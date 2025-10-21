@@ -20,6 +20,7 @@ import { alpha } from '@mui/material/styles';
 import EditUserSettings from './EditUserSettings';
 import EditLeague from './EditLeague';
 import JoinLeague from './JoinLeague';
+import ChangePassword from './ChangePassword';
 
 type Props = {}
 
@@ -64,6 +65,7 @@ function AppRouter({ }: Props) {
                                 <Route path="/" element={<MainGrid />} />
                                 <Route path="/signin" element={<SignIn />} />
                                 <Route path="/signup" element={<SignUp />} />
+                                <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
                             </Routes>
                         }
                         {userInfoQuery.isSuccess &&
@@ -76,10 +78,10 @@ function AppRouter({ }: Props) {
                                 <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={<PickemMakePicks />} />
                                 <Route path="/pickem/week/:leagueId/:weekNumber" element={<PickemWeekStandings />} />
                                 <Route path="/pickem/standings/:leagueId" element={<PickemLeagueStandings />} />
-                                <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
                                 <Route path="/settings" element={<EditUserSettings />} />
                                 <Route path="/editleague/:leagueId" element={<EditLeague />} />
                                 <Route path="/joinleague/:leagueId" element={<JoinLeague />} />
+                                <Route path="/changepassword" element={<ChangePassword />} />
                             </Routes>
                         }
                     </Stack>

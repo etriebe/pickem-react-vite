@@ -72,6 +72,10 @@ export class SiteUtilities {
         return `/editleague/${leagueId}`;
     }
 
+    static getChangePasswordLink(): string {
+        return `/changepassword`;
+    }
+
     static getEmojiForPickStatus(picksSubmitted: boolean): string {
         if (picksSubmitted) {
             return "✅ - Submitted";
