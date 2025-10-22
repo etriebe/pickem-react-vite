@@ -1,8 +1,9 @@
-import { Box, FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
-import React from 'react'
-import { Sports, SportType } from '../utilities/SiteUtilities';
+import { Box, Divider, FormControl, Grid, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import React from 'react';
+import { Sports } from '../utilities/SiteUtilities';
 import { useQuery } from '@tanstack/react-query';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
+import PublicLeagueCard from './PublicLeagueCard';
 
 type Props = {}
 
@@ -45,12 +46,12 @@ function BrowseLeagues({ }: Props) {
                         )}
                     </Select>
                 </FormControl>
-                
-                <Typography variant='h4'>{browseLeaguesQuery.data?.length} Leagues Found</Typography>
+
+                <Typography variant='subtitle2'>{browseLeaguesQuery.data?.length} Leagues Found</Typography>
                 {browseLeaguesQuery.data?.map((l) => {
                     return <React.Fragment key={l.id}>
                         <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                            <Typography variant='h3'>{l.leagueName}</Typography>
+                            <PublicLeagueCard leagueId={l.id!} leagueName={l.leagueName!} leagueYear={l.year!} key={l.id} sport={l.sport!} />
                         </Grid>
                     </React.Fragment>;
                 })}
