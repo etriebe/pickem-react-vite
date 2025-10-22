@@ -1,4 +1,4 @@
-import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
+import { Box, FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
 import React from 'react'
 import { Sports, SportType } from '../utilities/SiteUtilities';
 import { useQuery } from '@tanstack/react-query';
@@ -45,6 +45,15 @@ function BrowseLeagues({ }: Props) {
                         )}
                     </Select>
                 </FormControl>
+                
+                <Typography variant='h4'>{browseLeaguesQuery.data?.length} Leagues Found</Typography>
+                {browseLeaguesQuery.data?.map((l) => {
+                    return <React.Fragment key={l.id}>
+                        <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+                            <Typography variant='h3'>{l.leagueName}</Typography>
+                        </Grid>
+                    </React.Fragment>;
+                })}
             </Box>
         </>
     )

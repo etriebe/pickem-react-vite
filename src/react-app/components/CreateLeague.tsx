@@ -30,8 +30,8 @@ export default function CreateLeague() {
         createLeagueRequest.leagueName = leagueName;
         createLeagueRequest.leagueType = leagueType;
         createLeagueRequest.sport = sport;
-        createLeagueRequest.startWeek = startWeek;
-        createLeagueRequest.endWeek = endWeek;
+        createLeagueRequest.startingWeekNumber = startWeek;
+        createLeagueRequest.endingWeekNumber = endWeek;
         createLeagueRequest.totalPicks = totalPicks;
         createLeagueRequest.keyPicks = keyPicks;
         createLeagueRequest.keyPickBonus = keyPickBonus;
@@ -46,6 +46,7 @@ export default function CreateLeague() {
             setSportSeasonInformation(sportSeasonInformation);
             const max = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformation, LeagueUtilities.getSportNameFromNumber(sport));
             setEndWeek(max);
+            setMaxWeeks(max);
             setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(max));
         }
 
