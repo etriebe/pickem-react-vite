@@ -68,7 +68,7 @@ function AppRouter({ }: Props) {
                                 <Route path="/signup" element={<SignUp />} />
                                 <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
                                 <Route path="/browseleagues" element={<BrowseLeagues />} />
-                                <Route path="/joinleague/:leagueId" element={<SignIn />} />
+                                <Route path="/*" element={<SignIn />} />
                             </Routes>
                         }
                         {userInfoQuery.isSuccess &&
