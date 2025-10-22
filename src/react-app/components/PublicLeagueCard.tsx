@@ -6,10 +6,11 @@ type Props = {
     leagueId: string,
     leagueName: string,
     leagueYear: string,
-    sport: number
+    sport: number,
+    numberOfMembers: number
 }
 
-function PublicLeagueCard({ leagueId, leagueName, leagueYear, sport }: Props) {
+function PublicLeagueCard({ leagueId, leagueName, leagueYear, sport, numberOfMembers }: Props) {
     leagueYear = leagueYear.replace("_","-");
     const sportType = SiteUtilities.getSportTypeFromNumber(sport);
     return (
@@ -21,6 +22,9 @@ function PublicLeagueCard({ leagueId, leagueName, leagueYear, sport }: Props) {
                     </Typography>
                     <Typography variant="body1" component="div">
                         {leagueYear} - {sportType?.label}
+                    </Typography>
+                    <Typography variant="caption" component="div">
+                        {numberOfMembers} member(s)
                     </Typography>
                 </CardContent>
                 <CardActions>
