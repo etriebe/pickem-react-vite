@@ -20,34 +20,40 @@ function BrowseLeagues({ }: Props) {
 
     return (
         <>
-            <Box sx={{
-                minWidth: 120,
-                '& .MuiTextField-root': { m: 1 },
-                '& .MuiInputLabel-root.MuiInputLabel-shrink': {
-                    background: 'var(--template-palette-background-default)',
-                    padding: '0 4px',
-                    zIndex: 1,
-                },
-            }}>
 
-                <Typography variant='h2'>View Public Leagues</Typography>
+            <Typography variant='h2'>View Public Leagues</Typography>
 
-                <FormControl fullWidth>
-                    <InputLabel id="sport-select-label">Sport</InputLabel>
-                    <Select
-                        labelId="sport-select-label"
-                        id="sport-select"
-                        value={sport}
-                        label="Age"
-                        onChange={e => setSport(Number(e.target.value))}
-                    >
-                        {Sports.map(s =>
-                            <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>
-                        )}
-                    </Select>
-                </FormControl>
+            <FormControl>
+                <InputLabel id="sport-select-label">Sport</InputLabel>
+                <Select
+                    labelId="sport-select-label"
+                    id="sport-select"
+                    value={sport}
+                    label="Age"
+                    onChange={e => setSport(Number(e.target.value))}
+                >
+                    {Sports.map(s =>
+                        <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>
+                    )}
+                </Select>
+            </FormControl>
 
-                <Typography variant='subtitle2'>{browseLeaguesQuery.data?.length} Leagues Found</Typography>
+            <Typography variant='subtitle2'>{browseLeaguesQuery.data?.length} Leagues Found</Typography>
+            <Grid
+                container
+                spacing={2}
+                padding={2}
+                sx={{
+                    mb: (theme) => theme.spacing(2),
+                    width: '100%',
+                    '& .MuiTextField-root': { m: 1 },
+                    '& .MuiInputLabel-root.MuiInputLabel-shrink': {
+                        background: 'var(--template-palette-background-default)',
+                        padding: '0 4px',
+                        zIndex: 1,
+                    },
+                }}
+            >
                 {browseLeaguesQuery.data?.map((l) => {
                     return <React.Fragment key={l.id}>
                         <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
@@ -55,7 +61,7 @@ function BrowseLeagues({ }: Props) {
                         </Grid>
                     </React.Fragment>;
                 })}
-            </Box>
+            </Grid>
         </>
     )
 }
