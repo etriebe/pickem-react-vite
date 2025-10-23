@@ -1,4 +1,4 @@
-import { Box, Divider, FormControl, Grid, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import { FormControl, Grid, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import React from 'react';
 import { Sports } from '../utilities/SiteUtilities';
 import { useQuery } from '@tanstack/react-query';
