@@ -23,7 +23,15 @@ function BrowseLeagues({ }: Props) {
 
             <Typography variant='h2'>View Public Leagues</Typography>
 
-            <FormControl>
+            <FormControl
+                sx={{
+                    '& .MuiTextField-root': { m: 1 },
+                    '& .MuiInputLabel-root.MuiInputLabel-shrink': {
+                        background: 'var(--template-palette-background-default)',
+                        padding: '0 4px',
+                        zIndex: 1,
+                    },
+                }}>
                 <InputLabel id="sport-select-label">Sport</InputLabel>
                 <Select
                     labelId="sport-select-label"
@@ -46,12 +54,6 @@ function BrowseLeagues({ }: Props) {
                 sx={{
                     mb: (theme) => theme.spacing(2),
                     width: '100%',
-                    '& .MuiTextField-root': { m: 1 },
-                    '& .MuiInputLabel-root.MuiInputLabel-shrink': {
-                        background: 'var(--template-palette-background-default)',
-                        padding: '0 4px',
-                        zIndex: 1,
-                    },
                 }}
             >
                 {browseLeaguesQuery.data?.map((l) => {
