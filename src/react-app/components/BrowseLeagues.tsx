@@ -46,7 +46,7 @@ function BrowseLeagues({ }: Props) {
                 </Select>
             </FormControl>
 
-            <Typography variant='subtitle2'>{browseLeaguesQuery.data?.length} Leagues Found</Typography>
+            <Typography variant='subtitle2'>{browseLeaguesQuery.data?.length} League(s) Found</Typography>
             <Grid
                 container
                 spacing={2}
