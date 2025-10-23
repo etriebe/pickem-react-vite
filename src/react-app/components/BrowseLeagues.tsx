@@ -21,7 +21,7 @@ function BrowseLeagues({ }: Props) {
     return (
         <>
 
-            <Typography variant='h2'>View Public Leagues</Typography>
+            <Typography variant='h2'>Public Leagues</Typography>
 
             <FormControl
                 sx={{
