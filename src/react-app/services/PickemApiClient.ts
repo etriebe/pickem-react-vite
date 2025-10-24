@@ -1353,7 +1353,7 @@ export class Client {
      * @param sport (optional) 
      * @return OK
      */
-    getPublicLeagues(sport: number | undefined): Promise<LeagueDTO[]> {
+    getPublicLeagues(sport: number | undefined): Promise<LeagueWithUserMappingDTO[]> {
         let url_ = this.baseUrl + "/api/leagues/GetPublicLeagues?";
         if (sport === null)
             throw new globalThis.Error("The parameter 'sport' cannot be null.");
@@ -1375,7 +1375,7 @@ export class Client {
         });
     }
 
-    protected processGetPublicLeagues(response: Response): Promise<LeagueDTO[]> {
+    protected processGetPublicLeagues(response: Response): Promise<LeagueWithUserMappingDTO[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1385,7 +1385,7 @@ export class Client {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(LeagueDTO.fromJS(item));
+                    result200!.push(LeagueWithUserMappingDTO.fromJS(item));
             }
             else {
                 result200 = null as any;
@@ -1397,7 +1397,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<LeagueDTO[]>(null as any);
+        return Promise.resolve<LeagueWithUserMappingDTO[]>(null as any);
     }
 
     /**
