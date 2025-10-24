@@ -106,6 +106,9 @@ export default function PickemWeekStandings() {
     games = games.sort((a, b) => {
         try {
             if (a.gameStartTime && b.gameStartTime) {
+
+                const aGameStartTime = new Date(a.gameStartTime);
+                const bGameStartTime = new Date(b.gameStartTime);
                 if (a.result && b.result) {
                     const gameAStatus = a.result.status;
                     const gameBStatus = b.result.status;
@@ -121,12 +124,10 @@ export default function PickemWeekStandings() {
                                 return -1;
                             }
                         }
-                        return gameAStatus - gameBStatus;
+                        return aGameStartTime.getTime() - bGameStartTime.getTime();
                     }
                 }
 
-                const aGameStartTime = new Date(a.gameStartTime);
-                const bGameStartTime = new Date(b.gameStartTime);
                 return aGameStartTime.getTime() - bGameStartTime.getTime();
             }
             else {
