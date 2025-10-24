@@ -40,7 +40,6 @@ export default function PickemMakePicks() {
             const pickemClient = PickemApiClientFactory.createClient();
             return pickemClient.getMakePicks(leagueId!, weekNumberConverted);
         },
-        refetchOnWindowFocus: false
     });
 
     const longDescription = true;

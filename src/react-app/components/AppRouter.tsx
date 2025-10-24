@@ -31,7 +31,6 @@ function AppRouter({ }: Props) {
         queryKey: ['userinfo'],
         queryFn: AuthenticationUtilities.getUserInfo,
         retry: false,
-        refetchOnWindowFocus: false,
     });
 
     return (

@@ -16,7 +16,6 @@ function BrowseLeagues({ }: Props) {
             const pickemClient = PickemApiClientFactory.createClient();
             return pickemClient.getPublicLeagues(sport)
         },
-        refetchOnWindowFocus: false,
     });
 
     return (

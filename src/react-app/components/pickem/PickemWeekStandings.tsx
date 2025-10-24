@@ -100,7 +100,6 @@ export default function PickemWeekStandings() {
             const pickemClient = PickemApiClientFactory.createClient();
             return pickemClient.getWeekStandings(leagueId!, weekNumberConverted);
         },
-        refetchOnWindowFocus: false,
     });
 
     let games = weekStandingsQuery.data?.games ?? [];

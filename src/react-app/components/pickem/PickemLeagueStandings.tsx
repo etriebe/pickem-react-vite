@@ -63,7 +63,6 @@ export default function PickemLeagueStandings() {
             const pickemClient = PickemApiClientFactory.createClient();
             return pickemClient.getLeagueStandings(leagueId!);
         },
-        refetchOnWindowFocus: false,
     });
 
     const columnList: GridColDef<(UserInfo[])[number]>[] = [
