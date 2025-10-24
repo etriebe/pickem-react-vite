@@ -32,6 +32,7 @@ function EditUserSettings({ }: Props) {
             const pickemClient = PickemApiClientFactory.createClient();
             return pickemClient.getUserSettingFromUserId();
         },
+        refetchOnWindowFocus: false,
     });
 
     return (

@@ -19,6 +19,7 @@ function JoinLeague({ }: Props) {
             const pickemClient = PickemApiClientFactory.createClient();
             return pickemClient.getLeagueById(leagueId!);
         },
+        refetchOnWindowFocus: false,
     });
 
     const handleJoinLeague = async () => {

@@ -13,6 +13,7 @@ export default function MyLeagues() {
             return leagues;
         },
         staleTime: 1000 * 60 * 60, // 1 hour
+        refetchOnWindowFocus: false,
     });
     const picksQuery = useQueries({
         queries: leaguesQuery && leaguesQuery.data
@@ -24,16 +25,17 @@ export default function MyLeagues() {
                         const picks = pickemClient.getWeekPickForUser(league.id!, league.currentWeekNumber, league.type);
                         return picks;
                     },
+                    refetchOnWindowFocus: false,
                 }
             })
-            : [],  
-            combine: (results) => {
-                return {
-                    data: results.map((result) => result.data),
-                    pending: results.some((result) => result.isPending),
-                }
-            }, 
-        });
+            : [],
+        combine: (results) => {
+            return {
+                data: results.map((result) => result.data),
+                pending: results.some((result) => result.isPending),
+            }
+        },
+    });
     const allFinished = !picksQuery.pending;
 
     if (leaguesQuery.isPending) {
