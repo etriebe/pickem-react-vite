@@ -11,6 +11,7 @@ import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import MenuButton from './MenuButton';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
+import { SiteUtilities } from '../utilities/SiteUtilities';
 
 const MenuItem = styled(MuiMenuItem)({
   margin: '2px 0',
@@ -22,6 +23,10 @@ export default function OptionsMenu() {
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+  const handleChangePassword = () => {
+    window.location.href = SiteUtilities.getChangePasswordLink();
+    setAnchorEl(null);
+  }
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -57,10 +62,7 @@ export default function OptionsMenu() {
           },
         }}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>My account</MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose}>Settings</MenuItem>
+        <MenuItem onClick={handleChangePassword}>Change Password</MenuItem>
         <Divider />
         <MenuItem
           onClick={handleLogOut}

@@ -8,6 +8,7 @@ import Grid from '@mui/material/Grid';
 import { CreateLeagueRequest, SeasonDateInformation2 } from '../services/PickemApiClient';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import { Sports, LeagueTypes } from '../utilities/SiteUtilities';
+import { LeagueUtilities } from '../utilities/LeagueUtilities';
 
 export default function CreateLeague() {
     const [leagueName, setLeagueName] = useState('');
@@ -29,8 +30,8 @@ export default function CreateLeague() {
         createLeagueRequest.leagueName = leagueName;
         createLeagueRequest.leagueType = leagueType;
         createLeagueRequest.sport = sport;
-        createLeagueRequest.startWeek = startWeek;
-        createLeagueRequest.endWeek = endWeek;
+        createLeagueRequest.startingWeekNumber = startWeek;
+        createLeagueRequest.endingWeekNumber = endWeek;
         createLeagueRequest.totalPicks = totalPicks;
         createLeagueRequest.keyPicks = keyPicks;
         createLeagueRequest.keyPickBonus = keyPickBonus;
@@ -43,9 +44,10 @@ export default function CreateLeague() {
             const pickemClient = PickemApiClientFactory.createClient();
             const sportSeasonInformation = await pickemClient.getCurrentSportsSeasonInformation();
             setSportSeasonInformation(sportSeasonInformation);
-            const max = getCurrentMaxWeeks(sportSeasonInformation, getSportNameFromNumber(sport));
+            const max = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformation, LeagueUtilities.getSportNameFromNumber(sport));
             setEndWeek(max);
-            setEndingWeekNumberLabel(getEndingWeekLabel(max));
+            setMaxWeeks(max);
+            setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(max));
         }
 
         fetchData();
@@ -98,11 +100,11 @@ export default function CreateLeague() {
                             onChange={e => { 
                                 setSport(Number(e.target.value));
                                 const sportNumber = Number(e.target.value);
-                                const sportName: string = getSportNameFromNumber(sportNumber);
-                                const newMaxWeeks = getCurrentMaxWeeks(sportSeasonInformation, sportName);
+                                const sportName: string = LeagueUtilities.getSportNameFromNumber(sportNumber);
+                                const newMaxWeeks = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformation, sportName);
                                 setEndWeek(newMaxWeeks);
                                 setMaxWeeks(newMaxWeeks);
-                                setEndingWeekNumberLabel(getEndingWeekLabel(newMaxWeeks));
+                                setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(newMaxWeeks));
                             }}
                             fullWidth
                             required
@@ -188,16 +190,3 @@ export default function CreateLeague() {
         </Box>
     );
 }
-
-function getEndingWeekLabel(max: number): React.SetStateAction<string> {
-    return `Ending Week Number (Max:${max})`;
-}
-
-function getSportNameFromNumber(sportNumber: number): string {
-    return Sports.find(s => s.value === sportNumber)?.label!;
-}
-
-function getCurrentMaxWeeks(sportSeasonInformation: { [key: string]: SeasonDateInformation2; } | undefined, sportName: string) {
-    return sportSeasonInformation ? sportSeasonInformation[sportName].weekStartTimes?.length! : -1;
-}
-

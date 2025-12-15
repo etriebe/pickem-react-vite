@@ -2,17 +2,17 @@ import Stack from '@mui/material/Stack';
 import siteLogo from '../assets/logo.png';
 import Typography from '@mui/material/Typography';
 
-export default function Header() {
+export default function SiteLogo() {
     return (
         <Stack
             direction="row"
             sx={{
                 display: 'flex',
                 width: '100%',
-                alignItems: { xs: 'flex-start', md: 'center' },
+                alignItems: { md: 'center' },
                 justifyContent: 'space-between',
                 maxWidth: { sm: '100%', md: '1700px' },
-                maxHeight: { xs: '64px', sm: '64px', md: '80px', lg: '100px' },
+                maxHeight: { sm: '64px', md: '80px', lg: '100px' },
                 pt: 1.5,
             }}
             spacing={2}

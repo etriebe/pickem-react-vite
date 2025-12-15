@@ -1234,45 +1234,6 @@ export class Client {
     /**
      * @return OK
      */
-    updateLeague(body: LeagueDTO): Promise<void> {
-        let url_ = this.baseUrl + "/api/leagues/UpdateLeague";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            credentials: 'include',
-            mode: 'cors',
-            headers: {
-                "Content-Type": "application/json",
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateLeague(_response);
-        });
-    }
-
-    protected processUpdateLeague(response: Response): Promise<void> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            return;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
     updateLeagueSettings(body: UpdateLeagueSettingsRequest): Promise<void> {
         let url_ = this.baseUrl + "/api/leagues/UpdateLeagueSettings";
         url_ = url_.replace(/[?&]$/, "");
@@ -1295,45 +1256,6 @@ export class Client {
     }
 
     protected processUpdateLeagueSettings(response: Response): Promise<void> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            return;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    addLeague(body: LeagueDTO): Promise<void> {
-        let url_ = this.baseUrl + "/api/leagues/AddLeague";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            credentials: 'include',
-            mode: 'cors',
-            headers: {
-                "Content-Type": "application/json",
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processAddLeague(_response);
-        });
-    }
-
-    protected processAddLeague(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1431,7 +1353,7 @@ export class Client {
      * @param sport (optional) 
      * @return OK
      */
-    getPublicLeagues(sport: number | undefined): Promise<LeagueDTO[]> {
+    getPublicLeagues(sport: number | undefined): Promise<LeagueWithUserMappingDTO[]> {
         let url_ = this.baseUrl + "/api/leagues/GetPublicLeagues?";
         if (sport === null)
             throw new globalThis.Error("The parameter 'sport' cannot be null.");
@@ -1453,7 +1375,7 @@ export class Client {
         });
     }
 
-    protected processGetPublicLeagues(response: Response): Promise<LeagueDTO[]> {
+    protected processGetPublicLeagues(response: Response): Promise<LeagueWithUserMappingDTO[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1463,7 +1385,7 @@ export class Client {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(LeagueDTO.fromJS(item));
+                    result200!.push(LeagueWithUserMappingDTO.fromJS(item));
             }
             else {
                 result200 = null as any;
@@ -1475,7 +1397,96 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<LeagueDTO[]>(null as any);
+        return Promise.resolve<LeagueWithUserMappingDTO[]>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @return OK
+     */
+    getLeagueByIdWithUserMapping(leagueId: string | undefined): Promise<LeagueWithUserMappingDTO> {
+        let url_ = this.baseUrl + "/api/leagues/GetLeagueByIdWithUserMapping?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetLeagueByIdWithUserMapping(_response);
+        });
+    }
+
+    protected processGetLeagueByIdWithUserMapping(response: Response): Promise<LeagueWithUserMappingDTO> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LeagueWithUserMappingDTO.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<LeagueWithUserMappingDTO>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @return OK
+     */
+    addUserToLeague(leagueId: string | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/leagues/AddUserToLeague?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAddUserToLeague(_response);
+        });
+    }
+
+    protected processAddUserToLeague(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null as any;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
     }
 
     /**
@@ -2037,6 +2048,148 @@ export class Client {
             });
         }
         return Promise.resolve<WeatherForecast[]>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @param weekNumber (optional) 
+     * @return OK
+     */
+    getWeekStandings(leagueId: string | undefined, weekNumber: number | undefined): Promise<PickemWeekStandingsResponse> {
+        let url_ = this.baseUrl + "/api/pickempage/GetWeekStandings?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        if (weekNumber === null)
+            throw new globalThis.Error("The parameter 'weekNumber' cannot be null.");
+        else if (weekNumber !== undefined)
+            url_ += "weekNumber=" + encodeURIComponent("" + weekNumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetWeekStandings(_response);
+        });
+    }
+
+    protected processGetWeekStandings(response: Response): Promise<PickemWeekStandingsResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PickemWeekStandingsResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PickemWeekStandingsResponse>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @return OK
+     */
+    getLeagueStandings(leagueId: string | undefined): Promise<PickemLeagueStandingsResponse> {
+        let url_ = this.baseUrl + "/api/pickempage/GetLeagueStandings?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetLeagueStandings(_response);
+        });
+    }
+
+    protected processGetLeagueStandings(response: Response): Promise<PickemLeagueStandingsResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PickemLeagueStandingsResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PickemLeagueStandingsResponse>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @param weekNumber (optional) 
+     * @return OK
+     */
+    getMakePicks(leagueId: string | undefined, weekNumber: number | undefined): Promise<PickemMakePicksResponse> {
+        let url_ = this.baseUrl + "/api/pickempage/GetMakePicks?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        if (weekNumber === null)
+            throw new globalThis.Error("The parameter 'weekNumber' cannot be null.");
+        else if (weekNumber !== undefined)
+            url_ += "weekNumber=" + encodeURIComponent("" + weekNumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetMakePicks(_response);
+        });
+    }
+
+    protected processGetMakePicks(response: Response): Promise<PickemMakePicksResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PickemMakePicksResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PickemMakePicksResponse>(null as any);
     }
 }
 
@@ -3251,6 +3404,66 @@ export interface ILeagueSettings {
     [key: string]: any;
 }
 
+export class LeagueWithUserMappingDTO implements ILeagueWithUserMappingDTO {
+    league?: LeagueDTO;
+    users?: UserInfo[];
+
+    [key: string]: any;
+
+    constructor(data?: ILeagueWithUserMappingDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : undefined as any;
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(UserInfo.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): LeagueWithUserMappingDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new LeagueWithUserMappingDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface ILeagueWithUserMappingDTO {
+    league?: LeagueDTO;
+    users?: UserInfo[];
+
+    [key: string]: any;
+}
+
 export class LoginRequest implements ILoginRequest {
     email!: string;
     password!: string;
@@ -3419,6 +3632,238 @@ export interface IMoneyline2 {
     timeOfMeasurement?: Date;
     homeTeamPrice?: number;
     awayTeamPrice?: number;
+
+    [key: string]: any;
+}
+
+export class PickemLeagueStandingsResponse implements IPickemLeagueStandingsResponse {
+    league?: LeagueDTO;
+    results?: SpreadWeekResultDTO[];
+    users?: UserInfo[];
+
+    [key: string]: any;
+
+    constructor(data?: IPickemLeagueStandingsResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : undefined as any;
+            if (Array.isArray(_data["results"])) {
+                this.results = [] as any;
+                for (let item of _data["results"])
+                    this.results!.push(SpreadWeekResultDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(UserInfo.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PickemLeagueStandingsResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new PickemLeagueStandingsResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        if (Array.isArray(this.results)) {
+            data["results"] = [];
+            for (let item of this.results)
+                data["results"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IPickemLeagueStandingsResponse {
+    league?: LeagueDTO;
+    results?: SpreadWeekResultDTO[];
+    users?: UserInfo[];
+
+    [key: string]: any;
+}
+
+export class PickemMakePicksResponse implements IPickemMakePicksResponse {
+    league?: LeagueDTO;
+    picks?: SpreadWeekPickDTO2 | undefined;
+    games?: GameDTO[];
+
+    [key: string]: any;
+
+    constructor(data?: IPickemMakePicksResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : undefined as any;
+            this.picks = _data["picks"] ? SpreadWeekPickDTO2.fromJS(_data["picks"]) : undefined as any;
+            if (Array.isArray(_data["games"])) {
+                this.games = [] as any;
+                for (let item of _data["games"])
+                    this.games!.push(GameDTO.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PickemMakePicksResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new PickemMakePicksResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        data["picks"] = this.picks ? this.picks.toJSON() : undefined as any;
+        if (Array.isArray(this.games)) {
+            data["games"] = [];
+            for (let item of this.games)
+                data["games"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IPickemMakePicksResponse {
+    league?: LeagueDTO;
+    picks?: SpreadWeekPickDTO2 | undefined;
+    games?: GameDTO[];
+
+    [key: string]: any;
+}
+
+export class PickemWeekStandingsResponse implements IPickemWeekStandingsResponse {
+    league?: LeagueDTO;
+    picks?: SpreadWeekPickDTO[];
+    results?: SpreadWeekResultDTO[];
+    games?: GameDTO[];
+    users?: UserInfo[];
+
+    [key: string]: any;
+
+    constructor(data?: IPickemWeekStandingsResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : undefined as any;
+            if (Array.isArray(_data["picks"])) {
+                this.picks = [] as any;
+                for (let item of _data["picks"])
+                    this.picks!.push(SpreadWeekPickDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["results"])) {
+                this.results = [] as any;
+                for (let item of _data["results"])
+                    this.results!.push(SpreadWeekResultDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["games"])) {
+                this.games = [] as any;
+                for (let item of _data["games"])
+                    this.games!.push(GameDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(UserInfo.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PickemWeekStandingsResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new PickemWeekStandingsResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        if (Array.isArray(this.picks)) {
+            data["picks"] = [];
+            for (let item of this.picks)
+                data["picks"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.results)) {
+            data["results"] = [];
+            for (let item of this.results)
+                data["results"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.games)) {
+            data["games"] = [];
+            for (let item of this.games)
+                data["games"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IPickemWeekStandingsResponse {
+    league?: LeagueDTO;
+    picks?: SpreadWeekPickDTO[];
+    results?: SpreadWeekResultDTO[];
+    games?: GameDTO[];
+    users?: UserInfo[];
 
     [key: string]: any;
 }
@@ -4118,6 +4563,94 @@ export class SpreadWeekPickDTO implements ISpreadWeekPickDTO {
 }
 
 export interface ISpreadWeekPickDTO {
+    id?: string | undefined;
+    leagueId?: string | undefined;
+    userId?: string | undefined;
+    sport?: number;
+    weekNumber?: number;
+    year?: string | undefined;
+    gamePicks?: SpreadGamePickDTO[] | undefined;
+    isFinal?: boolean;
+    processed?: boolean;
+
+    [key: string]: any;
+}
+
+export class SpreadWeekPickDTO2 implements ISpreadWeekPickDTO2 {
+    id?: string | undefined;
+    leagueId?: string | undefined;
+    userId?: string | undefined;
+    sport?: number;
+    weekNumber?: number;
+    year?: string | undefined;
+    gamePicks?: SpreadGamePickDTO[] | undefined;
+    isFinal?: boolean;
+    processed?: boolean;
+
+    [key: string]: any;
+
+    constructor(data?: ISpreadWeekPickDTO2) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.leagueId = _data["leagueId"];
+            this.userId = _data["userId"];
+            this.sport = _data["sport"];
+            this.weekNumber = _data["weekNumber"];
+            this.year = _data["year"];
+            if (Array.isArray(_data["gamePicks"])) {
+                this.gamePicks = [] as any;
+                for (let item of _data["gamePicks"])
+                    this.gamePicks!.push(SpreadGamePickDTO.fromJS(item));
+            }
+            this.isFinal = _data["isFinal"];
+            this.processed = _data["processed"];
+        }
+    }
+
+    static fromJS(data: any): SpreadWeekPickDTO2 {
+        data = typeof data === 'object' ? data : {};
+        let result = new SpreadWeekPickDTO2();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["leagueId"] = this.leagueId;
+        data["userId"] = this.userId;
+        data["sport"] = this.sport;
+        data["weekNumber"] = this.weekNumber;
+        data["year"] = this.year;
+        if (Array.isArray(this.gamePicks)) {
+            data["gamePicks"] = [];
+            for (let item of this.gamePicks)
+                data["gamePicks"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["isFinal"] = this.isFinal;
+        data["processed"] = this.processed;
+        return data;
+    }
+}
+
+export interface ISpreadWeekPickDTO2 {
     id?: string | undefined;
     leagueId?: string | undefined;
     userId?: string | undefined;
@@ -4968,6 +5501,7 @@ export interface IUserSeasonDTO {
 
 export class UserSettings implements IUserSettings {
     userId!: string;
+    userName?: string;
     partitionKey?: string;
     discordUserId!: string;
     timeZoneInfoId!: string;
@@ -4991,6 +5525,7 @@ export class UserSettings implements IUserSettings {
                     this[property] = _data[property];
             }
             this.userId = _data["userId"];
+            this.userName = _data["userName"];
             this.partitionKey = _data["partitionKey"];
             this.discordUserId = _data["discordUserId"];
             this.timeZoneInfoId = _data["timeZoneInfoId"];
@@ -5012,6 +5547,7 @@ export class UserSettings implements IUserSettings {
                 data[property] = this[property];
         }
         data["userId"] = this.userId;
+        data["userName"] = this.userName;
         data["partitionKey"] = this.partitionKey;
         data["discordUserId"] = this.discordUserId;
         data["timeZoneInfoId"] = this.timeZoneInfoId;
@@ -5022,6 +5558,7 @@ export class UserSettings implements IUserSettings {
 
 export interface IUserSettings {
     userId: string;
+    userName?: string;
     partitionKey?: string;
     discordUserId: string;
     timeZoneInfoId: string;

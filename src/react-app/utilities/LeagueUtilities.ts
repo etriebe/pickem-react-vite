@@ -1,5 +1,6 @@
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
-import { League } from "../services/PickemApiClient";
+import { League, SeasonDateInformation2 } from "../services/PickemApiClient";
+import { Sports } from "./SiteUtilities";
 
 export class LeagueUtilities {
   static async getLeaguesForCurrentUser(showArchivedLeagues: boolean): Promise<League[]> {
@@ -20,5 +21,21 @@ export class LeagueUtilities {
     else {
       return false;
     }
+  }
+
+  static getEndingWeekLabel(max: number): React.SetStateAction<string> {
+      return `Ending Week Number (Max:${max})`;
+  }
+
+  static getSportNameFromNumber(sportNumber: number): string {
+      return Sports.find(s => s.value === sportNumber)?.label!;
+  }
+
+  static getCurrentMaxWeeksForSport(sportSeasonInformation: { [key: string]: SeasonDateInformation2; } | undefined, sportName: string) {
+      return sportSeasonInformation ? sportSeasonInformation[sportName].weekStartTimes?.length! : -1;
+  }
+
+  static getCurrentMaxWeeksForSeason(seasonInformation: SeasonDateInformation2 | undefined) {
+      return seasonInformation ? seasonInformation.weekStartTimes?.length! : -1;
   }
 }

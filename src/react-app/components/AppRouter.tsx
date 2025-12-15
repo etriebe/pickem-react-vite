@@ -17,17 +17,21 @@ import SideMenu from "./SideMenu";
 import AppNavbar from "./AppNavbar";
 import Header from "./Header";
 import { alpha } from '@mui/material/styles';
+import EditUserSettings from './EditUserSettings';
+import EditLeague from './EditLeague';
+import JoinLeague from './JoinLeague';
+import ChangePassword from './ChangePassword';
+import BrowseLeagues from './BrowseLeagues';
 
 type Props = {}
 
 function AppRouter({ }: Props) {
-    
+
     const userInfoQuery = useQuery({
         queryKey: ['userinfo'],
         queryFn: AuthenticationUtilities.getUserInfo,
+        retry: false,
     });
-
-    const isAuthenticated = userInfoQuery.isSuccess && userInfoQuery.data != undefined;
 
     return (
         <>
@@ -57,18 +61,31 @@ function AppRouter({ }: Props) {
                         <Header />
 
                         {userInfoQuery.isPending && <Loading />}
-                        {userInfoQuery.isError && <SignIn />}
+                        {userInfoQuery.isError &&
+                            <Routes>
+                                <Route path="/" element={<MainGrid />} />
+                                <Route path="/signin" element={<SignIn />} />
+                                <Route path="/signup" element={<SignUp />} />
+                                <Route path="/resetpassword/:resetCode" element={<ResetPassword />} />
+                                <Route path="/browseleagues" element={<BrowseLeagues />} />
+                                <Route path="/*" element={<SignIn />} />
+                            </Routes>
+                        }
                         {userInfoQuery.isSuccess &&
                             <Routes>
-                                <Route path="/" element={isAuthenticated ? <MyLeagues /> : <MainGrid />} />
-                                <Route path="/myleagues" element={isAuthenticated ? <MyLeagues /> : <SignIn />} />
-                                <Route path="/signin" element={isAuthenticated ? <SignIn /> : <SignIn />} />
-                                <Route path="/signup" element={isAuthenticated ? <SignUp /> : <SignIn />} />
-                                <Route path="/createleague" element={isAuthenticated ? <CreateLeague /> : <SignIn />} />
-                                <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={isAuthenticated ? <PickemMakePicks /> : <SignIn />} />
-                                <Route path="/pickem/week/:leagueId/:weekNumber" element={isAuthenticated ? <PickemWeekStandings /> : <SignIn />} />
-                                <Route path="/pickem/standings/:leagueId" element={isAuthenticated ? <PickemLeagueStandings /> : <SignIn />} />
-                                <Route path="/resetpassword/:resetCode" element={isAuthenticated ? <ResetPassword /> : <SignIn />} />
+                                <Route path="/" element={<MyLeagues />} />
+                                <Route path="/myleagues" element={<MyLeagues />} />
+                                <Route path="/signin" element={<SignIn />} />
+                                <Route path="/signup" element={<SignUp />} />
+                                <Route path="/createleague" element={<CreateLeague />} />
+                                <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={<PickemMakePicks />} />
+                                <Route path="/pickem/week/:leagueId/:weekNumber" element={<PickemWeekStandings />} />
+                                <Route path="/pickem/standings/:leagueId" element={<PickemLeagueStandings />} />
+                                <Route path="/settings" element={<EditUserSettings />} />
+                                <Route path="/editleague/:leagueId" element={<EditLeague />} />
+                                <Route path="/joinleague/:leagueId" element={<JoinLeague />} />
+                                <Route path="/changepassword" element={<ChangePassword />} />
+                                <Route path="/browseleagues" element={<BrowseLeagues />} />
                             </Routes>
                         }
                     </Stack>

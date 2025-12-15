@@ -1,15 +1,16 @@
 import * as React from 'react';
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams } from 'react-router';
-import { LeagueDTO, SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO, ApiException } from '../../services/PickemApiClient';
+import { SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO, ApiException } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
-import { SiteUtilities } from '../../utilities/SiteUtilities';
+import { PageType, SiteUtilities } from '../../utilities/SiteUtilities';
 import { Typography, Snackbar, SnackbarCloseReason, Button, Paper } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MakePicksTeamCell from '../MakePicksTeamCell';
 import LeagueNavigationBreadcrumbs from '../LeagueNavigationBreadcrumbs';
 import Loading from '../Loading';
+import { useQuery } from '@tanstack/react-query';
 
 
 enum MakePicksColumnType {
@@ -20,16 +21,11 @@ enum MakePicksColumnType {
 }
 
 export default function PickemMakePicks() {
-    const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
-    const [currentPicks, setCurrentPicks] = useState<SpreadWeekPickDTO>();
     const [selectedPicksCount, setSelectedPicksCount] = useState(0);
     const [selectedKeyPicksCount, setSelectedKeyPicksCount] = useState(0);
-    const [weekGames, setWeekGames] = useState<GameDTO[]>();
-    const [weekDescription, setWeekDescription] = useState("");
     const { leagueId, weekNumber } = useParams();
     const [open, setOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
-    const [dataLoaded, setDataLoaded] = useState(false);
     const weekNumberConverted = parseInt(weekNumber!);
     const apiRef = useGridApiRef();
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
@@ -37,6 +33,18 @@ export default function PickemMakePicks() {
     const homeTeamColumnWidth = isSmallScreen ? 110 : 220;
     const gameStartColumnWidth = isSmallScreen ? 110 : 200;
     const keyPickColumnWidth = isSmallScreen ? 75 : 125;
+    
+    const makePicksQuery = useQuery({
+        queryKey: ['makepicks', leagueId, weekNumberConverted],
+        queryFn: async () => {
+            const pickemClient = PickemApiClientFactory.createClient();
+            return pickemClient.getMakePicks(leagueId!, weekNumberConverted);
+        },
+    });
+
+    const longDescription = true;
+    const weekDescription = `${SiteUtilities.getWeekDescriptionFromWeekNumber(makePicksQuery.data?.league!.seasonInformation!, weekNumberConverted, longDescription)} Picks`;
+    let currentPicks = makePicksQuery.data?.picks!;
 
     const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): React.ReactNode => {
         const teamChosen = (params.value as TeamDTO);
@@ -44,7 +52,7 @@ export default function PickemMakePicks() {
             cellType === MakePicksColumnType.HomeTeam) {
             let cellText = isSmallScreen ? `${teamChosen.abbreviation}` : `${teamChosen.name}`;
 
-            const gameSpread = currentLeague?.settings?.lockSpreadsDuringWeek ? params.row.spreadAtLockTime : params.row.currentSpread;
+            const gameSpread = makePicksQuery.data?.league?.settings?.lockSpreadsDuringWeek ? params.row.spreadAtLockTime : params.row.currentSpread;
             if (cellType === MakePicksColumnType.HomeTeam) {
                 cellText += ` (${SiteUtilities.getFormattedSpreadAmount(gameSpread!)})`
             }
@@ -61,7 +69,7 @@ export default function PickemMakePicks() {
                     }
                 }
             }
-            const imagePath = SiteUtilities.getTeamIconPathFromTeam(teamChosen, currentLeague!);
+            const imagePath = SiteUtilities.getTeamIconPathFromTeam(teamChosen, makePicksQuery.data?.league!);
             const altText = SiteUtilities.getAltTextFromTeam(teamChosen);
             return (
                 <>
@@ -150,7 +158,7 @@ export default function PickemMakePicks() {
         if (!currentPicks.gamePicks) {
             throw new Error("currentPicks.gamePicks should not be able to be null here.");
         }
-        let currentGame = weekGames?.find(g => g.id === params.row.id);
+        let currentGame = makePicksQuery.data?.games!.find(g => g.id === params.row.id);
         if (!currentGame) {
             throw new Error("Couldn't find the correct game");
         }
@@ -164,7 +172,7 @@ export default function PickemMakePicks() {
         let currentPick = currentPicks.gamePicks.find(g => g.gameID === params.row.id);
 
         if (params.field === "keyPick") {
-            if (currentPick == null) {
+            if (currentPick === undefined) {
                 setSnackbarMessage("You cannot select a key pick unless you have selected the game first.")
                 setOpen(true);
                 return;
@@ -175,28 +183,26 @@ export default function PickemMakePicks() {
             }
             else {
                 let currentKeyPickCount = currentPicks.gamePicks.filter(g => g.isKeyPicked).length;
-                if (currentKeyPickCount >= currentLeague?.settings?.keyPicks!) {
+                if (currentKeyPickCount >= makePicksQuery.data?.league?.settings?.keyPicks!) {
                     setSnackbarMessage("You have selected too many picks. Please unselect one before selecting again.")
                     setOpen(true);
                     return;
                 }
                 currentPick.isKeyPicked = !currentPick.isKeyPicked;
             }
-            setCurrentPicks(currentPicks);
             setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
             return;
         }
 
         if (!currentPick) {
             // Picking a brand new game
-            if (currentPicks.gamePicks.length >= currentLeague?.settings?.totalPicks!) {
+            if (currentPicks.gamePicks.length >= makePicksQuery.data?.league?.settings?.totalPicks!) {
                 setSnackbarMessage("You have selected too many picks. Please unselect one before selecting again.")
                 setOpen(true);
                 return;
             }
             currentPick = createPickObject(currentGame, params.value as TeamDTO);
             currentPicks.gamePicks.push(currentPick);
-            setCurrentPicks(currentPicks);
         }
         else {
             console.log(`Side picked: ${currentPick.sidePicked}`);
@@ -215,11 +221,9 @@ export default function PickemMakePicks() {
                 currentPick = createPickObject(currentGame, params.value as TeamDTO);
                 currentPicks.gamePicks.push(currentPick);
             }
-            setCurrentPicks(currentPicks);
         }
 
-        setCurrentPicks(currentPicks);
-        setSelectedPicksCount(currentPicks.gamePicks.length);
+        setSelectedPicksCount(getSelectedPicksCount(currentPicks));
         setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
         apiRef.current?.selectRow(params.id);
         apiRef.current?.autosizeColumns();
@@ -242,28 +246,6 @@ export default function PickemMakePicks() {
         }
     }
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const pickemClient = PickemApiClientFactory.createClient();
-            const league = await pickemClient.getLeagueById(leagueId);
-            const picks = await pickemClient.getSpreadWeekPicksForUser(leagueId, weekNumberConverted);
-            const returnOnlyGamesThatHaveStarted = false;
-            const games = await pickemClient.queryGames(weekNumberConverted, league.year, league.sport, returnOnlyGamesThatHaveStarted);
-            const longDescription = true;
-            const description = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!, longDescription);
-
-            setCurrentLeague(league);
-            setCurrentPicks(picks);
-            setSelectedPicksCount(getSelectedPicksCount(picks));
-            setSelectedKeyPicksCount(getSelectedKeyPicksCount(picks));
-            setWeekGames(games);
-            setWeekDescription(`${description} Picks`);
-            setDataLoaded(true);
-        }
-
-        fetchData();
-    }, []);
-
     React.useEffect(() => {
         const handleResizeWindow = () => {
             // setWidth(window.innerWidth);
@@ -279,12 +261,14 @@ export default function PickemMakePicks() {
 
     return (
         <>
-            <Typography variant='h4'>{currentLeague?.leagueName}</Typography>
+            <Typography variant='h4'>{makePicksQuery.data?.league?.leagueName}</Typography>
             <Typography variant='h5'></Typography>
             <LeagueNavigationBreadcrumbs
-                league={currentLeague!}
+                league={makePicksQuery.data?.league!}
                 currentWeekNumber={weekNumberConverted}
-                navigationTitle={weekDescription} />
+                navigationTitle={weekDescription}
+                pageType={PageType.MakePicksPage}
+            />
             <Snackbar
                 open={open}
                 autoHideDuration={5000}
@@ -292,8 +276,8 @@ export default function PickemMakePicks() {
                 message={snackbarMessage}
             />
             <Paper elevation={3} sx={{ padding: '1rem', marginTop: '1rem' }}>
-                <Typography variant='h6'>{selectedPicksCount} / {currentLeague?.settings?.totalPicks} Picks, {selectedKeyPicksCount} / {currentLeague?.settings?.keyPicks} Key Picks</Typography>
-                {!dataLoaded ?
+                <Typography variant='h6'>{selectedPicksCount} / {makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
+                {makePicksQuery.isPending ?
                     <Loading /> :
                     <>
                         <DataGrid
@@ -312,7 +296,7 @@ export default function PickemMakePicks() {
                                     outline: "none !important",
                                 },
                             }}
-                            rows={weekGames}
+                            rows={makePicksQuery.data?.games!}
                             columns={columns}
                             onCellClick={handleCellClick}
                             apiRef={apiRef}
@@ -339,7 +323,7 @@ export default function PickemMakePicks() {
         currentPick.isEdited = false;
         currentPick.isLocked = false;
         currentPick.timeOfPick = new Date();
-        currentPick.pickType = currentLeague?.type;
+        currentPick.pickType = makePicksQuery.data?.league?.type;
         return currentPick;
     }
 }

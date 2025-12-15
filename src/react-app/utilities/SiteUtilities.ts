@@ -1,3 +1,4 @@
+import { GridSortDirection } from '@mui/x-data-grid';
 import { GameDTO, LeagueDTO, SeasonDateInformation, Spread, TeamDTO, UserInfo } from '../services/PickemApiClient';
 
 export class SiteUtilities {
@@ -35,6 +36,17 @@ export class SiteUtilities {
         }
     }
 
+    static getNavigationLinkForPageType(pageType: PageType, leagueType: number, leagueId: string, weekNumber: number): string {
+        switch (pageType) {
+            case PageType.MakePicksPage:
+                return SiteUtilities.getMakePicksLink(leagueType, leagueId, weekNumber);
+            case PageType.WeekStandingsPage:
+                return SiteUtilities.getWeekStandingLink(leagueType, leagueId, weekNumber);
+            default:
+                return SiteUtilities.getLeagueStandingLink(leagueType, leagueId);
+        }
+    }
+
     static getMakePicksLink(leagueType: number, leagueId: string, weekNumber: number): string {
         switch (leagueType) {
             // both 1 and 2 are pickem against the spread and pickem straight up and have the same pick pages
@@ -52,6 +64,18 @@ export class SiteUtilities {
         }
     }
 
+    static getInviteLink(leagueId: string): string {
+        return `/joinleague/${leagueId}`;
+    }
+
+    static getEditLeagueLink(leagueId: string): string {
+        return `/editleague/${leagueId}`;
+    }
+
+    static getChangePasswordLink(): string {
+        return `/changepassword`;
+    }
+
     static getEmojiForPickStatus(picksSubmitted: boolean): string {
         if (picksSubmitted) {
             return "✅ - Submitted";
@@ -61,12 +85,40 @@ export class SiteUtilities {
         }
     }
 
+    static ConvertTrophyToEmoji(trophy: number): string
+    {
+        switch (trophy)
+        {
+            case 1:
+                return "💯";
+                break;
+            case 2:
+                return "💩";
+                break;
+            case 3:
+                return "🐛";
+                break;
+            case 4:
+                return "🥇";
+                break;
+            case 5:
+                return "🏆";
+                break;
+            default:
+                return "🤔";
+                break;
+        }
+    }
+
     static getWeekDescriptionFromWeekNumber(season: SeasonDateInformation, weekNumber: number, longDescription: boolean): string {
+        if (season === undefined) {
+            return "";
+        }
         if (weekNumber > season.weekStartTimes?.length! || weekNumber < 1) {
             throw new Error(`Invalid weekNumber requested: ${weekNumber}`);
         }
 
-        if (season.weekStartTimes == null || season.weekStartTimes.length == 0) {
+        if (season.weekStartTimes === undefined || season.weekStartTimes.length === 0) {
             return `Week ${weekNumber}`;
         }
         else {
@@ -100,7 +152,8 @@ export class SiteUtilities {
             };
         }
 
-        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStart);
+        const gameStartDate = new Date(gameStart);
+        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStartDate);
         return formattedDate;
     }
 
@@ -122,8 +175,17 @@ export class SiteUtilities {
             hour12: true,
         };
 
-        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStart);
-        return formattedDate;
+        if (gameStart === null || gameStart === undefined) {
+            return "";
+        }
+        try {
+            const gameStartDate = new Date(gameStart);
+            const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStartDate);
+            return formattedDate;
+        }
+        catch (e) {
+            return "";
+        }
     }
 
     static getNumberWithOrdinalSuffix(n: number): string {
@@ -227,13 +289,23 @@ export class SiteUtilities {
 
     static getLeagueTypeFromUrl(url: string): LeagueType | undefined {
         const urlParts = url.split("/");
-        const leagueType = LeagueTypes.find(lt => urlParts[1] == lt.urlPart);
+        const leagueType = LeagueTypes.find(lt => urlParts[1] === lt.urlPart);
         if (leagueType) {
             return leagueType;
         }
         else {
             return undefined;
         }
+    }
+
+    static getLeagueTypeFromNumber(leagueTypeNumber: number): LeagueType | undefined {
+        const leagueType = LeagueTypes.find(lt => leagueTypeNumber === lt.value);
+        return leagueType;
+    }
+
+    static getSportTypeFromNumber(sportNumber: number): SportType | undefined {
+        const sportType = Sports.find(lt => sportNumber === lt.value);
+        return sportType;
     }
 
     static getWeekNumberFromUrl(url: string): number | undefined {
@@ -272,6 +344,8 @@ export const LeagueTypes: LeagueType[] = [
     { value: 4, label: 'All Bet Types', urlPart: 'allbets' },
     { value: 5, label: 'Squares', urlPart: 'squares' },
 ];
+
+export const GRID_DEFAULT_SORT_ORDER: GridSortDirection[] =  [ 'desc', 'asc' ];
 
 export interface LeagueType {
     value: number;

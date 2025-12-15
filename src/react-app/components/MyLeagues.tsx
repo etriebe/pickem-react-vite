@@ -26,14 +26,14 @@ export default function MyLeagues() {
                     },
                 }
             })
-            : [],  
-            combine: (results) => {
-                return {
-                    data: results.map((result) => result.data),
-                    pending: results.some((result) => result.isPending),
-                }
-            }, 
-        });
+            : [],
+        combine: (results) => {
+            return {
+                data: results.map((result) => result.data),
+                pending: results.some((result) => result.isPending),
+            }
+        },
+    });
     const allFinished = !picksQuery.pending;
 
     if (leaguesQuery.isPending) {
