@@ -28,7 +28,9 @@ export default function LeagueNavigationBreadcrumbs({ league, currentWeekNumber,
                         </IconButton>
                     </div>
                 }
-                <Typography variant='h5'>{navigationTitle}</Typography>
+                <div className='centerDivContainerHorizontally'>
+                    <Typography variant='h5'>{navigationTitle}</Typography>
+                </div>
                 {nextWeekNumber <= league.endingWeekNumber! &&
                     <div className="NavigationBreadcrumbs">
                         <IconButton href={nextWeekURL} size="small" sx={{ alignSelf: 'center' }} >

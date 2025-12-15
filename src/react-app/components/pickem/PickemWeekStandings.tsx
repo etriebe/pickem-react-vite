@@ -23,7 +23,7 @@ export default function PickemWeekStandings() {
     // const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
     const gameColumnWidth = isSmallScreen ? 95 : 95;
-    const gridHeight = isSmallScreen ? "75vh" : "80vh"
+    const gridHeight = isSmallScreen ? "85vh" : "90vh"
 
     const renderUserCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
         userMapping: UserInfo[]): React.ReactNode => {
@@ -271,13 +271,7 @@ export default function PickemWeekStandings() {
 
     return (
         <>
-            <Typography variant='h4'>{weekStandingsQuery.data?.league?.leagueName}</Typography>
-            <LeagueNavigationBreadcrumbs
-                league={weekStandingsQuery.data?.league!}
-                currentWeekNumber={weekNumberConverted}
-                navigationTitle={pageTitle}
-                pageType={PageType.WeekStandingsPage}
-            />
+
             <div style={{ height: '100%', width: '90%' }}>
                 <div
                     style={{
@@ -286,6 +280,17 @@ export default function PickemWeekStandings() {
                         maxHeight: gridHeight
                     }}
                 >
+                    <div className='centerDivContainerHorizontally'>
+                        <Typography variant='h4'>{weekStandingsQuery.data?.league?.leagueName}</Typography>
+                    </div>
+                    <div className='centerDivContainerHorizontally'>
+                        <LeagueNavigationBreadcrumbs
+                            league={weekStandingsQuery.data?.league!}
+                            currentWeekNumber={weekNumberConverted}
+                            navigationTitle={pageTitle}
+                            pageType={PageType.WeekStandingsPage}
+                        />
+                    </div>
                     {weekStandingsQuery.isPending ?
                         <Loading /> :
                         <DataGrid
