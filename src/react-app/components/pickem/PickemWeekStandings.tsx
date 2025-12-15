@@ -23,6 +23,7 @@ export default function PickemWeekStandings() {
     // const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
     const gameColumnWidth = isSmallScreen ? 95 : 95;
+    const gridHeight = isSmallScreen ? "75vh" : "80vh"
 
     const renderUserCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
         userMapping: UserInfo[]): React.ReactNode => {
@@ -282,6 +283,7 @@ export default function PickemWeekStandings() {
                     style={{
                         display: 'flex',
                         flexDirection: 'column',
+                        maxHeight: gridHeight
                     }}
                 >
                     {weekStandingsQuery.isPending ?
