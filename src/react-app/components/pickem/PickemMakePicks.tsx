@@ -21,8 +21,8 @@ enum MakePicksColumnType {
 }
 
 export default function PickemMakePicks() {
-    const [selectedPicksCount, setSelectedPicksCount] = useState(0);
-    const [selectedKeyPicksCount, setSelectedKeyPicksCount] = useState(0);
+    const [selectedPicksCount, setSelectedPicksCount] = useState(-1);
+    const [selectedKeyPicksCount, setSelectedKeyPicksCount] = useState(-1);
     const { leagueId, weekNumber } = useParams();
     const [open, setOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -45,6 +45,8 @@ export default function PickemMakePicks() {
     const longDescription = true;
     const weekDescription = `${SiteUtilities.getWeekDescriptionFromWeekNumber(makePicksQuery.data?.league!.seasonInformation!, weekNumberConverted, longDescription)} Picks`;
     let currentPicks = makePicksQuery.data?.picks!;
+    let selectedPicksOriginal = currentPicks.gamePicks!.length;
+    let selectedKeyPicksOriginal = currentPicks.gamePicks?.filter(p => p.isKeyPicked).length;
 
     const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): React.ReactNode => {
         const teamChosen = (params.value as TeamDTO);
@@ -286,7 +288,7 @@ export default function PickemMakePicks() {
                         onClose={handleClose}
                         message={snackbarMessage}
                     />
-                    <Typography variant='h6'>{selectedPicksCount} / {makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
+                    <Typography variant='h6'>{selectedPicksCount == -1 ? selectedPicksOriginal : selectedPicksCount} / {makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount == -1 ? selectedKeyPicksOriginal : selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
                     {makePicksQuery.isPending ?
                         <Loading /> :
                         <>
