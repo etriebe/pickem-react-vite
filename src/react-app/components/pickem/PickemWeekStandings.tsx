@@ -11,6 +11,8 @@ import Loading from '../Loading';
 import { Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import LeagueNavigationBreadcrumbs from '../LeagueNavigationBreadcrumbs';
+import NavbarBreadcrumbs from '../NavbarBreadcrumbs';
+import Header from '../Header';
 
 export default function PickemWeekStandings() {
     // const [currentLeague, setCurrentLeague] = useState<LeagueDTO>();
@@ -23,7 +25,6 @@ export default function PickemWeekStandings() {
     // const [dataLoaded, setDataLoaded] = useState(false);
     const userColumnWidth = 100;
     const gameColumnWidth = isSmallScreen ? 95 : 95;
-    const gridHeight = isSmallScreen ? "85vh" : "90vh"
 
     const renderUserCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
         userMapping: UserInfo[]): React.ReactNode => {
@@ -268,11 +269,12 @@ export default function PickemWeekStandings() {
     const longDescription = true;
     const description = SiteUtilities.getWeekDescriptionFromWeekNumber(weekStandingsQuery.data?.league!.seasonInformation!, weekNumberConverted, longDescription);
     const pageTitle = `${description} Standings`;
+    const gridHeight = "90vh";
 
     return (
         <>
 
-            <div style={{ height: '100%', width: '90%' }}>
+            <div style={{ height: '100%', width: '100%' }}>
                 <div
                     style={{
                         display: 'flex',
@@ -280,6 +282,7 @@ export default function PickemWeekStandings() {
                         maxHeight: gridHeight
                     }}
                 >
+                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} />
                     <div className='centerDivContainerHorizontally'>
                         <Typography variant='h4'>{weekStandingsQuery.data?.league?.leagueName}</Typography>
                     </div>

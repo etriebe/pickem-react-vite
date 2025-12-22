@@ -11,6 +11,8 @@ import MakePicksTeamCell from '../MakePicksTeamCell';
 import LeagueNavigationBreadcrumbs from '../LeagueNavigationBreadcrumbs';
 import Loading from '../Loading';
 import { useQuery } from '@tanstack/react-query';
+import NavbarBreadcrumbs from '../NavbarBreadcrumbs';
+import Header from '../Header';
 
 
 enum MakePicksColumnType {
@@ -260,7 +262,7 @@ export default function PickemMakePicks() {
             window.removeEventListener("resize", handleResizeWindow);
         };
     }, []);
-    const gridHeight = "85vh";
+    const gridHeight = "90vh";
 
     return (
         <>
@@ -272,8 +274,10 @@ export default function PickemMakePicks() {
                         flexDirection: 'column',
                         maxHeight: gridHeight
                     }}>
+                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} />
                     <div className='centerDivContainerHorizontally'>
-                        <Typography variant='h4'>{makePicksQuery.data?.league?.leagueName}</Typography>                                            </div>
+                        <Typography variant='h4'>{makePicksQuery.data?.league?.leagueName}</Typography>
+                    </div>
                     <div className='centerDivContainerHorizontally'>
                         <LeagueNavigationBreadcrumbs
                             league={makePicksQuery.data?.league!}

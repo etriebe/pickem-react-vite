@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import SideMenuMobile from './SideMenuMobile';
 import MenuButton from './MenuButton';
-import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 import { SideMenuProps } from './SideMenu';
 import siteLogo from '../assets/logo.png';
 
@@ -77,7 +76,6 @@ export default function AppNavbar({ isAuthenticated, username, email }: SideMenu
               Just Pick'em
             </Typography>
           </Stack>
-          <ColorModeIconDropdown />
           <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
             <MenuRoundedIcon />
           </MenuButton>

@@ -1,13 +1,17 @@
 import Stack from '@mui/material/Stack';
-import NavbarBreadcrumbs from './NavbarBreadcrumbs';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
+import NavbarBreadcrumbs from './NavbarBreadcrumbs';
 
-export default function Header() {
+export interface NavbarBreadcrumbsProps {
+  leagueId: string | undefined;
+  weekNumber: number | undefined;
+}
+export default function Header({ leagueId, weekNumber }: NavbarBreadcrumbsProps) {
   return (
     <Stack
       direction="row"
       sx={{
-        display: { xs: 'none', md: 'flex' },
+        display: { md: 'flex' },
         width: '100%',
         alignItems: { xs: 'flex-start', md: 'center' },
         justifyContent: 'space-between',
@@ -16,7 +20,7 @@ export default function Header() {
       }}
       spacing={2}
     >
-      <NavbarBreadcrumbs />
+      <NavbarBreadcrumbs leagueId={leagueId} weekNumber={weekNumber} />
       <Stack direction="row" sx={{ gap: 1 }}>
         <ColorModeIconDropdown />
       </Stack>

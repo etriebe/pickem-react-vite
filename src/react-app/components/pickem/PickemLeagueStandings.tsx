@@ -8,6 +8,8 @@ import Loading from '../Loading';
 import { Typography } from '@mui/material';
 import { GRID_DEFAULT_SORT_ORDER, SiteUtilities } from '../../utilities/SiteUtilities';
 import { useQuery } from '@tanstack/react-query';
+import NavbarBreadcrumbs from '../NavbarBreadcrumbs';
+import Header from '../Header';
 
 export default function PickemLeagueStandings() {
     const { leagueId } = useParams();
@@ -147,18 +149,26 @@ export default function PickemLeagueStandings() {
         };
         columnList.push(weekColumn);
     }
-
+    const weekNumberConverted = leagueStandingsQuery.data?.league?.currentWeekNumber;
+    const gridHeight = "90vh";
+    
     return (
         <>
-            <Typography variant='h4'>{leagueStandingsQuery.data?.league?.leagueName}</Typography>
-            <Typography variant='h5'>Season Standings</Typography>
-            <div style={{ height: '100%', width: '90%' }}>
+            <div style={{ height: '100%', width: '100%' }}>
                 <div
                     style={{
                         display: 'flex',
                         flexDirection: 'column',
+                        maxHeight: gridHeight
                     }}
                 >
+                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} />
+                    <div className='centerDivContainerHorizontally'>
+                        <Typography variant='h4'>{leagueStandingsQuery.data?.league?.leagueName}</Typography>
+                    </div>
+                    <div className='centerDivContainerHorizontally'>
+                        <Typography variant='h5'>Season Standings</Typography>
+                    </div>
                     {leagueStandingsQuery.isPending ?
                         <Loading /> :
                         <DataGrid
@@ -192,7 +202,7 @@ export default function PickemLeagueStandings() {
                             rows={leagueStandingsQuery.data?.users || []}
                             columns={columnList}
                             rowSelection={false}
-                            columnHeaderHeight={175}
+                            columnHeaderHeight={50}
                             scrollbarSize={10}
                             getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
                             initialState={{

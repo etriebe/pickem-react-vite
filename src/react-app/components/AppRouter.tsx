@@ -58,7 +58,7 @@ function AppRouter({ }: Props) {
                             mt: { xs: 8, md: 0 },
                         }}
                     >
-                        <Header />
+                        {/* <Header /> */}
 
                         {userInfoQuery.isPending && <Loading />}
                         {userInfoQuery.isError &&
