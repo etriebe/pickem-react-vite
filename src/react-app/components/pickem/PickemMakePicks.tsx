@@ -5,7 +5,7 @@ import { SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO, ApiException } 
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
 import { DataGrid, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
 import { PageType, SiteUtilities } from '../../utilities/SiteUtilities';
-import { Typography, Snackbar, SnackbarCloseReason, Button, Paper } from '@mui/material';
+import { Typography, Snackbar, SnackbarCloseReason, Button } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MakePicksTeamCell from '../MakePicksTeamCell';
 import LeagueNavigationBreadcrumbs from '../LeagueNavigationBreadcrumbs';
@@ -270,54 +270,55 @@ export default function PickemMakePicks() {
                         flexDirection: 'column',
                         maxHeight: gridHeight
                     }}>
-                    <Typography variant='h4'>{makePicksQuery.data?.league?.leagueName}</Typography>
-                    <Typography variant='h5'></Typography>
-
-                    <LeagueNavigationBreadcrumbs
-                        league={makePicksQuery.data?.league!}
-                        currentWeekNumber={weekNumberConverted}
-                        navigationTitle={weekDescription}
-                        pageType={PageType.MakePicksPage}
-                    />
+                    <div className='centerDivContainerHorizontally'>
+                        <Typography variant='h4'>{makePicksQuery.data?.league?.leagueName}</Typography>                                            </div>
+                    <div className='centerDivContainerHorizontally'>
+                        <LeagueNavigationBreadcrumbs
+                            league={makePicksQuery.data?.league!}
+                            currentWeekNumber={weekNumberConverted}
+                            navigationTitle={weekDescription}
+                            pageType={PageType.MakePicksPage}
+                        />
+                    </div>
                     <Snackbar
                         open={open}
                         autoHideDuration={5000}
                         onClose={handleClose}
                         message={snackbarMessage}
                     />
-                        <Typography variant='h6'>{selectedPicksCount} / {makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
-                        {makePicksQuery.isPending ?
-                            <Loading /> :
-                            <>
-                                <DataGrid
-                                    sx={{
-                                        border: '1px solid #7e7e7eff', // Darker gray border
-                                        '& .MuiDataGrid-row': {
-                                            borderBottom: '1px solid #7e7e7eff', // Darker row border
-                                        },
-                                        '& .MuiDataGrid-iconSeparator': {
-                                            color: '#7e7e7eff', // Darker row border
-                                        },
-                                        '& .MuiDataGrid-columnHeaders': {
-                                            borderBottom: '1px solid #7e7e7eff', // Darker row border
-                                        },
-                                        "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                                            outline: "none !important",
-                                        },
-                                    }}
-                                    rows={makePicksQuery.data?.games!}
-                                    columns={columns}
-                                    onCellClick={handleCellClick}
-                                    apiRef={apiRef}
-                                    rowSelection={false}
-                                    getRowClassName={(params) => getRowClassName(isSmallScreen, params.row.gameStartTime!)}
-                                />
-                                <div className='makePicksButtonsDiv'>
-                                    <Button className='submitPicksButton' variant='contained' color='primary' onClick={handleSubmitPicks}>Submit Picks</Button>
-                                    <Button className='cancelPicksButton' variant='outlined' href='/'>Cancel</Button>
-                                </div>
-                            </>
-                        }
+                    <Typography variant='h6'>{selectedPicksCount} / {makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
+                    {makePicksQuery.isPending ?
+                        <Loading /> :
+                        <>
+                            <DataGrid
+                                sx={{
+                                    border: '1px solid #7e7e7eff', // Darker gray border
+                                    '& .MuiDataGrid-row': {
+                                        borderBottom: '1px solid #7e7e7eff', // Darker row border
+                                    },
+                                    '& .MuiDataGrid-iconSeparator': {
+                                        color: '#7e7e7eff', // Darker row border
+                                    },
+                                    '& .MuiDataGrid-columnHeaders': {
+                                        borderBottom: '1px solid #7e7e7eff', // Darker row border
+                                    },
+                                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                                        outline: "none !important",
+                                    },
+                                }}
+                                rows={makePicksQuery.data?.games!}
+                                columns={columns}
+                                onCellClick={handleCellClick}
+                                apiRef={apiRef}
+                                rowSelection={false}
+                                getRowClassName={(params) => getRowClassName(isSmallScreen, params.row.gameStartTime!)}
+                            />
+                            <div className='makePicksButtonsDiv'>
+                                <Button className='submitPicksButton' variant='contained' color='primary' onClick={handleSubmitPicks}>Submit Picks</Button>
+                                <Button className='cancelPicksButton' variant='outlined' href='/'>Cancel</Button>
+                            </div>
+                        </>
+                    }
                 </div>
             </div>
         </>
