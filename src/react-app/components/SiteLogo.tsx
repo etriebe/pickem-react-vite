@@ -3,6 +3,9 @@ import siteLogo from '../assets/logo.png';
 import Typography from '@mui/material/Typography';
 
 export default function SiteLogo() {
+  const goHome = () => () => {
+    window.location.href = '/';
+  };
     return (
         <Stack
             direction="row"
@@ -15,6 +18,7 @@ export default function SiteLogo() {
                 maxHeight: { sm: '64px', md: '80px', lg: '100px' },
                 pt: 1.5,
             }}
+            onClick={goHome()}
             spacing={2}
         >
             <img
