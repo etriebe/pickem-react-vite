@@ -274,7 +274,7 @@ export default function PickemMakePicks() {
                         flexDirection: 'column',
                         maxHeight: gridHeight
                     }}>
-                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} />
+                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} isSmallScreen={isSmallScreen} />
                     <div className='centerDivContainerHorizontally'>
                         <Typography variant='h4'>{makePicksQuery.data?.league?.leagueName}</Typography>
                     </div>

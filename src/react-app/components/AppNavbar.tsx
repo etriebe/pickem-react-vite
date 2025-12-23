@@ -10,6 +10,7 @@ import SideMenuMobile from './SideMenuMobile';
 import MenuButton from './MenuButton';
 import { SideMenuProps } from './SideMenu';
 import siteLogo from '../assets/logo.png';
+import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 
 const Toolbar = styled(MuiToolbar)({
   width: '100%',
@@ -79,6 +80,7 @@ export default function AppNavbar({ isAuthenticated, username, email }: SideMenu
           <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
             <MenuRoundedIcon />
           </MenuButton>
+          <ColorModeIconDropdown />
           <SideMenuMobile open={open} toggleDrawer={toggleDrawer} isAuthenticated={isAuthenticated} email={email} username={username} />
         </Stack>
       </Toolbar>

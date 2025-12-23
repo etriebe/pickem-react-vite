@@ -282,7 +282,7 @@ export default function PickemWeekStandings() {
                         maxHeight: gridHeight
                     }}
                 >
-                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} />
+                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} isSmallScreen={isSmallScreen} />
                     <div className='centerDivContainerHorizontally'>
                         <Typography variant='h4'>{weekStandingsQuery.data?.league?.leagueName}</Typography>
                     </div>

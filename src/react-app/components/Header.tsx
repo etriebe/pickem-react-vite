@@ -5,8 +5,9 @@ import NavbarBreadcrumbs from './NavbarBreadcrumbs';
 export interface NavbarBreadcrumbsProps {
   leagueId: string | undefined;
   weekNumber: number | undefined;
+  isSmallScreen: boolean;
 }
-export default function Header({ leagueId, weekNumber }: NavbarBreadcrumbsProps) {
+export default function Header({ leagueId, weekNumber, isSmallScreen }: NavbarBreadcrumbsProps) {
   return (
     <Stack
       direction="row"
@@ -22,7 +23,7 @@ export default function Header({ leagueId, weekNumber }: NavbarBreadcrumbsProps)
     >
       <NavbarBreadcrumbs leagueId={leagueId} weekNumber={weekNumber} />
       <Stack direction="row" sx={{ gap: 1 }}>
-        <ColorModeIconDropdown />
+        {!isSmallScreen && <ColorModeIconDropdown />}
       </Stack>
     </Stack>
   );

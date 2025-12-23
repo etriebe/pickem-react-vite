@@ -151,7 +151,7 @@ export default function PickemLeagueStandings() {
     }
     const weekNumberConverted = leagueStandingsQuery.data?.league?.currentWeekNumber;
     const gridHeight = "90vh";
-    
+
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
@@ -162,7 +162,7 @@ export default function PickemLeagueStandings() {
                         maxHeight: gridHeight
                     }}
                 >
-                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} />
+                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} isSmallScreen={isSmallScreen}/>
                     <div className='centerDivContainerHorizontally'>
                         <Typography variant='h4'>{leagueStandingsQuery.data?.league?.leagueName}</Typography>
                     </div>
