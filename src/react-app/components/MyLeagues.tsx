@@ -21,7 +21,7 @@ export default function MyLeagues() {
                     queryKey: ['picks', league.id],
                     queryFn: async () => {
                         const pickemClient = PickemApiClientFactory.createClient();
-                        const picks = pickemClient.getWeekPickForUser(league.id!, league.currentWeekNumber, league.type);
+                        const picks = pickemClient.getWeekPickForUser(league.id!, LeagueUtilities.getCurrentWeekNumber(league), league.type);
                         return picks;
                     },
                 }
