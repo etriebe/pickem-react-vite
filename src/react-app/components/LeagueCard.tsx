@@ -17,13 +17,14 @@ export interface LeagueCardProps {
 }
 
 export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) {
-    const weekStandingLink = SiteUtilities.getWeekStandingLink(league.type, league.id!, league.currentWeekNumber!);
+    const currentWeekNumber = LeagueUtilities.getCurrentWeekNumber(league);
+    const weekStandingLink = SiteUtilities.getWeekStandingLink(league.type, league.id!, currentWeekNumber!);
     const leagueStandingLink = SiteUtilities.getLeagueStandingLink(league.type, league.id!);
-    const myPicksLink = SiteUtilities.getMakePicksLink(league.type, league.id!, league.currentWeekNumber!);
+    const myPicksLink = SiteUtilities.getMakePicksLink(league.type, league.id!, currentWeekNumber!);
     const editLeagueLink = SiteUtilities.getEditLeagueLink(league.id!);
     const pickStatus = SiteUtilities.getEmojiForPickStatus(picksSubmitted);
     const longDescription = true;
-    const weekDescription = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, league.currentWeekNumber!, longDescription);
+    const weekDescription = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, currentWeekNumber!, longDescription);
     const leagueYear = league.year?.replace("_", "-");
     const isOffSeason = LeagueUtilities.isOffSeason(league);
     const userInfo = AuthenticationUtilities.getUserInfoFromLocalStorage();

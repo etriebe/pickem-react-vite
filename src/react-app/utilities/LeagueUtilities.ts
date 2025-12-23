@@ -54,6 +54,8 @@ export class LeagueUtilities {
         }
         weekNumber++;
       }
+      // If we still haven't returned the league is at the end of the season so return the last week
+      return weekNumber - 1;
     }
     else {
       return league.currentWeekNumber!;
