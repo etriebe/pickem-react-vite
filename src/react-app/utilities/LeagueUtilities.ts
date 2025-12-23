@@ -1,5 +1,5 @@
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
-import { League, LeagueDTO, SeasonDateInformation2 } from "../services/PickemApiClient";
+import { League, SeasonDateInformation2 } from "../services/PickemApiClient";
 import { Sports } from "./SiteUtilities";
 
 export class LeagueUtilities {
