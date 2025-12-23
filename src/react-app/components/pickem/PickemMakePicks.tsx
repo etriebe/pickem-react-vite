@@ -46,8 +46,8 @@ export default function PickemMakePicks() {
     const longDescription = true;
     const weekDescription = `${SiteUtilities.getWeekDescriptionFromWeekNumber(makePicksQuery.data?.league!.seasonInformation!, weekNumberConverted, longDescription)} Picks`;
     let currentPicks = makePicksQuery.data?.picks!;
-    let selectedPicksOriginal = currentPicks.gamePicks!.length;
-    let selectedKeyPicksOriginal = currentPicks.gamePicks?.filter(p => p.isKeyPicked).length;
+    let selectedPicksOriginal = currentPicks?.gamePicks?.length ?? 0;
+    let selectedKeyPicksOriginal = currentPicks?.gamePicks?.filter(p => p.isKeyPicked).length ?? 0;
 
     const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): React.ReactNode => {
         const teamChosen = (params.value as TeamDTO);
