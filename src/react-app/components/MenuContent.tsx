@@ -8,7 +8,6 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import { Add as AddIcon } from '@mui/icons-material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 
 const mainListItems = [
   { text: 'My Leagues', icon: <HomeRoundedIcon />, path: '/' },

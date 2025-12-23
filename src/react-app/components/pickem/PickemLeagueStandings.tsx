@@ -8,7 +8,6 @@ import Loading from '../Loading';
 import { Typography } from '@mui/material';
 import { GRID_DEFAULT_SORT_ORDER, SiteUtilities } from '../../utilities/SiteUtilities';
 import { useQuery } from '@tanstack/react-query';
-import NavbarBreadcrumbs from '../NavbarBreadcrumbs';
 import Header from '../Header';
 
 export default function PickemLeagueStandings() {

@@ -11,7 +11,6 @@ import MakePicksTeamCell from '../MakePicksTeamCell';
 import LeagueNavigationBreadcrumbs from '../LeagueNavigationBreadcrumbs';
 import Loading from '../Loading';
 import { useQuery } from '@tanstack/react-query';
-import NavbarBreadcrumbs from '../NavbarBreadcrumbs';
 import Header from '../Header';
 
 

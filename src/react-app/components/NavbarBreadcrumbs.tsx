@@ -3,7 +3,6 @@ import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import { PageType, SiteUtilities } from '../utilities/SiteUtilities';
 import { Link } from 'react-router';
-import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
   margin: theme.spacing(1, 0),

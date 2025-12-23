@@ -11,7 +11,6 @@ import Loading from '../Loading';
 import { Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import LeagueNavigationBreadcrumbs from '../LeagueNavigationBreadcrumbs';
-import NavbarBreadcrumbs from '../NavbarBreadcrumbs';
 import Header from '../Header';
 
 export default function PickemWeekStandings() {

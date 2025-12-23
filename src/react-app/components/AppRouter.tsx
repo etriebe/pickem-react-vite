@@ -15,7 +15,6 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import SideMenu from "./SideMenu";
 import AppNavbar from "./AppNavbar";
-import Header from "./Header";
 import { alpha } from '@mui/material/styles';
 import EditUserSettings from './EditUserSettings';
 import EditLeague from './EditLeague';
