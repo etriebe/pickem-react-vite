@@ -48,6 +48,7 @@ export default function PickemMakePicks() {
     let currentPicks = makePicksQuery.data?.picks!;
     let selectedPicksOriginal = currentPicks?.gamePicks?.length ?? 0;
     let selectedKeyPicksOriginal = currentPicks?.gamePicks?.filter(p => p.isKeyPicked).length ?? 0;
+    const weekInformation = makePicksQuery.data?.league?.seasonInformation?.weekStartTimes?.find(w => w.weekNumber == weekNumber);
 
     const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): React.ReactNode => {
         const teamChosen = (params.value as TeamDTO);
@@ -154,6 +155,12 @@ export default function PickemMakePicks() {
     };
 
     const handleCellClick: GridEventListener<"cellClick"> = (params) => {
+        let picksAllowed = makePicksQuery.data?.league?.settings?.totalPicks!;
+        let keyPicksAllowed = makePicksQuery.data?.league?.settings?.keyPicks!;
+        if (weekInformation && weekInformation.allowAllPicks) {
+            picksAllowed = -1;
+            keyPicksAllowed = 0;
+        }
         console.log("Cell clicked:", params);
         if (!currentPicks) {
             throw new Error("currentPicks should not be able to be null here.");
@@ -186,7 +193,7 @@ export default function PickemMakePicks() {
             }
             else {
                 let currentKeyPickCount = currentPicks.gamePicks.filter(g => g.isKeyPicked).length;
-                if (currentKeyPickCount >= makePicksQuery.data?.league?.settings?.keyPicks!) {
+                if (currentKeyPickCount >= keyPicksAllowed) {
                     setSnackbarMessage("You have selected too many picks. Please unselect one before selecting again.")
                     setOpen(true);
                     return;
@@ -199,7 +206,7 @@ export default function PickemMakePicks() {
 
         if (!currentPick) {
             // Picking a brand new game
-            if (currentPicks.gamePicks.length >= makePicksQuery.data?.league?.settings?.totalPicks!) {
+            if (picksAllowed != -1 && currentPicks.gamePicks.length >= picksAllowed) {
                 setSnackbarMessage("You have selected too many picks. Please unselect one before selecting again.")
                 setOpen(true);
                 return;
@@ -266,7 +273,6 @@ export default function PickemMakePicks() {
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
-
                 <div
                     style={{
                         display: 'flex',
@@ -291,7 +297,7 @@ export default function PickemMakePicks() {
                         onClose={handleClose}
                         message={snackbarMessage}
                     />
-                    <Typography variant='h6'>{selectedPicksCount == -1 ? selectedPicksOriginal : selectedPicksCount} / {makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount == -1 ? selectedKeyPicksOriginal : selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
+                    <Typography variant='h6'>{selectedPicksCount == -1 ? selectedPicksOriginal : selectedPicksCount} / {weekInformation?.allowAllPicks ? "All" : makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount == -1 ? selectedKeyPicksOriginal : selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
                     {makePicksQuery.isPending ?
                         <Loading /> :
                         <>
