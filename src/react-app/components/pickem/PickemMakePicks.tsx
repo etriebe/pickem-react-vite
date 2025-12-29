@@ -269,6 +269,7 @@ export default function PickemMakePicks() {
         };
     }, []);
     const gridHeight = "90vh";
+    const rowHeight = isSmallScreen ? 30 : 52;
 
     return (
         <>
@@ -322,6 +323,7 @@ export default function PickemMakePicks() {
                                 onCellClick={handleCellClick}
                                 apiRef={apiRef}
                                 rowSelection={false}
+                                rowHeight={rowHeight}
                                 getRowClassName={(params) => getRowClassName(isSmallScreen, params.row.gameStartTime!)}
                             />
                             <div className='makePicksButtonsDiv'>
