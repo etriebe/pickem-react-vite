@@ -3,6 +3,11 @@
     max-height: 40px;
 }
 
+.teamlogoSmallScreen {
+    max-width: 20px;
+    max-height: 20px;
+}
+
 .makePicksButtonsDiv {
     margin-top: 1em;
 }

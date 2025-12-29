@@ -8,7 +8,7 @@ export interface PickemWeekStandingsHeaderTeamCellProps {
     isSmallScreen: boolean;
 }
 
-export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague }: PickemWeekStandingsHeaderTeamCellProps) {
+export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague, isSmallScreen }: PickemWeekStandingsHeaderTeamCellProps) {
     let gameHeaderClass = "GameHeader ";
 
     const awayImagePath = SiteUtilities.getTeamIconPathFromTeam(game.awayTeam!, currentLeague!);
@@ -48,7 +48,7 @@ export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague 
                     {game.result?.awayScore}
                 </div>
                 <div className="TeamIconHeaderDiv">
-                    <TeamIcon imagePath={awayImagePath} altText={awayAltText} />
+                    <TeamIcon imagePath={awayImagePath} altText={awayAltText} useSmallLogo={false} />
                 </div>
             </div>
             <div className="HomeTeam">
@@ -57,7 +57,7 @@ export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague 
                     {game.result?.homeScore}
                 </div>
                 <div className="TeamIconHeaderDiv">
-                    <TeamIcon imagePath={homeImagePath} altText={homeAltText} />
+                    <TeamIcon imagePath={homeImagePath} altText={homeAltText} useSmallLogo={false} />
                 </div>
             </div>
             <div className="Spread">

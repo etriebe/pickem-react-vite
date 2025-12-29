@@ -52,7 +52,7 @@ export default function PickemWeekStandings() {
         const userGameResult = userWeekResult?.pickResults?.find(pr => pr.gameId === game.id);
         const gameResultText = userGameResult?.isFinal ? (userGameResult.success ? "✅" : "❌") : "";
         return <div className='centerDivContainer'>
-            <TeamIcon imagePath={pickImagePath} altText={pickAltText} />
+            <TeamIcon imagePath={pickImagePath} altText={pickAltText} useSmallLogo={isSmallScreen} />
             {gamePick.isKeyPicked && <div className='keyPickIndicator'>🔑</div>}
             {userGameResult && <div className='gamePickResultIndicator'>{gameResultText}</div>}
         </div>;
@@ -269,6 +269,7 @@ export default function PickemWeekStandings() {
     const description = SiteUtilities.getWeekDescriptionFromWeekNumber(weekStandingsQuery.data?.league!.seasonInformation!, weekNumberConverted, longDescription);
     const pageTitle = `${description} Standings`;
     const gridHeight = "90vh";
+    const rowHeight = isSmallScreen ? 25 : 52;
 
     return (
         <>
@@ -327,6 +328,7 @@ export default function PickemWeekStandings() {
                             columns={columnList}
                             rowSelection={false}
                             columnHeaderHeight={175}
+                            rowHeight={rowHeight}
                             scrollbarSize={10}
                             getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
                             initialState={{
