@@ -329,7 +329,7 @@ export default function PickemMakePicks() {
                                 apiRef={apiRef}
                                 rowSelection={false}
                                 rowHeight={rowHeight}
-                                getRowClassName={(params) => getRowClassName(isSmallScreen, params.row.gameStartTime!)}
+                                getRowClassName={() => getRowClassName(isSmallScreen)}
                             />
                             <div className='makePicksButtonsDiv'>
                                 <Button className='submitPicksButton' variant='contained' color='primary' onClick={handleSubmitPicks}>Submit Picks</Button>
@@ -368,9 +368,8 @@ function getSelectedKeyPicksCount(currentPicks: SpreadWeekPickDTO): React.SetSta
     return currentPicks.gamePicks.filter(p => p.isKeyPicked).length;
 }
 
-function getRowClassName(isSmallScreen: boolean, gameStartTime: Date): string {
+function getRowClassName(isSmallScreen: boolean): string {
     let cssClasses = [];
     cssClasses.push(isSmallScreen ? 'makePickContainerSmall' : 'makePickContainer');
-    // cssClasses.push(gameStartTime <= new Date() ? 'gameStarted' : '');
     return cssClasses.join(' ');
 }
