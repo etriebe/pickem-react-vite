@@ -12,7 +12,7 @@ export default function MakePicksTeamCell({ imagePath, altText, isSmallScreen, c
     return (
         <>
             <div className={divClassName}>
-                <TeamIcon imagePath={imagePath} altText={altText} />
+                <TeamIcon imagePath={imagePath} altText={altText} useSmallLogo={isSmallScreen} />
                 {cellText}
             </div>
         </>);

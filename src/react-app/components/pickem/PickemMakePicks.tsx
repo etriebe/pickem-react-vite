@@ -81,7 +81,12 @@ export default function PickemMakePicks() {
                 </>);
         }
         else if (cellType === MakePicksColumnType.GameStartTime) {
-            return <>{SiteUtilities.getFormattedGameTime(params.value, isSmallScreen)}</>;
+            const gameStartTime = params.value;
+            let lockSymbol = "";
+            if (gameStartTime <= new Date()) {
+                lockSymbol = "🔒";
+            }
+            return <>{lockSymbol}{SiteUtilities.getFormattedGameTime(params.value, isSmallScreen)}</>;
         }
         else if (cellType === MakePicksColumnType.KeyPick) {
             if (currentPicks && currentPicks.gamePicks) {
@@ -366,6 +371,6 @@ function getSelectedKeyPicksCount(currentPicks: SpreadWeekPickDTO): React.SetSta
 function getRowClassName(isSmallScreen: boolean, gameStartTime: Date): string {
     let cssClasses = [];
     cssClasses.push(isSmallScreen ? 'makePickContainerSmall' : 'makePickContainer');
-    cssClasses.push(gameStartTime <= new Date() ? 'gameStarted' : '');
+    // cssClasses.push(gameStartTime <= new Date() ? 'gameStarted' : '');
     return cssClasses.join(' ');
 }
