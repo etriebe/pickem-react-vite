@@ -8,9 +8,10 @@ type LeagueNavigationBreadcrumbsProps = {
     currentWeekNumber: number;
     navigationTitle: string;
     pageType: PageType;
+    isSmallScreen: boolean;
 }
 
-export default function LeagueNavigationBreadcrumbs({ league, currentWeekNumber, navigationTitle, pageType }: LeagueNavigationBreadcrumbsProps) {
+export default function LeagueNavigationBreadcrumbs({ league, currentWeekNumber, navigationTitle, pageType, isSmallScreen }: LeagueNavigationBreadcrumbsProps) {
     if (!league) {
         return <></>;
     }
@@ -18,22 +19,31 @@ export default function LeagueNavigationBreadcrumbs({ league, currentWeekNumber,
     const previousWeekURL = SiteUtilities.getNavigationLinkForPageType(pageType, league.type!, league.id!, previousWeekNumber);
     const nextWeekNumber = currentWeekNumber + 1;
     const nextWeekURL = SiteUtilities.getNavigationLinkForPageType(pageType, league.type!, league.id!, nextWeekNumber);
+    const navTypographySize = isSmallScreen ? 'body1' : 'h5';
+    const navBreadcrumbClassName = isSmallScreen ? 'NavigationBreadcrumbsSmall' : 'NavigationBreadcrumbs';
+    const buttonHeight = isSmallScreen ? 20 : 'auto';
     return (
         <>
             <div className="NavigationBreadcrumbsContainer">
                 {previousWeekNumber >= league.startingWeekNumber! &&
-                    <div className="NavigationBreadcrumbs">
-                        <IconButton href={previousWeekURL} size="small" sx={{ alignSelf: 'center' }} >
+                    <div className={navBreadcrumbClassName}>
+                        <IconButton href={previousWeekURL} size="small" sx={{
+                            alignSelf: 'center',
+                            height: buttonHeight,
+                        }} >
                             <ChevronLeft />
                         </IconButton>
                     </div>
                 }
                 <div className='centerDivContainerHorizontally'>
-                    <Typography variant='h5'>{navigationTitle}</Typography>
+                    <Typography variant={navTypographySize}>{navigationTitle}</Typography>
                 </div>
                 {nextWeekNumber <= league.endingWeekNumber! &&
-                    <div className="NavigationBreadcrumbs">
-                        <IconButton href={nextWeekURL} size="small" sx={{ alignSelf: 'center' }} >
+                    <div className={navBreadcrumbClassName}>
+                        <IconButton href={nextWeekURL} size="small" sx={{
+                            alignSelf: 'center',
+                            height: buttonHeight,
+                        }} >
                             <ChevronRight />
                         </IconButton>
                     </div>

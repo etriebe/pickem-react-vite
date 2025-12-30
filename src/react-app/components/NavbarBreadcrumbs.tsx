@@ -41,6 +41,7 @@ export default function NavbarBreadcrumbs({ leagueId, weekNumber }: NavbarBreadc
         style={{
             display: 'flex',
             flexDirection: 'column',
+            padding: '0px',
         }}
       >
       <StyledBreadcrumbs

@@ -57,6 +57,7 @@ export default function PickemMakePicks() {
             let cellText = isSmallScreen ? `${teamChosen.abbreviation}` : `${teamChosen.name}`;
 
             const gameSpread = makePicksQuery.data?.league?.settings?.lockSpreadsDuringWeek ? params.row.spreadAtLockTime : params.row.currentSpread;
+            console.log(`Game spread: ${JSON.stringify(gameSpread)}`);
             if (cellType === MakePicksColumnType.HomeTeam) {
                 cellText += ` (${SiteUtilities.getFormattedSpreadAmount(gameSpread!)})`
             }
@@ -273,8 +274,10 @@ export default function PickemMakePicks() {
             window.removeEventListener("resize", handleResizeWindow);
         };
     }, []);
-    const gridHeight = "90vh";
+    const gridHeight = "100vh";
     const rowHeight = isSmallScreen ? 30 : 52;
+    const typoGraphyLeagueTitle = isSmallScreen ? 'h5' : 'h4';
+    const typoGraphyLeaguePicks = isSmallScreen ? 'body1' : 'h6';
 
     return (
         <>
@@ -287,7 +290,7 @@ export default function PickemMakePicks() {
                     }}>
                     <Header leagueId={leagueId} weekNumber={weekNumberConverted} isSmallScreen={isSmallScreen} />
                     <div className='centerDivContainerHorizontally'>
-                        <Typography variant='h4'>{makePicksQuery.data?.league?.leagueName}</Typography>
+                        <Typography variant={typoGraphyLeagueTitle}>{makePicksQuery.data?.league?.leagueName}</Typography>
                     </div>
                     <div className='centerDivContainerHorizontally'>
                         <LeagueNavigationBreadcrumbs
@@ -295,6 +298,7 @@ export default function PickemMakePicks() {
                             currentWeekNumber={weekNumberConverted}
                             navigationTitle={weekDescription}
                             pageType={PageType.MakePicksPage}
+                            isSmallScreen={isSmallScreen}
                         />
                     </div>
                     <Snackbar
@@ -303,7 +307,7 @@ export default function PickemMakePicks() {
                         onClose={handleClose}
                         message={snackbarMessage}
                     />
-                    <Typography variant='h6'>{selectedPicksCount == -1 ? selectedPicksOriginal : selectedPicksCount} / {weekInformation?.allowAllPicks ? "All" : makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount == -1 ? selectedKeyPicksOriginal : selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
+                    <Typography variant={typoGraphyLeaguePicks}>{selectedPicksCount == -1 ? selectedPicksOriginal : selectedPicksCount} / {weekInformation?.allowAllPicks ? "All" : makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount == -1 ? selectedKeyPicksOriginal : selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
                     {makePicksQuery.isPending ?
                         <Loading /> :
                         <>

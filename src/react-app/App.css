@@ -180,6 +180,10 @@
     padding-left: 1ch;
 }
 
+.NavigationBreadcrumbsSmall {
+    max-height: 10px;
+}
+
 .NavigationBreadcrumbsContainer {
     display: flex;
 }

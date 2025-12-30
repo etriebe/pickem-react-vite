@@ -18,11 +18,14 @@ export default function Header({ leagueId, weekNumber, isSmallScreen }: NavbarBr
         justifyContent: 'space-between',
         maxWidth: { sm: '100%', md: '1700px' },
         pt: 1.5,
+        padding: 0,
       }}
       spacing={2}
     >
       <NavbarBreadcrumbs leagueId={leagueId} weekNumber={weekNumber} />
-      <Stack direction="row" sx={{ gap: 1 }}>
+      <Stack direction="row" sx={{ 
+        gap: 1,
+      }}>
         {!isSmallScreen && <ColorModeIconDropdown />}
       </Stack>
     </Stack>

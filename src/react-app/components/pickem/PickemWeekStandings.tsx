@@ -292,6 +292,7 @@ export default function PickemWeekStandings() {
                             currentWeekNumber={weekNumberConverted}
                             navigationTitle={pageTitle}
                             pageType={PageType.WeekStandingsPage}
+                            isSmallScreen={isSmallScreen}
                         />
                     </div>
                     {weekStandingsQuery.isPending ?
