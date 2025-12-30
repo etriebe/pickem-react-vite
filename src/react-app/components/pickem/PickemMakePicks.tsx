@@ -57,7 +57,7 @@ export default function PickemMakePicks() {
             let cellText = isSmallScreen ? `${teamChosen.abbreviation}` : `${teamChosen.name}`;
 
             const gameSpread = makePicksQuery.data?.league?.settings?.lockSpreadsDuringWeek ? params.row.spreadAtLockTime : params.row.currentSpread;
-            console.log(`Game spread: ${JSON.stringify(gameSpread)}`);
+            // console.log(`Game ID: ${params.row.id}, game: ${JSON.stringify(params.row)}`);
             if (cellType === MakePicksColumnType.HomeTeam) {
                 cellText += ` (${SiteUtilities.getFormattedSpreadAmount(gameSpread!)})`
             }
