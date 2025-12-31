@@ -188,6 +188,9 @@ export default function PickemMakePicks() {
 
         let currentPick = currentPicks.gamePicks.find(g => g.gameID === params.row.id);
 
+        if (params.field === "gameStartTime") {
+            return;
+        }
         if (params.field === "keyPick") {
             if (currentPick === undefined) {
                 setSnackbarMessage("You cannot select a key pick unless you have selected the game first.")
@@ -243,7 +246,7 @@ export default function PickemMakePicks() {
         setSelectedPicksCount(getSelectedPicksCount(currentPicks));
         setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
         apiRef.current?.selectRow(params.id);
-        apiRef.current?.autosizeColumns();
+        // apiRef.current?.autosizeColumns();
     };
 
     const handleSubmitPicks = async () => {
@@ -266,7 +269,7 @@ export default function PickemMakePicks() {
     React.useEffect(() => {
         const handleResizeWindow = () => {
             // setWidth(window.innerWidth);
-            apiRef.current?.autosizeColumns();
+            // apiRef.current?.autosizeColumns();
         };
         // subscribe to window resize event "onComponentDidMount"
         window.addEventListener("resize", handleResizeWindow);
