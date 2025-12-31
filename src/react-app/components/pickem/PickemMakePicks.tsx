@@ -275,7 +275,7 @@ export default function PickemMakePicks() {
         };
     }, []);
     const gridHeight = "100vh";
-    const rowHeight = isSmallScreen ? 30 : 52;
+    const rowHeight = isSmallScreen ? 30 : 40;
     const typoGraphyLeagueTitle = isSmallScreen ? 'h5' : 'h4';
     const typoGraphyLeaguePicks = isSmallScreen ? 'body1' : 'h6';
 
@@ -333,6 +333,7 @@ export default function PickemMakePicks() {
                                 apiRef={apiRef}
                                 rowSelection={false}
                                 rowHeight={rowHeight}
+                                hideFooter={true}
                                 getRowClassName={() => getRowClassName(isSmallScreen)}
                             />
                             <div className='makePicksButtonsDiv'>
