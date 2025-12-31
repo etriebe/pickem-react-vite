@@ -376,10 +376,8 @@ function getSelectedKeyPicksCount(currentPicks: SpreadWeekPickDTO): React.SetSta
 }
 
 function getCellClassName(params: GridCellParams<any, GameDTO, GameDTO, GridTreeNode>, currentPicks: SpreadWeekPickDTO): string {
-    const homeOrAwayPicked = params.field;
     const game : GameDTO = params.row;
     const clickedTeam: TeamDTO | undefined = params.value;
-
     const gamePicked = currentPicks.gamePicks?.find(p => p.gameID === params.id);
 
     if (gamePicked) {
