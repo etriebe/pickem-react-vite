@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useParams } from 'react-router';
 import { SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO, ApiException } from '../../services/PickemApiClient';
 import PickemApiClientFactory from "../../services/PickemApiClientFactory";
-import { DataGrid, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNode, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
 import { PageType, SiteUtilities } from '../../utilities/SiteUtilities';
 import { Typography, Snackbar, SnackbarCloseReason, Button } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -62,18 +62,19 @@ export default function PickemMakePicks() {
                 cellText += ` (${SiteUtilities.getFormattedSpreadAmount(gameSpread!)})`
             }
 
-            if (currentPicks && currentPicks.gamePicks) {
-                const selectedGameId = params.row.id;
-                const gamePick = currentPicks.gamePicks.find(g => g.gameID === selectedGameId);
-                if (gamePick) {
-                    const isTeamSelected = (gamePick.sidePicked === 0 && cellType === MakePicksColumnType.HomeTeam) ||
-                        (gamePick.sidePicked === 1 && cellType === MakePicksColumnType.AwayTeam);
+            // Uncomment if you want to go back to checkbox for picks
+            // if (currentPicks && currentPicks.gamePicks) {
+            //     const selectedGameId = params.row.id;
+            //     const gamePick = currentPicks.gamePicks.find(g => g.gameID === selectedGameId);
+            //     if (gamePick) {
+            //         const isTeamSelected = (gamePick.sidePicked === 0 && cellType === MakePicksColumnType.HomeTeam) ||
+            //             (gamePick.sidePicked === 1 && cellType === MakePicksColumnType.AwayTeam);
 
-                    if (isTeamSelected) {
-                        cellText += ` ☑️`;
-                    }
-                }
-            }
+            //         if (isTeamSelected) {
+            //             cellText += ` ☑️`;
+            //         }
+            //     }
+            // }
             const imagePath = SiteUtilities.getTeamIconPathFromTeam(teamChosen, makePicksQuery.data?.league!);
             const altText = SiteUtilities.getAltTextFromTeam(teamChosen);
             return (
@@ -334,6 +335,7 @@ export default function PickemMakePicks() {
                                 rowSelection={false}
                                 rowHeight={rowHeight}
                                 hideFooter={true}
+                                getCellClassName={(params) => getCellClassName(params, currentPicks)}
                                 getRowClassName={() => getRowClassName(isSmallScreen)}
                             />
                             <div className='makePicksButtonsDiv'>
@@ -371,6 +373,26 @@ function getSelectedKeyPicksCount(currentPicks: SpreadWeekPickDTO): React.SetSta
         return 0;
     }
     return currentPicks.gamePicks.filter(p => p.isKeyPicked).length;
+}
+
+function getCellClassName(params: GridCellParams<any, GameDTO, GameDTO, GridTreeNode>, currentPicks: SpreadWeekPickDTO): string {
+    const homeOrAwayPicked = params.field;
+    const game : GameDTO = params.row;
+    const clickedTeam: TeamDTO | undefined = params.value;
+
+    const gamePicked = currentPicks.gamePicks?.find(p => p.gameID === params.id);
+
+    if (gamePicked) {
+        if (gamePicked.sidePicked === 1 && game.awayTeam?.id === clickedTeam?.id) {
+            console.log(`Picked away team: ${clickedTeam?.abbreviation}`);
+            return "teamPicked";
+        }
+        if (gamePicked.sidePicked === 0 && game.homeTeam?.id === clickedTeam?.id) {
+            console.log(`Picked home team: ${clickedTeam?.abbreviation}`);
+            return "teamPicked";
+        }
+    }
+    return "";
 }
 
 function getRowClassName(isSmallScreen: boolean): string {

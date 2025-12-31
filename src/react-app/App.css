@@ -8,6 +8,10 @@
     max-height: 20px;
 }
 
+.teamPicked {
+    background-color:  gray;
+}
+
 .makePicksButtonsDiv {
     margin-top: 1em;
 }
