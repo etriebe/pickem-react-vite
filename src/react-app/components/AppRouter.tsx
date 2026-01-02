@@ -21,6 +21,7 @@ import EditLeague from './EditLeague';
 import JoinLeague from './JoinLeague';
 import ChangePassword from './ChangePassword';
 import BrowseLeagues from './BrowseLeagues';
+import Admin from './Admin';
 
 type Props = {}
 
@@ -85,6 +86,7 @@ function AppRouter({ }: Props) {
                                 <Route path="/joinleague/:leagueId" element={<JoinLeague />} />
                                 <Route path="/changepassword" element={<ChangePassword />} />
                                 <Route path="/browseleagues" element={<BrowseLeagues />} />
+                                <Route path="/admin" element={<Admin />} />
                             </Routes>
                         }
                     </Stack>
