@@ -14,7 +14,7 @@ export class Client {
 
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "https://localhost:32773/";
+        this.baseUrl = baseUrl ?? "https://pickemapi20250725110234-hmfrfjgjdafwbpgd.centralus-01.azurewebsites.net/";
     }
 
     /**
@@ -2190,6 +2190,99 @@ export class Client {
             });
         }
         return Promise.resolve<PickemMakePicksResponse>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @return OK
+     */
+    getLeagueStandings2(leagueId: string | undefined): Promise<SurvivorLeagueStandingsResponse> {
+        let url_ = this.baseUrl + "/api/survivorpage/GetLeagueStandings?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetLeagueStandings2(_response);
+        });
+    }
+
+    protected processGetLeagueStandings2(response: Response): Promise<SurvivorLeagueStandingsResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SurvivorLeagueStandingsResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SurvivorLeagueStandingsResponse>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @param weekNumber (optional) 
+     * @return OK
+     */
+    getMakePicks2(leagueId: string | undefined, weekNumber: number | undefined): Promise<SurvivorMakePicksResponse> {
+        let url_ = this.baseUrl + "/api/survivorpage/GetMakePicks?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        if (weekNumber === null)
+            throw new globalThis.Error("The parameter 'weekNumber' cannot be null.");
+        else if (weekNumber !== undefined)
+            url_ += "weekNumber=" + encodeURIComponent("" + weekNumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetMakePicks2(_response);
+        });
+    }
+
+    protected processGetMakePicks2(response: Response): Promise<SurvivorMakePicksResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SurvivorMakePicksResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SurvivorMakePicksResponse>(null as any);
     }
 }
 
@@ -4764,6 +4857,402 @@ export interface ISpreadWeekResultDTO {
     weekNumber?: number;
     year?: string;
     trophies?: number[];
+
+    [key: string]: any;
+}
+
+export class SurvivorGamePickDTO implements ISurvivorGamePickDTO {
+    gameID?: string;
+    gameStartTime?: Date;
+    sidePicked?: number;
+    teamPicked?: TeamDTO;
+    timeOfPick?: Date;
+    isLocked?: boolean;
+    isEdited?: boolean;
+
+    [key: string]: any;
+
+    constructor(data?: ISurvivorGamePickDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.gameID = _data["gameID"];
+            this.gameStartTime = _data["gameStartTime"] ? new Date(_data["gameStartTime"].toString()) : undefined as any;
+            this.sidePicked = _data["sidePicked"];
+            this.teamPicked = _data["teamPicked"] ? TeamDTO.fromJS(_data["teamPicked"]) : undefined as any;
+            this.timeOfPick = _data["timeOfPick"] ? new Date(_data["timeOfPick"].toString()) : undefined as any;
+            this.isLocked = _data["isLocked"];
+            this.isEdited = _data["isEdited"];
+        }
+    }
+
+    static fromJS(data: any): SurvivorGamePickDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new SurvivorGamePickDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["gameID"] = this.gameID;
+        data["gameStartTime"] = this.gameStartTime ? this.gameStartTime.toISOString() : undefined as any;
+        data["sidePicked"] = this.sidePicked;
+        data["teamPicked"] = this.teamPicked ? this.teamPicked.toJSON() : undefined as any;
+        data["timeOfPick"] = this.timeOfPick ? this.timeOfPick.toISOString() : undefined as any;
+        data["isLocked"] = this.isLocked;
+        data["isEdited"] = this.isEdited;
+        return data;
+    }
+}
+
+export interface ISurvivorGamePickDTO {
+    gameID?: string;
+    gameStartTime?: Date;
+    sidePicked?: number;
+    teamPicked?: TeamDTO;
+    timeOfPick?: Date;
+    isLocked?: boolean;
+    isEdited?: boolean;
+
+    [key: string]: any;
+}
+
+export class SurvivorLeagueStandingsResponse implements ISurvivorLeagueStandingsResponse {
+    league?: LeagueDTO;
+    results?: SurvivorWeekResultDTO[];
+    users?: UserInfo[];
+
+    [key: string]: any;
+
+    constructor(data?: ISurvivorLeagueStandingsResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : undefined as any;
+            if (Array.isArray(_data["results"])) {
+                this.results = [] as any;
+                for (let item of _data["results"])
+                    this.results!.push(SurvivorWeekResultDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(UserInfo.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SurvivorLeagueStandingsResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SurvivorLeagueStandingsResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        if (Array.isArray(this.results)) {
+            data["results"] = [];
+            for (let item of this.results)
+                data["results"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface ISurvivorLeagueStandingsResponse {
+    league?: LeagueDTO;
+    results?: SurvivorWeekResultDTO[];
+    users?: UserInfo[];
+
+    [key: string]: any;
+}
+
+export class SurvivorMakePicksResponse implements ISurvivorMakePicksResponse {
+    league?: LeagueDTO;
+    picks?: SurvivorWeekPickDTO[] | undefined;
+    games?: GameDTO[];
+
+    [key: string]: any;
+
+    constructor(data?: ISurvivorMakePicksResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : undefined as any;
+            if (Array.isArray(_data["picks"])) {
+                this.picks = [] as any;
+                for (let item of _data["picks"])
+                    this.picks!.push(SurvivorWeekPickDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["games"])) {
+                this.games = [] as any;
+                for (let item of _data["games"])
+                    this.games!.push(GameDTO.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SurvivorMakePicksResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SurvivorMakePicksResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        if (Array.isArray(this.picks)) {
+            data["picks"] = [];
+            for (let item of this.picks)
+                data["picks"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.games)) {
+            data["games"] = [];
+            for (let item of this.games)
+                data["games"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface ISurvivorMakePicksResponse {
+    league?: LeagueDTO;
+    picks?: SurvivorWeekPickDTO[] | undefined;
+    games?: GameDTO[];
+
+    [key: string]: any;
+}
+
+export class SurvivorWeekPickDTO implements ISurvivorWeekPickDTO {
+    id?: string | undefined;
+    leagueId?: string | undefined;
+    userId?: string | undefined;
+    sport?: number;
+    weekNumber?: number;
+    year?: string | undefined;
+    gamePick?: SurvivorGamePickDTO | undefined;
+    isFinal?: boolean;
+    totalPoints?: number;
+    processed?: boolean;
+
+    [key: string]: any;
+
+    constructor(data?: ISurvivorWeekPickDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.leagueId = _data["leagueId"];
+            this.userId = _data["userId"];
+            this.sport = _data["sport"];
+            this.weekNumber = _data["weekNumber"];
+            this.year = _data["year"];
+            this.gamePick = _data["gamePick"] ? SurvivorGamePickDTO.fromJS(_data["gamePick"]) : undefined as any;
+            this.isFinal = _data["isFinal"];
+            this.totalPoints = _data["totalPoints"];
+            this.processed = _data["processed"];
+        }
+    }
+
+    static fromJS(data: any): SurvivorWeekPickDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new SurvivorWeekPickDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["leagueId"] = this.leagueId;
+        data["userId"] = this.userId;
+        data["sport"] = this.sport;
+        data["weekNumber"] = this.weekNumber;
+        data["year"] = this.year;
+        data["gamePick"] = this.gamePick ? this.gamePick.toJSON() : undefined as any;
+        data["isFinal"] = this.isFinal;
+        data["totalPoints"] = this.totalPoints;
+        data["processed"] = this.processed;
+        return data;
+    }
+}
+
+export interface ISurvivorWeekPickDTO {
+    id?: string | undefined;
+    leagueId?: string | undefined;
+    userId?: string | undefined;
+    sport?: number;
+    weekNumber?: number;
+    year?: string | undefined;
+    gamePick?: SurvivorGamePickDTO | undefined;
+    isFinal?: boolean;
+    totalPoints?: number;
+    processed?: boolean;
+
+    [key: string]: any;
+}
+
+export class SurvivorWeekResultDTO implements ISurvivorWeekResultDTO {
+    id?: string;
+    leagueId?: string;
+    pickId?: string;
+    totalPoints?: number;
+    correctPicks?: number;
+    correctKeyPicks?: number;
+    pickResults?: PickResult[];
+    weekPassed?: boolean;
+    userId?: string;
+    weekNumber?: number;
+    year?: string;
+
+    [key: string]: any;
+
+    constructor(data?: ISurvivorWeekResultDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.leagueId = _data["leagueId"];
+            this.pickId = _data["pickId"];
+            this.totalPoints = _data["totalPoints"];
+            this.correctPicks = _data["correctPicks"];
+            this.correctKeyPicks = _data["correctKeyPicks"];
+            if (Array.isArray(_data["pickResults"])) {
+                this.pickResults = [] as any;
+                for (let item of _data["pickResults"])
+                    this.pickResults!.push(PickResult.fromJS(item));
+            }
+            this.weekPassed = _data["weekPassed"];
+            this.userId = _data["userId"];
+            this.weekNumber = _data["weekNumber"];
+            this.year = _data["year"];
+        }
+    }
+
+    static fromJS(data: any): SurvivorWeekResultDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new SurvivorWeekResultDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["leagueId"] = this.leagueId;
+        data["pickId"] = this.pickId;
+        data["totalPoints"] = this.totalPoints;
+        data["correctPicks"] = this.correctPicks;
+        data["correctKeyPicks"] = this.correctKeyPicks;
+        if (Array.isArray(this.pickResults)) {
+            data["pickResults"] = [];
+            for (let item of this.pickResults)
+                data["pickResults"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["weekPassed"] = this.weekPassed;
+        data["userId"] = this.userId;
+        data["weekNumber"] = this.weekNumber;
+        data["year"] = this.year;
+        return data;
+    }
+}
+
+export interface ISurvivorWeekResultDTO {
+    id?: string;
+    leagueId?: string;
+    pickId?: string;
+    totalPoints?: number;
+    correctPicks?: number;
+    correctKeyPicks?: number;
+    pickResults?: PickResult[];
+    weekPassed?: boolean;
+    userId?: string;
+    weekNumber?: number;
+    year?: string;
 
     [key: string]: any;
 }
