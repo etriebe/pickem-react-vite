@@ -1,5 +1,5 @@
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
-import { League, SeasonDateInformation2 } from "../services/PickemApiClient";
+import { League, LeagueDTO, SeasonDateInformation2 } from "../services/PickemApiClient";
 import { Sports } from "./SiteUtilities";
 
 export class LeagueUtilities {
@@ -39,7 +39,7 @@ export class LeagueUtilities {
       return seasonInformation ? seasonInformation.weekStartTimes?.length! : -1;
   }
 
-  static getCurrentWeekNumber(league: League): number | undefined {
+  static getCurrentWeekNumber(league: League | LeagueDTO): number | undefined {
     const currentDate = new Date();
     if (league.seasonInformation) {
       let weekNumber = 1;

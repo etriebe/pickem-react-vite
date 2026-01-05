@@ -5,6 +5,7 @@ import { Grid } from "@mui/material";
 import Loading from "./Loading";
 import React from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
+import SquaresLeagueCard from './squares/SquaresLeagueCard';
 
 export default function MyLeagues() {
     const leaguesQuery = useQuery({
@@ -16,7 +17,7 @@ export default function MyLeagues() {
     });
     const picksQuery = useQueries({
         queries: leaguesQuery && leaguesQuery.data
-            ? leaguesQuery.data.map((league) => {
+            ? leaguesQuery.data.filter(l => l.type === 1 || l.type === 2).map((league) => {
                 return {
                     queryKey: ['picks', league.id],
                     queryFn: async () => {
@@ -53,11 +54,22 @@ export default function MyLeagues() {
                 >
                     {leaguesQuery.data.map((l) => {
                         const currentLeaguePicks = picksQuery.data.find(p => p?.leagueId === l.id);
-                        return <React.Fragment key={l.id}>
-                            <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                                <LeagueCard key={l.id} league={l} picksSubmitted={currentLeaguePicks != null} />
-                            </Grid>
-                        </React.Fragment>;
+                        const leagueType = l.type;
+
+                        if (leagueType === 1 || leagueType === 2) {
+                            return <React.Fragment key={l.id}>
+                                <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+                                    <LeagueCard key={l.id} league={l} picksSubmitted={currentLeaguePicks != null} />
+                                </Grid>
+                            </React.Fragment>;
+                        }
+                        else if (leagueType === 5) {
+                            return <React.Fragment key={l.id}>
+                                <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+                                    <SquaresLeagueCard key={l.id} league={l} />
+                                </Grid>
+                            </React.Fragment>
+                        }
                     })}
                 </Grid>
             </>

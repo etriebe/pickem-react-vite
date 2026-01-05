@@ -46,7 +46,7 @@ export default function PickemWeekStandings() {
         }
 
         const teamPicked = gamePick.sidePicked === 0 ? game.homeTeam : game.awayTeam;
-        const pickImagePath = SiteUtilities.getTeamIconPathFromTeam(teamPicked!, league!);
+        const pickImagePath = SiteUtilities.getTeamIconPathFromTeam(teamPicked!, league.sport!);
         const pickAltText = SiteUtilities.getAltTextFromTeam(teamPicked!);
         const userWeekResult = weekResults.find(wr => wr.userId === userId);
         const userGameResult = userWeekResult?.pickResults?.find(pr => pr.gameId === game.id);

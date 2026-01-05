@@ -9,6 +9,7 @@ import { CreateLeagueRequest, SeasonDateInformation2 } from '../services/PickemA
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import { Sports, LeagueTypes } from '../utilities/SiteUtilities';
 import { LeagueUtilities } from '../utilities/LeagueUtilities';
+import { queryClient } from '../main';
 
 export default function CreateLeague() {
     const [leagueName, setLeagueName] = useState('');
@@ -36,6 +37,7 @@ export default function CreateLeague() {
         createLeagueRequest.keyPicks = keyPicks;
         createLeagueRequest.keyPickBonus = keyPickBonus;
         await pickemClient.createLeague(createLeagueRequest);
+        queryClient.invalidateQueries({ queryKey: ['leagues'] });
         window.location.href = '/';
     };
 
@@ -97,7 +99,7 @@ export default function CreateLeague() {
                             select
                             label="Sport"
                             value={sport}
-                            onChange={e => { 
+                            onChange={e => {
                                 setSport(Number(e.target.value));
                                 const sportNumber = Number(e.target.value);
                                 const sportName: string = LeagueUtilities.getSportNameFromNumber(sportNumber);
@@ -115,71 +117,76 @@ export default function CreateLeague() {
                             ))}
                         </TextField>
                     </Grid>
-                    <Grid size={6}>
-                        <TextField
-                            label="Starting Week Number"
-                            type="number"
-                            value={startWeek}
-                            onChange={e => setStartWeek(Number(e.target.value))}
-                            fullWidth
-                            required
-                            inputProps={{ min: 1 }}
-                            variant="outlined"
-                        />
-                    </Grid>
-                    <Grid size={6}>
-                        <TextField
-                            label={endingWeekNumberLabel}
-                            type="number"
-                            value={endWeek}
-                            onChange={e => setEndWeek(Number(e.target.value))}
-                            fullWidth
-                            required
-                            inputProps={{ min: startWeek, max: maxWeeks }}
-                            variant="outlined"
-                        />
-                        <Typography variant="caption" display="block" gutterBottom sx={{ ml: 1 }}>
-                        </Typography>
-                    </Grid>
-                    <Grid size={4}>
-                        <TextField
-                            label="Total Number of Picks"
-                            type="number"
-                            value={totalPicks}
-                            onChange={e => setTotalPicks(Number(e.target.value))}
-                            fullWidth
-                            required
-                            inputProps={{ min: 1 }}
-                            variant="outlined"
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
-                    <Grid size={4}>
-                        <TextField
-                            label="Total Number of Key Picks"
-                            type="number"
-                            value={keyPicks}
-                            onChange={e => setKeyPicks(Number(e.target.value))}
-                            fullWidth
-                            required
-                            inputProps={{ min: 0 }}
-                            variant="outlined"
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
-                    <Grid size={4}>
-                        <TextField
-                            label="Key Pick Bonus"
-                            type="number"
-                            value={keyPickBonus}
-                            onChange={e => setKeyPickBonus(Number(e.target.value))}
-                            fullWidth
-                            required
-                            inputProps={{ min: 0 }}
-                            variant="outlined"
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
+                    {leagueType != 5 && // We don't need the rest of these parameters for a squares league
+                    <>
+                        <Grid size={6}>
+                            <TextField
+                                label="Starting Week Number"
+                                type="number"
+                                value={startWeek}
+                                onChange={e => setStartWeek(Number(e.target.value))}
+                                fullWidth
+                                required
+                                inputProps={{ min: 1 }}
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid size={6}>
+                            <TextField
+                                label={endingWeekNumberLabel}
+                                type="number"
+                                value={endWeek}
+                                onChange={e => setEndWeek(Number(e.target.value))}
+                                fullWidth
+                                required
+                                inputProps={{ min: startWeek, max: maxWeeks }}
+                                variant="outlined"
+                            />
+                            <Typography variant="caption" display="block" gutterBottom sx={{ ml: 1 }}>
+                            </Typography>
+                        </Grid>
+                        <Grid size={4}>
+                            <TextField
+                                label="Total Number of Picks"
+                                type="number"
+                                value={totalPicks}
+                                onChange={e => setTotalPicks(Number(e.target.value))}
+                                fullWidth
+                                required
+                                inputProps={{ min: 1 }}
+                                variant="outlined"
+                                InputLabelProps={{ shrink: true }}
+                            />
+                        </Grid>
+                        <Grid size={4}>
+                            <TextField
+                                label="Total Number of Key Picks"
+                                type="number"
+                                value={keyPicks}
+                                onChange={e => setKeyPicks(Number(e.target.value))}
+                                fullWidth
+                                required
+                                inputProps={{ min: 0 }}
+                                variant="outlined"
+                                InputLabelProps={{ shrink: true }}
+                            />
+                        </Grid>
+                        <Grid size={4}>
+                            <TextField
+                                label="Key Pick Bonus"
+                                type="number"
+                                value={keyPickBonus}
+                                onChange={e => setKeyPickBonus(Number(e.target.value))}
+                                fullWidth
+                                required
+                                inputProps={{ min: 0 }}
+                                variant="outlined"
+                                InputLabelProps={{ shrink: true }}
+                            />
+                        </Grid>
+                    </>
+                    }
+
                     <Grid size={{ xs: 12, sm: 12, lg: 12 }}>
                         <Button type="submit" variant="contained" color="primary" fullWidth>
                             Create League

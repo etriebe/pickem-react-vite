@@ -11,9 +11,9 @@ export interface PickemWeekStandingsHeaderTeamCellProps {
 export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague }: PickemWeekStandingsHeaderTeamCellProps) {
     let gameHeaderClass = "GameHeader ";
 
-    const awayImagePath = SiteUtilities.getTeamIconPathFromTeam(game.awayTeam!, currentLeague!);
+    const awayImagePath = SiteUtilities.getTeamIconPathFromTeam(game.awayTeam!, currentLeague?.sport!);
     const awayAltText = SiteUtilities.getAltTextFromTeam(game.awayTeam!);
-    const homeImagePath = SiteUtilities.getTeamIconPathFromTeam(game.homeTeam!, currentLeague!);
+    const homeImagePath = SiteUtilities.getTeamIconPathFromTeam(game.homeTeam!, currentLeague?.sport!);
     const homeAltText = SiteUtilities.getAltTextFromTeam(game.homeTeam!);
     const gameSpread = currentLeague.settings?.lockSpreadsDuringWeek ? game.spreadAtLockTime : game.currentSpread;
 

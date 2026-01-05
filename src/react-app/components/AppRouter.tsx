@@ -22,6 +22,8 @@ import JoinLeague from './JoinLeague';
 import ChangePassword from './ChangePassword';
 import BrowseLeagues from './BrowseLeagues';
 import Admin from './Admin';
+import SquaresCreateBoard from './squares/SquaresCreateBoard';
+import SquaresBrowseBoards from './squares/SquaresBrowseBoards';
 
 type Props = {}
 
@@ -81,6 +83,8 @@ function AppRouter({ }: Props) {
                                 <Route path="/pickem/makepicks/:leagueId/:weekNumber" element={<PickemMakePicks />} />
                                 <Route path="/pickem/week/:leagueId/:weekNumber" element={<PickemWeekStandings />} />
                                 <Route path="/pickem/standings/:leagueId" element={<PickemLeagueStandings />} />
+                                <Route path="/squares/createboard/:leagueId" element={<SquaresCreateBoard />} />
+                                <Route path="/squares/boards/:leagueId" element={<SquaresBrowseBoards />} />
                                 <Route path="/settings" element={<EditUserSettings />} />
                                 <Route path="/editleague/:leagueId" element={<EditLeague />} />
                                 <Route path="/joinleague/:leagueId" element={<JoinLeague />} />

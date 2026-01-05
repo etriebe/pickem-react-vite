@@ -19,6 +19,14 @@ export class SiteUtilities {
         }
     }
 
+    static getSquaresCreateBoardLink(leagueId: string): string {
+        return `/squares/createboard/${leagueId}`;
+    }
+
+    static getSquaresBrowseBoardsLink(leagueId: string): string {
+        return `/squares/boards/${leagueId}`;
+    }
+
     static getLeagueStandingLink(leagueType: number, leagueId: string): string {
         switch (leagueType) {
             // both 1 and 2 are pickem against the spread and pickem straight up and have the same pick pages
@@ -209,10 +217,10 @@ export class SiteUtilities {
         return `${prefix}${currentSpread.spreadAmount?.toFixed(1)}`
     }
 
-    static getTeamIconPathFromTeam(team: TeamDTO, league: LeagueDTO): string {
+    static getTeamIconPathFromTeam(team: TeamDTO, sport: number): string {
         const city = team.city?.replace(" ", "_").replace(".", "");
         const name = team.name?.replace(" ", "_").replace(".", "");
-        const imagePath = `/TeamIcons/${SiteUtilities.getSportFolderNameFromSportNumber(league?.sport!)}/${city}_${name}.svg`;
+        const imagePath = `/TeamIcons/${SiteUtilities.getSportFolderNameFromSportNumber(sport)}/${city}_${name}.svg`;
         return imagePath;
     }
 

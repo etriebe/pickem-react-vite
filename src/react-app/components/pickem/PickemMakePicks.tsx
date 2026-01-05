@@ -75,7 +75,7 @@ export default function PickemMakePicks() {
             //         }
             //     }
             // }
-            const imagePath = SiteUtilities.getTeamIconPathFromTeam(teamChosen, makePicksQuery.data?.league!);
+            const imagePath = SiteUtilities.getTeamIconPathFromTeam(teamChosen, makePicksQuery.data?.league!.sport!);
             const altText = SiteUtilities.getAltTextFromTeam(teamChosen);
             return (
                 <>

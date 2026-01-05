@@ -16,6 +16,17 @@
     margin-top: 1em;
 }
 
+.squaresGameMatchup {
+    display: inline-flex;
+    place-items: center;
+}
+
+.squaresTeamIcon {
+    min-height: 75px;
+    min-width: 100px;
+    margin: 1ch;
+}
+
 .centerDivContainer {
     display: inline-flex;
     place-items: center;
