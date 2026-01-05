@@ -20,9 +20,10 @@ function SquaresGameCard({ leagueId, game, isSmallScreen }: SquaresGameCardProps
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const pickemClient = PickemApiClientFactory.createClient();
-        
-        await pickemClient.createSquaresBoard(leagueId, game.id);
-        window.location.href = '/';
+        const createResponse = await pickemClient.createSquaresBoard(leagueId, game.id);
+        const boardId = createResponse.boardId;
+        const newBoardLink = SiteUtilities.getSquaresBoardLink(leagueId, boardId);
+        window.location.href = `${window.location.origin}${newBoardLink}`;
     };
     
     return (

@@ -1,5 +1,5 @@
 import { GridSortDirection } from '@mui/x-data-grid';
-import { GameDTO, LeagueDTO, SeasonDateInformation, Spread, TeamDTO, UserInfo } from '../services/PickemApiClient';
+import { GameDTO, SeasonDateInformation, Spread, TeamDTO, UserInfo } from '../services/PickemApiClient';
 
 export class SiteUtilities {
     static getWeekStandingLink(leagueType: number, leagueId: string, weekNumber: number): string {
@@ -25,6 +25,10 @@ export class SiteUtilities {
 
     static getSquaresBrowseBoardsLink(leagueId: string): string {
         return `/squares/boards/${leagueId}`;
+    }
+
+    static getSquaresBoardLink(leagueId: string, boardId: string): string {
+        return `/squares/boards/${leagueId}/${boardId}`;
     }
 
     static getLeagueStandingLink(leagueType: number, leagueId: string): string {
