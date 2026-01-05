@@ -2150,8 +2150,101 @@ export class Client {
      * @param leagueId (optional) 
      * @return OK
      */
+    getSquaresChooseGame(leagueId: string | undefined): Promise<SquaresChooseGameResponse> {
+        let url_ = this.baseUrl + "/api/squarespage/GetSquaresChooseGame?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetSquaresChooseGame(_response);
+        });
+    }
+
+    protected processGetSquaresChooseGame(response: Response): Promise<SquaresChooseGameResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SquaresChooseGameResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SquaresChooseGameResponse>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @param gameId (optional) 
+     * @return OK
+     */
+    createSquaresBoard(leagueId: string | undefined, gameId: string | undefined): Promise<CreateSquaresBoardResponse> {
+        let url_ = this.baseUrl + "/api/squarespage/CreateSquaresBoard?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        if (gameId === null)
+            throw new globalThis.Error("The parameter 'gameId' cannot be null.");
+        else if (gameId !== undefined)
+            url_ += "gameId=" + encodeURIComponent("" + gameId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateSquaresBoard(_response);
+        });
+    }
+
+    protected processCreateSquaresBoard(response: Response): Promise<CreateSquaresBoardResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CreateSquaresBoardResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<CreateSquaresBoardResponse>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @return OK
+     */
     getAllLeagueSquaresBoards(leagueId: string | undefined): Promise<AllLeagueSquaresBoardsResponse> {
-        let url_ = this.baseUrl + "/api/survivorpage/GetAllLeagueSquaresBoards?";
+        let url_ = this.baseUrl + "/api/squarespage/GetAllLeagueSquaresBoards?";
         if (leagueId === null)
             throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
         else if (leagueId !== undefined)
@@ -2196,7 +2289,7 @@ export class Client {
      * @return OK
      */
     getSquaresBoard(boardId: string | undefined, leagueId: string | undefined): Promise<SquaresBoardResponse> {
-        let url_ = this.baseUrl + "/api/survivorpage/GetSquaresBoard?";
+        let url_ = this.baseUrl + "/api/squarespage/GetSquaresBoard?";
         if (boardId === null)
             throw new globalThis.Error("The parameter 'boardId' cannot be null.");
         else if (boardId !== undefined)
@@ -2248,7 +2341,7 @@ export class Client {
      * @return OK
      */
     updateSquaresBoard(boardId: string | undefined, leagueId: string | undefined, awayAxisIndex: number | undefined, homeAxisIndex: number | undefined, addToBoard: boolean | undefined): Promise<UpdateSquaresBoardResponse> {
-        let url_ = this.baseUrl + "/api/survivorpage/UpdateSquaresBoard?";
+        let url_ = this.baseUrl + "/api/squarespage/UpdateSquaresBoard?";
         if (boardId === null)
             throw new globalThis.Error("The parameter 'boardId' cannot be null.");
         else if (boardId !== undefined)
@@ -2309,7 +2402,7 @@ export class Client {
      * @return OK
      */
     archiveSquaresBoard(boardId: string | undefined, leagueId: string | undefined): Promise<boolean> {
-        let url_ = this.baseUrl + "/api/survivorpage/ArchiveSquaresBoard?";
+        let url_ = this.baseUrl + "/api/squarespage/ArchiveSquaresBoard?";
         if (boardId === null)
             throw new globalThis.Error("The parameter 'boardId' cannot be null.");
         else if (boardId !== undefined)
@@ -2510,6 +2603,7 @@ export interface IAccessTokenResponse {
 export class AllLeagueSquaresBoardsResponse implements IAllLeagueSquaresBoardsResponse {
     league!: LeagueDTO;
     boards!: SquaresBoardDTO[];
+    games!: GameDTO[];
     users!: UserInfo[];
 
     [key: string]: any;
@@ -2524,6 +2618,7 @@ export class AllLeagueSquaresBoardsResponse implements IAllLeagueSquaresBoardsRe
         if (!data) {
             this.league = new LeagueDTO();
             this.boards = [];
+            this.games = [];
             this.users = [];
         }
     }
@@ -2539,6 +2634,11 @@ export class AllLeagueSquaresBoardsResponse implements IAllLeagueSquaresBoardsRe
                 this.boards = [] as any;
                 for (let item of _data["boards"])
                     this.boards!.push(SquaresBoardDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["games"])) {
+                this.games = [] as any;
+                for (let item of _data["games"])
+                    this.games!.push(GameDTO.fromJS(item));
             }
             if (Array.isArray(_data["users"])) {
                 this.users = [] as any;
@@ -2567,6 +2667,11 @@ export class AllLeagueSquaresBoardsResponse implements IAllLeagueSquaresBoardsRe
             for (let item of this.boards)
                 data["boards"].push(item ? item.toJSON() : undefined as any);
         }
+        if (Array.isArray(this.games)) {
+            data["games"] = [];
+            for (let item of this.games)
+                data["games"].push(item ? item.toJSON() : undefined as any);
+        }
         if (Array.isArray(this.users)) {
             data["users"] = [];
             for (let item of this.users)
@@ -2579,6 +2684,7 @@ export class AllLeagueSquaresBoardsResponse implements IAllLeagueSquaresBoardsRe
 export interface IAllLeagueSquaresBoardsResponse {
     league: LeagueDTO;
     boards: SquaresBoardDTO[];
+    games: GameDTO[];
     users: UserInfo[];
 
     [key: string]: any;
@@ -2656,6 +2762,54 @@ export interface ICreateLeagueRequest {
     totalPicks: number;
     keyPicks: number;
     keyPickBonus: number;
+
+    [key: string]: any;
+}
+
+export class CreateSquaresBoardResponse implements ICreateSquaresBoardResponse {
+    boardId!: string;
+
+    [key: string]: any;
+
+    constructor(data?: ICreateSquaresBoardResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.boardId = _data["boardId"];
+        }
+    }
+
+    static fromJS(data: any): CreateSquaresBoardResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateSquaresBoardResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["boardId"] = this.boardId;
+        return data;
+    }
+}
+
+export interface ICreateSquaresBoardResponse {
+    boardId: string;
 
     [key: string]: any;
 }
@@ -4199,7 +4353,7 @@ export interface IPickemWeekStandingsResponse {
     [key: string]: any;
 }
 
-export class PickResult2 implements IPickResult2 {
+export class PickResult implements IPickResult {
     gameId?: string | undefined;
     success?: boolean;
     totalPoints?: number;
@@ -4210,7 +4364,7 @@ export class PickResult2 implements IPickResult2 {
 
     [key: string]: any;
 
-    constructor(data?: IPickResult2) {
+    constructor(data?: IPickResult) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -4235,9 +4389,9 @@ export class PickResult2 implements IPickResult2 {
         }
     }
 
-    static fromJS(data: any): PickResult2 {
+    static fromJS(data: any): PickResult {
         data = typeof data === 'object' ? data : {};
-        let result = new PickResult2();
+        let result = new PickResult();
         result.init(data);
         return result;
     }
@@ -4259,7 +4413,7 @@ export class PickResult2 implements IPickResult2 {
     }
 }
 
-export interface IPickResult2 {
+export interface IPickResult {
     gameId?: string | undefined;
     success?: boolean;
     totalPoints?: number;
@@ -5002,7 +5156,7 @@ export class SpreadWeekResultDTO implements ISpreadWeekResultDTO {
     totalPoints?: number;
     correctPicks?: number;
     correctKeyPicks?: number;
-    pickResults?: PickResult2[];
+    pickResults?: PickResult[];
     userId?: string;
     weekNumber?: number;
     year?: string;
@@ -5034,7 +5188,7 @@ export class SpreadWeekResultDTO implements ISpreadWeekResultDTO {
             if (Array.isArray(_data["pickResults"])) {
                 this.pickResults = [] as any;
                 for (let item of _data["pickResults"])
-                    this.pickResults!.push(PickResult2.fromJS(item));
+                    this.pickResults!.push(PickResult.fromJS(item));
             }
             this.userId = _data["userId"];
             this.weekNumber = _data["weekNumber"];
@@ -5090,7 +5244,7 @@ export interface ISpreadWeekResultDTO {
     totalPoints?: number;
     correctPicks?: number;
     correctKeyPicks?: number;
-    pickResults?: PickResult2[];
+    pickResults?: PickResult[];
     userId?: string;
     weekNumber?: number;
     year?: string;
@@ -5256,6 +5410,70 @@ export interface ISquaresBoardResponse {
     league: LeagueDTO;
     board: SquaresBoardDTO;
     users: UserInfo[];
+
+    [key: string]: any;
+}
+
+export class SquaresChooseGameResponse implements ISquaresChooseGameResponse {
+    games!: GameDTO[];
+    league!: LeagueDTO;
+
+    [key: string]: any;
+
+    constructor(data?: ISquaresChooseGameResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.games = [];
+            this.league = new LeagueDTO();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (Array.isArray(_data["games"])) {
+                this.games = [] as any;
+                for (let item of _data["games"])
+                    this.games!.push(GameDTO.fromJS(item));
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : new LeagueDTO();
+        }
+    }
+
+    static fromJS(data: any): SquaresChooseGameResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SquaresChooseGameResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (Array.isArray(this.games)) {
+            data["games"] = [];
+            for (let item of this.games)
+                data["games"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface ISquaresChooseGameResponse {
+    games: GameDTO[];
+    league: LeagueDTO;
 
     [key: string]: any;
 }
@@ -5567,7 +5785,7 @@ export class SurvivorWeekResultDTO implements ISurvivorWeekResultDTO {
     totalPoints?: number;
     correctPicks?: number;
     correctKeyPicks?: number;
-    pickResults?: PickResult2[];
+    pickResults?: PickResult[];
     weekPassed?: boolean;
     userId?: string;
     weekNumber?: number;
@@ -5599,7 +5817,7 @@ export class SurvivorWeekResultDTO implements ISurvivorWeekResultDTO {
             if (Array.isArray(_data["pickResults"])) {
                 this.pickResults = [] as any;
                 for (let item of _data["pickResults"])
-                    this.pickResults!.push(PickResult2.fromJS(item));
+                    this.pickResults!.push(PickResult.fromJS(item));
             }
             this.weekPassed = _data["weekPassed"];
             this.userId = _data["userId"];
@@ -5647,7 +5865,7 @@ export interface ISurvivorWeekResultDTO {
     totalPoints?: number;
     correctPicks?: number;
     correctKeyPicks?: number;
-    pickResults?: PickResult2[];
+    pickResults?: PickResult[];
     weekPassed?: boolean;
     userId?: string;
     weekNumber?: number;
