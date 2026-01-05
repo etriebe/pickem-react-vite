@@ -3,18 +3,28 @@ import { GameDTO } from '../../services/PickemApiClient'
 import { SiteUtilities } from '../../utilities/SiteUtilities'
 import { Add, } from '@mui/icons-material'
 import TeamIcon from '../TeamIcon'
+import PickemApiClientFactory from '../../services/PickemApiClientFactory'
 
 type SquaresGameCardProps = {
+    leagueId: string,
     game: GameDTO,
     isSmallScreen: boolean,
 }
 
-function SquaresGameCard({ game, isSmallScreen }: SquaresGameCardProps) {
+function SquaresGameCard({ leagueId, game, isSmallScreen }: SquaresGameCardProps) {
     const homeImagePath = SiteUtilities.getTeamIconPathFromTeam(game.homeTeam!, game.sport!);
     const homeAltText = SiteUtilities.getAltTextFromTeam(game.homeTeam!);
     const awayImagePath = SiteUtilities.getTeamIconPathFromTeam(game.awayTeam!, game.sport!);
     const awayAltText = SiteUtilities.getAltTextFromTeam(game.awayTeam!);
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const pickemClient = PickemApiClientFactory.createClient();
+        
+        await pickemClient.createSquaresBoard(leagueId, game.id);
+        window.location.href = '/';
+    };
+    
     return (
         <>
             <Card sx={{}}>
@@ -49,7 +59,7 @@ function SquaresGameCard({ game, isSmallScreen }: SquaresGameCardProps) {
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button size="large" startIcon={<Add />}>Create Board</Button>
+                    <Button size="large" startIcon={<Add />} onClick={handleSubmit}>Create Board</Button>
                 </CardActions>
             </Card>
         </>

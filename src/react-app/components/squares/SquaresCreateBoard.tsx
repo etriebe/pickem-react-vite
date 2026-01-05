@@ -20,8 +20,11 @@ function SquaresCreateBoard({ }: Props) {
     });
 
     return (
-        <Typography variant='h2'>
-            Create Squares Board
+        <Typography variant='h4'>
+            <div className='centerDivContainerHorizontally'>
+            Create Squares Game Board
+
+            </div>
             <Grid
                 container
                 spacing={2}
@@ -33,7 +36,7 @@ function SquaresCreateBoard({ }: Props) {
                 .map((g) => {
                     return <React.Fragment key={g.id}>
                         <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                            <SquaresGameCard game={g} isSmallScreen={isSmallScreen} />
+                            <SquaresGameCard game={g} isSmallScreen={isSmallScreen} leagueId={leagueId!} />
                         </Grid>
                     </React.Fragment>;
                 })}
