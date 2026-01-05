@@ -28,7 +28,9 @@ function SquaresCreateBoard({ }: Props) {
                 padding={2}
                 sx={{ mb: (theme) => theme.spacing(2), width: '100%' }}
             >
-                {chooseGameQuery.data?.games.map((g) => {
+                {chooseGameQuery.data?.games
+                .filter((g) => g.result?.status != 2) // Filter out games that are Status === Final
+                .map((g) => {
                     return <React.Fragment key={g.id}>
                         <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
                             <SquaresGameCard game={g} isSmallScreen={isSmallScreen} />
