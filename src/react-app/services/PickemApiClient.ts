@@ -2005,52 +2005,6 @@ export class Client {
     }
 
     /**
-     * @return OK
-     */
-    getWeatherForecast(): Promise<WeatherForecast[]> {
-        let url_ = this.baseUrl + "/WeatherForecast";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            credentials: 'include',
-            mode: 'cors',
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetWeatherForecast(_response);
-        });
-    }
-
-    protected processGetWeatherForecast(response: Response): Promise<WeatherForecast[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(WeatherForecast.fromJS(item));
-            }
-            else {
-                result200 = null as any;
-            }
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<WeatherForecast[]>(null as any);
-    }
-
-    /**
      * @param leagueId (optional) 
      * @param weekNumber (optional) 
      * @return OK
@@ -2190,6 +2144,213 @@ export class Client {
             });
         }
         return Promise.resolve<PickemMakePicksResponse>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @return OK
+     */
+    getAllLeagueSquaresBoards(leagueId: string | undefined): Promise<AllLeagueSquaresBoardsResponse> {
+        let url_ = this.baseUrl + "/api/survivorpage/GetAllLeagueSquaresBoards?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAllLeagueSquaresBoards(_response);
+        });
+    }
+
+    protected processGetAllLeagueSquaresBoards(response: Response): Promise<AllLeagueSquaresBoardsResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AllLeagueSquaresBoardsResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<AllLeagueSquaresBoardsResponse>(null as any);
+    }
+
+    /**
+     * @param boardId (optional) 
+     * @param leagueId (optional) 
+     * @return OK
+     */
+    getSquaresBoard(boardId: string | undefined, leagueId: string | undefined): Promise<SquaresBoardResponse> {
+        let url_ = this.baseUrl + "/api/survivorpage/GetSquaresBoard?";
+        if (boardId === null)
+            throw new globalThis.Error("The parameter 'boardId' cannot be null.");
+        else if (boardId !== undefined)
+            url_ += "boardId=" + encodeURIComponent("" + boardId) + "&";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetSquaresBoard(_response);
+        });
+    }
+
+    protected processGetSquaresBoard(response: Response): Promise<SquaresBoardResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SquaresBoardResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SquaresBoardResponse>(null as any);
+    }
+
+    /**
+     * @param boardId (optional) 
+     * @param leagueId (optional) 
+     * @param awayAxisIndex (optional) 
+     * @param homeAxisIndex (optional) 
+     * @param addToBoard (optional) 
+     * @return OK
+     */
+    updateSquaresBoard(boardId: string | undefined, leagueId: string | undefined, awayAxisIndex: number | undefined, homeAxisIndex: number | undefined, addToBoard: boolean | undefined): Promise<UpdateSquaresBoardResponse> {
+        let url_ = this.baseUrl + "/api/survivorpage/UpdateSquaresBoard?";
+        if (boardId === null)
+            throw new globalThis.Error("The parameter 'boardId' cannot be null.");
+        else if (boardId !== undefined)
+            url_ += "boardId=" + encodeURIComponent("" + boardId) + "&";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        if (awayAxisIndex === null)
+            throw new globalThis.Error("The parameter 'awayAxisIndex' cannot be null.");
+        else if (awayAxisIndex !== undefined)
+            url_ += "awayAxisIndex=" + encodeURIComponent("" + awayAxisIndex) + "&";
+        if (homeAxisIndex === null)
+            throw new globalThis.Error("The parameter 'homeAxisIndex' cannot be null.");
+        else if (homeAxisIndex !== undefined)
+            url_ += "homeAxisIndex=" + encodeURIComponent("" + homeAxisIndex) + "&";
+        if (addToBoard === null)
+            throw new globalThis.Error("The parameter 'addToBoard' cannot be null.");
+        else if (addToBoard !== undefined)
+            url_ += "addToBoard=" + encodeURIComponent("" + addToBoard) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateSquaresBoard(_response);
+        });
+    }
+
+    protected processUpdateSquaresBoard(response: Response): Promise<UpdateSquaresBoardResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UpdateSquaresBoardResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UpdateSquaresBoardResponse>(null as any);
+    }
+
+    /**
+     * @param boardId (optional) 
+     * @param leagueId (optional) 
+     * @return OK
+     */
+    archiveSquaresBoard(boardId: string | undefined, leagueId: string | undefined): Promise<boolean> {
+        let url_ = this.baseUrl + "/api/survivorpage/ArchiveSquaresBoard?";
+        if (boardId === null)
+            throw new globalThis.Error("The parameter 'boardId' cannot be null.");
+        else if (boardId !== undefined)
+            url_ += "boardId=" + encodeURIComponent("" + boardId) + "&";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processArchiveSquaresBoard(_response);
+        });
+    }
+
+    protected processArchiveSquaresBoard(response: Response): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null as any;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<boolean>(null as any);
     }
 
     /**
@@ -2342,6 +2503,83 @@ export interface IAccessTokenResponse {
     accessToken: string;
     expiresIn: number;
     refreshToken: string;
+
+    [key: string]: any;
+}
+
+export class AllLeagueSquaresBoardsResponse implements IAllLeagueSquaresBoardsResponse {
+    league!: LeagueDTO;
+    boards!: SquaresBoardDTO[];
+    users!: UserInfo[];
+
+    [key: string]: any;
+
+    constructor(data?: IAllLeagueSquaresBoardsResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.league = new LeagueDTO();
+            this.boards = [];
+            this.users = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : new LeagueDTO();
+            if (Array.isArray(_data["boards"])) {
+                this.boards = [] as any;
+                for (let item of _data["boards"])
+                    this.boards!.push(SquaresBoardDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(UserInfo.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): AllLeagueSquaresBoardsResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new AllLeagueSquaresBoardsResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        if (Array.isArray(this.boards)) {
+            data["boards"] = [];
+            for (let item of this.boards)
+                data["boards"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IAllLeagueSquaresBoardsResponse {
+    league: LeagueDTO;
+    boards: SquaresBoardDTO[];
+    users: UserInfo[];
 
     [key: string]: any;
 }
@@ -3961,7 +4199,7 @@ export interface IPickemWeekStandingsResponse {
     [key: string]: any;
 }
 
-export class PickResult implements IPickResult {
+export class PickResult2 implements IPickResult2 {
     gameId?: string | undefined;
     success?: boolean;
     totalPoints?: number;
@@ -3972,7 +4210,7 @@ export class PickResult implements IPickResult {
 
     [key: string]: any;
 
-    constructor(data?: IPickResult) {
+    constructor(data?: IPickResult2) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -3997,9 +4235,9 @@ export class PickResult implements IPickResult {
         }
     }
 
-    static fromJS(data: any): PickResult {
+    static fromJS(data: any): PickResult2 {
         data = typeof data === 'object' ? data : {};
-        let result = new PickResult();
+        let result = new PickResult2();
         result.init(data);
         return result;
     }
@@ -4021,7 +4259,7 @@ export class PickResult implements IPickResult {
     }
 }
 
-export interface IPickResult {
+export interface IPickResult2 {
     gameId?: string | undefined;
     success?: boolean;
     totalPoints?: number;
@@ -4764,7 +5002,7 @@ export class SpreadWeekResultDTO implements ISpreadWeekResultDTO {
     totalPoints?: number;
     correctPicks?: number;
     correctKeyPicks?: number;
-    pickResults?: PickResult[];
+    pickResults?: PickResult2[];
     userId?: string;
     weekNumber?: number;
     year?: string;
@@ -4796,7 +5034,7 @@ export class SpreadWeekResultDTO implements ISpreadWeekResultDTO {
             if (Array.isArray(_data["pickResults"])) {
                 this.pickResults = [] as any;
                 for (let item of _data["pickResults"])
-                    this.pickResults!.push(PickResult.fromJS(item));
+                    this.pickResults!.push(PickResult2.fromJS(item));
             }
             this.userId = _data["userId"];
             this.weekNumber = _data["weekNumber"];
@@ -4852,11 +5090,172 @@ export interface ISpreadWeekResultDTO {
     totalPoints?: number;
     correctPicks?: number;
     correctKeyPicks?: number;
-    pickResults?: PickResult[];
+    pickResults?: PickResult2[];
     userId?: string;
     weekNumber?: number;
     year?: string;
     trophies?: number[];
+
+    [key: string]: any;
+}
+
+export class SquaresBoardDTO implements ISquaresBoardDTO {
+    id?: string;
+    leagueId?: string;
+    gameId?: string;
+    isArchived?: boolean;
+    boardCreatorId?: string;
+    gameBoard?: any;
+    homeScoreAxis?: number[];
+    awayScoreAxis?: number[];
+
+    [key: string]: any;
+
+    constructor(data?: ISquaresBoardDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.leagueId = _data["leagueId"];
+            this.gameId = _data["gameId"];
+            this.isArchived = _data["isArchived"];
+            this.boardCreatorId = _data["boardCreatorId"];
+            this.gameBoard = _data["gameBoard"];
+            if (Array.isArray(_data["homeScoreAxis"])) {
+                this.homeScoreAxis = [] as any;
+                for (let item of _data["homeScoreAxis"])
+                    this.homeScoreAxis!.push(item);
+            }
+            if (Array.isArray(_data["awayScoreAxis"])) {
+                this.awayScoreAxis = [] as any;
+                for (let item of _data["awayScoreAxis"])
+                    this.awayScoreAxis!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): SquaresBoardDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new SquaresBoardDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["leagueId"] = this.leagueId;
+        data["gameId"] = this.gameId;
+        data["isArchived"] = this.isArchived;
+        data["boardCreatorId"] = this.boardCreatorId;
+        data["gameBoard"] = this.gameBoard;
+        if (Array.isArray(this.homeScoreAxis)) {
+            data["homeScoreAxis"] = [];
+            for (let item of this.homeScoreAxis)
+                data["homeScoreAxis"].push(item);
+        }
+        if (Array.isArray(this.awayScoreAxis)) {
+            data["awayScoreAxis"] = [];
+            for (let item of this.awayScoreAxis)
+                data["awayScoreAxis"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface ISquaresBoardDTO {
+    id?: string;
+    leagueId?: string;
+    gameId?: string;
+    isArchived?: boolean;
+    boardCreatorId?: string;
+    gameBoard?: any;
+    homeScoreAxis?: number[];
+    awayScoreAxis?: number[];
+
+    [key: string]: any;
+}
+
+export class SquaresBoardResponse implements ISquaresBoardResponse {
+    league!: LeagueDTO;
+    board!: SquaresBoardDTO;
+    users!: UserInfo[];
+
+    [key: string]: any;
+
+    constructor(data?: ISquaresBoardResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.league = new LeagueDTO();
+            this.board = new SquaresBoardDTO();
+            this.users = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : new LeagueDTO();
+            this.board = _data["board"] ? SquaresBoardDTO.fromJS(_data["board"]) : new SquaresBoardDTO();
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(UserInfo.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SquaresBoardResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SquaresBoardResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        data["board"] = this.board ? this.board.toJSON() : undefined as any;
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface ISquaresBoardResponse {
+    league: LeagueDTO;
+    board: SquaresBoardDTO;
+    users: UserInfo[];
 
     [key: string]: any;
 }
@@ -5168,7 +5567,7 @@ export class SurvivorWeekResultDTO implements ISurvivorWeekResultDTO {
     totalPoints?: number;
     correctPicks?: number;
     correctKeyPicks?: number;
-    pickResults?: PickResult[];
+    pickResults?: PickResult2[];
     weekPassed?: boolean;
     userId?: string;
     weekNumber?: number;
@@ -5200,7 +5599,7 @@ export class SurvivorWeekResultDTO implements ISurvivorWeekResultDTO {
             if (Array.isArray(_data["pickResults"])) {
                 this.pickResults = [] as any;
                 for (let item of _data["pickResults"])
-                    this.pickResults!.push(PickResult.fromJS(item));
+                    this.pickResults!.push(PickResult2.fromJS(item));
             }
             this.weekPassed = _data["weekPassed"];
             this.userId = _data["userId"];
@@ -5248,7 +5647,7 @@ export interface ISurvivorWeekResultDTO {
     totalPoints?: number;
     correctPicks?: number;
     correctKeyPicks?: number;
-    pickResults?: PickResult[];
+    pickResults?: PickResult2[];
     weekPassed?: boolean;
     userId?: string;
     weekNumber?: number;
@@ -5740,6 +6139,79 @@ export interface IUpdateLeagueSettingsRequest {
     [key: string]: any;
 }
 
+export class UpdateSquaresBoardResponse implements IUpdateSquaresBoardResponse {
+    league!: LeagueDTO;
+    board!: SquaresBoardDTO;
+    users!: UserInfo[];
+    squareUpdated!: boolean;
+
+    [key: string]: any;
+
+    constructor(data?: IUpdateSquaresBoardResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.league = new LeagueDTO();
+            this.board = new SquaresBoardDTO();
+            this.users = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : new LeagueDTO();
+            this.board = _data["board"] ? SquaresBoardDTO.fromJS(_data["board"]) : new SquaresBoardDTO();
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(UserInfo.fromJS(item));
+            }
+            this.squareUpdated = _data["squareUpdated"];
+        }
+    }
+
+    static fromJS(data: any): UpdateSquaresBoardResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateSquaresBoardResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        data["board"] = this.board ? this.board.toJSON() : undefined as any;
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["squareUpdated"] = this.squareUpdated;
+        return data;
+    }
+}
+
+export interface IUpdateSquaresBoardResponse {
+    league: LeagueDTO;
+    board: SquaresBoardDTO;
+    users: UserInfo[];
+    squareUpdated: boolean;
+
+    [key: string]: any;
+}
+
 export class UserInfo implements IUserInfo {
     id?: string;
     userName?: string;
@@ -6056,66 +6528,6 @@ export interface IUserSettings {
     [key: string]: any;
 }
 
-export class WeatherForecast implements IWeatherForecast {
-    date?: Date;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
-
-    [key: string]: any;
-
-    constructor(data?: IWeatherForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : undefined as any;
-            this.temperatureC = _data["temperatureC"];
-            this.temperatureF = _data["temperatureF"];
-            this.summary = _data["summary"];
-        }
-    }
-
-    static fromJS(data: any): WeatherForecast {
-        data = typeof data === 'object' ? data : {};
-        let result = new WeatherForecast();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["date"] = this.date ? formatDate(this.date) : undefined as any;
-        data["temperatureC"] = this.temperatureC;
-        data["temperatureF"] = this.temperatureF;
-        data["summary"] = this.summary;
-        return data;
-    }
-}
-
-export interface IWeatherForecast {
-    date?: Date;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
-
-    [key: string]: any;
-}
-
 export class WeekInformation implements IWeekInformation {
     weekDescription?: string;
     weekStartTime?: Date;
@@ -6182,12 +6594,6 @@ export interface IWeekInformation {
     weekNumber?: number;
 
     [key: string]: any;
-}
-
-function formatDate(d: Date) {
-    return d.getFullYear() + '-' + 
-        (d.getMonth() < 9 ? ('0' + (d.getMonth()+1)) : (d.getMonth()+1)) + '-' +
-        (d.getDate() < 10 ? ('0' + d.getDate()) : d.getDate());
 }
 
 export class ApiException extends Error {
