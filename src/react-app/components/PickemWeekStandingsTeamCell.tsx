@@ -15,7 +15,7 @@ export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague 
     const awayAltText = SiteUtilities.getAltTextFromTeam(game.awayTeam!);
     const homeImagePath = SiteUtilities.getTeamIconPathFromTeam(game.homeTeam!, currentLeague!);
     const homeAltText = SiteUtilities.getAltTextFromTeam(game.homeTeam!);
-    const gameSpread = currentLeague.settings?.lockSpreadsDuringWeek ? game.spreadAtLockTime?.spreadAmount : game.currentSpread?.spreadAmount;
+    const gameSpread = currentLeague.settings?.lockSpreadsDuringWeek ? game.spreadAtLockTime : game.currentSpread;
 
     switch (game.result?.status) {
         case 0: // scheduled
@@ -61,7 +61,7 @@ export default function PickemWeekStandingsHeaderTeamCell({ game, currentLeague 
                 </div>
             </div>
             <div className="Spread">
-                {gameSpread}
+                {SiteUtilities.getFormattedSpreadAmount(gameSpread!)}
             </div>
             <div className="GameStatus">
                 {SiteUtilities.getGameHeaderStatusDescription(game)}
