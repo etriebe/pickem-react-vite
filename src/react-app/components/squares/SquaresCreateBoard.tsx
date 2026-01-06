@@ -3,7 +3,7 @@ import PickemApiClientFactory from '../../services/PickemApiClientFactory';
 import { useQuery } from '@tanstack/react-query';
 import { Grid, Typography, useMediaQuery } from '@mui/material';
 import React from 'react';
-import SquaresGameCard from './SquaresGameCard';
+import SquaresGameCreateCard from './SquaresGameCreateCard';
 
 type Props = {}
 
@@ -22,8 +22,7 @@ function SquaresCreateBoard({ }: Props) {
     return (
         <Typography variant='h4'>
             <div className='centerDivContainerHorizontally'>
-            Create Squares Game Board
-
+                Create Squares Game Board
             </div>
             <Grid
                 container
@@ -36,7 +35,7 @@ function SquaresCreateBoard({ }: Props) {
                 .map((g) => {
                     return <React.Fragment key={g.id}>
                         <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                            <SquaresGameCard game={g} isSmallScreen={isSmallScreen} leagueId={leagueId!} />
+                            <SquaresGameCreateCard game={g} isSmallScreen={isSmallScreen} leagueId={leagueId!} />
                         </Grid>
                     </React.Fragment>;
                 })}

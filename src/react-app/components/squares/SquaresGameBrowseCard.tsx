@@ -3,29 +3,21 @@ import { GameDTO } from '../../services/PickemApiClient'
 import { SiteUtilities } from '../../utilities/SiteUtilities'
 import { Add, } from '@mui/icons-material'
 import TeamIcon from '../TeamIcon'
-import PickemApiClientFactory from '../../services/PickemApiClientFactory'
 
-type SquaresGameCardProps = {
+type SquaresGameBrowseCardProps = {
     leagueId: string,
+    boardId: string,
     game: GameDTO,
     isSmallScreen: boolean,
 }
 
-function SquaresGameCard({ leagueId, game, isSmallScreen }: SquaresGameCardProps) {
+function SquaresGameBrowseCard({ leagueId, boardId, game, isSmallScreen }: SquaresGameBrowseCardProps) {
     const homeImagePath = SiteUtilities.getTeamIconPathFromTeam(game.homeTeam!, game.sport!);
     const homeAltText = SiteUtilities.getAltTextFromTeam(game.homeTeam!);
     const awayImagePath = SiteUtilities.getTeamIconPathFromTeam(game.awayTeam!, game.sport!);
     const awayAltText = SiteUtilities.getAltTextFromTeam(game.awayTeam!);
+    const squaresBoardLink = SiteUtilities.getSquaresBoardLink(leagueId, boardId);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const pickemClient = PickemApiClientFactory.createClient();
-        const createResponse = await pickemClient.createSquaresBoard(leagueId, game.id);
-        const boardId = createResponse.boardId;
-        const newBoardLink = SiteUtilities.getSquaresBoardLink(leagueId, boardId);
-        window.location.href = `${window.location.origin}${newBoardLink}`;
-    };
-    
     return (
         <>
             <Card sx={{}}>
@@ -60,11 +52,11 @@ function SquaresGameCard({ leagueId, game, isSmallScreen }: SquaresGameCardProps
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button size="large" startIcon={<Add />} onClick={handleSubmit}>Create Board</Button>
+                    <Button size="large" startIcon={<Add />} href={squaresBoardLink}>Select Squares</Button>
                 </CardActions>
             </Card>
         </>
     )
 }
 
-export default SquaresGameCard
+export default SquaresGameBrowseCard
