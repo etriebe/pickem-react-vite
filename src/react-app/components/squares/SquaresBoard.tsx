@@ -10,4 +10,4 @@ function SquaresBoard({ }: SquaresProps) {
     )
 }
 
-export default SquaresBoard
+export default SquaresBoard 
