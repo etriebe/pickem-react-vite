@@ -35,7 +35,8 @@ function SquaresBrowseBoards({ }: Props) {
                     const gameObject = browseBoardsQuery.data.games.find(g => g.id === gameId);
 
                     return <React.Fragment key={b.id}>
-                        <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+                        <Grid size={{ xs: 12, sm: 6, lg: 6 }}
+                            minWidth={270}>
                             <SquaresGameBrowseCard game={gameObject!} boardId={b.id!} isSmallScreen={isSmallScreen} leagueId={leagueId!} />
                         </Grid>
                     </React.Fragment>;
