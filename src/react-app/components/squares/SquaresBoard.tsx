@@ -95,7 +95,10 @@ function SquaresBoard({ }: SquaresProps) {
         },
     });
 
+    console.log(JSON.stringify(selectBoardsQuery));
+
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
+    console.log(JSON.stringify(isSmallScreen));
 
     const table = useReactTable({
         data,
