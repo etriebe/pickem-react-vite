@@ -69,7 +69,6 @@ export default function PickemMakePicks() {
             //     if (gamePick) {
             //         const isTeamSelected = (gamePick.sidePicked === 0 && cellType === MakePicksColumnType.HomeTeam) ||
             //             (gamePick.sidePicked === 1 && cellType === MakePicksColumnType.AwayTeam);
-
             //         if (isTeamSelected) {
             //             cellText += ` ☑️`;
             //         }
@@ -230,6 +229,7 @@ export default function PickemMakePicks() {
             // If they picked home or away and are clicking this again, we should remove
             if ((currentPick.sidePicked === 0 && currentGame?.homeTeam === params.value) ||
                 (currentPick.sidePicked === 1 && currentGame?.awayTeam === params.value)) {
+                console.log(`Removing pick for game: ${currentGame.id}`);
                 const indexOfPick = currentPicks.gamePicks.indexOf(currentPick);
                 currentPicks.gamePicks.splice(indexOfPick, 1);
             }
@@ -237,14 +237,23 @@ export default function PickemMakePicks() {
             else if ((currentPick.sidePicked === 0 && currentGame?.awayTeam === params.value) ||
                 (currentPick.sidePicked === 1 && currentGame?.homeTeam === params.value)) {
                 const indexOfPick = currentPicks.gamePicks.indexOf(currentPick);
+                console.log(`Removing pick: ${currentPick.gameID}. New side picked: ${currentPick.sidePicked}`);
                 currentPicks.gamePicks.splice(indexOfPick, 1);
-                currentPick = createPickObject(currentGame, params.value as TeamDTO);
-                currentPicks.gamePicks.push(currentPick);
+                // TODO: Fix this logic to actually switch the pick. This wasn't working correctly anymore so just removing picks.
+                // console.log(`Removing existing pick for game to add new pick later: ${currentGame.id}`);
+                // currentPick = createPickObject(currentGame, params.value as TeamDTO);
+                // console.log(`Adding pick for game: ${currentGame.id} as team ${params.value}: Pick Object: ${currentPick.gameID}, ${currentPick.sidePicked}`);
+                // currentPicks.gamePicks.push(currentPick);
+                // console.log("Picks after...");
+                // console.log(JSON.stringify(currentPicks));
+
             }
         }
 
+        
         setSelectedPicksCount(getSelectedPicksCount(currentPicks));
         setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
+
         apiRef.current?.selectRow(params.id);
         // apiRef.current?.autosizeColumns();
     };
@@ -385,11 +394,11 @@ function getCellClassName(params: GridCellParams<any, GameDTO, GameDTO, GridTree
 
     if (gamePicked) {
         if (gamePicked.sidePicked === 1 && game.awayTeam?.id === clickedTeam?.id) {
-            console.log(`Picked away team: ${clickedTeam?.abbreviation}`);
+            // console.log(`Picked away team: ${clickedTeam?.abbreviation}`);
             return "teamPicked";
         }
         if (gamePicked.sidePicked === 0 && game.homeTeam?.id === clickedTeam?.id) {
-            console.log(`Picked home team: ${clickedTeam?.abbreviation}`);
+            // console.log(`Picked home team: ${clickedTeam?.abbreviation}`);
             return "teamPicked";
         }
     }
