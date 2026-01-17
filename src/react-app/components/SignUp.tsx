@@ -14,7 +14,8 @@ import * as React from 'react';
 import AppTheme from '../theme/AppTheme';
 import SiteLogo from './SiteLogo';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
-import { RegisterRequest } from '../services/PickemApiClient';
+import { HttpValidationProblemDetails, RegisterRequest } from '../services/PickemApiClient';
+import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -110,21 +111,30 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     }
     event.preventDefault(); // Prevent default form submission
     const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get('name'),
-      lastName: data.get('lastName'),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    const pickemClient = PickemApiClientFactory.createClient();
-    const body = new RegisterRequest();
-    body.email = data.get('email') as string;
-    body.password = data.get('password') as string;
+    const email = data.get('email') as string;
     try {
-      await pickemClient.register(body);
+      const loginResult = await AuthenticationUtilities.register(email, data.get('password') as string);
+
+      if (loginResult.result) {
+        // Redirect to My Leagues page on successful login
+        console.log('Register successful:', JSON.stringify(loginResult));
+      } else {
+        console.log('Register failed:', JSON.stringify(loginResult));
+        setEmailError(true);
+        setEmailErrorMessage(`Failed to register: ${loginResult.message}`);
+      }
     }
     catch (error) {
-      console.error('Error during registering:', error);
+      console.error('Error during register:', error);
+
+      if (error instanceof HttpValidationProblemDetails) {
+        setEmailError(true);
+        setEmailErrorMessage(`Failed to register: ${JSON.stringify(error.errors)}`);
+      }
+      else {
+        setEmailError(true);
+        setEmailErrorMessage(`Failed to register: ${JSON.stringify(error)}`);
+      }
     }
   };
 

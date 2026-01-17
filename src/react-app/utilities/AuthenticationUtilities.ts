@@ -1,5 +1,5 @@
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
-import { LoginRequest, UserInfo } from "../services/PickemApiClient";
+import { LoginRequest, RegisterRequest, UserInfo } from "../services/PickemApiClient";
 import { ApiResponse } from './ApiUtilities';
 
 export class AuthenticationUtilities {
@@ -32,6 +32,37 @@ export class AuthenticationUtilities {
     catch (err)
     {
         console.error(`Failed to login: ${err}`);
+        AuthenticationUtilities.clearLocalStorage();
+        let message: string;
+        if (typeof err === "string") {
+            // TypeScript should know it's a string here
+            message = err;
+        } else if (err instanceof Error) {
+            // Check that it's an actually Error object, before trying to access the error message
+            message = err.message;
+        } else {
+            throw err;
+        }
+        return new ApiResponse(false, message);
+    }
+  }
+
+  static async register(email: string, password: string): Promise<ApiResponse> {
+    const pickemClient = PickemApiClientFactory.createClient();
+    let requestInfo = new RegisterRequest();
+    requestInfo.email = email;
+    requestInfo.password = password;
+    try
+    {
+        const responseToken = await pickemClient.register(requestInfo);
+        console.log(JSON.stringify(responseToken));
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('email', email);
+        return new ApiResponse(true, "");
+    }
+    catch (err)
+    {
+        console.error(`Failed to register: ${err}`);
         AuthenticationUtilities.clearLocalStorage();
         let message: string;
         if (typeof err === "string") {
