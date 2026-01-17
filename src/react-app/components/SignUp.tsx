@@ -13,8 +13,7 @@ import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import AppTheme from '../theme/AppTheme';
 import SiteLogo from './SiteLogo';
-import PickemApiClientFactory from '../services/PickemApiClientFactory';
-import { HttpValidationProblemDetails, RegisterRequest } from '../services/PickemApiClient';
+import { HttpValidationProblemDetails } from '../services/PickemApiClient';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
 
 const Card = styled(MuiCard)(({ theme }) => ({
