@@ -250,7 +250,7 @@ export default function PickemMakePicks() {
             }
         }
 
-        
+
         setSelectedPicksCount(getSelectedPicksCount(currentPicks));
         setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
 
@@ -320,7 +320,11 @@ export default function PickemMakePicks() {
                         onClose={handleClose}
                         message={snackbarMessage}
                     />
-                    <Typography variant={typoGraphyLeaguePicks}>{selectedPicksCount == -1 ? selectedPicksOriginal : selectedPicksCount} / {weekInformation?.allowAllPicks ? "All" : makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount == -1 ? selectedKeyPicksOriginal : selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
+                    {weekInformation?.allowAllPicks ?
+                        <Typography variant={typoGraphyLeaguePicks}>Pick all games. No Key Picks</Typography>
+                        :
+                        <Typography variant={typoGraphyLeaguePicks}>{selectedPicksCount == -1 ? selectedPicksOriginal : selectedPicksCount} / {makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount == -1 ? selectedKeyPicksOriginal : selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
+                    }
                     {makePicksQuery.isPending ?
                         <Loading /> :
                         <>
@@ -388,7 +392,7 @@ function getSelectedKeyPicksCount(currentPicks: SpreadWeekPickDTO): React.SetSta
 }
 
 function getCellClassName(params: GridCellParams<any, GameDTO, GameDTO, GridTreeNode>, currentPicks: SpreadWeekPickDTO): string {
-    const game : GameDTO = params.row;
+    const game: GameDTO = params.row;
     const clickedTeam: TeamDTO | undefined = params.value;
     const gamePicked = currentPicks.gamePicks?.find(p => p.gameID === params.id);
 
