@@ -14,7 +14,7 @@ export class LeagueUtilities {
     const endOfSeason = new Date(league.seasonInformation!.endOfSeason!);
     const currentDate = new Date();
     startOfWeekOne.setDate(startOfWeekOne.getDate() - numberOfDaysBuffer);
-    endOfSeason.setDate(endOfSeason.getDate() - numberOfDaysBuffer);
+    endOfSeason.setDate(endOfSeason.getDate() + numberOfDaysBuffer);
     if (currentDate < startOfWeekOne || currentDate > endOfSeason) {
       return true;
     }
