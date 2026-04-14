@@ -19,7 +19,7 @@ function ViewGames({ }: Props) {
 
     return (
         <>
-            <Typography variant='h2'>Active Games</Typography>
+            <Typography variant='h2'>Scoreboard</Typography>
 
             
                 {
