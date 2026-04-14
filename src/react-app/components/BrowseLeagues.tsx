@@ -57,9 +57,9 @@ function BrowseLeagues({ }: Props) {
                 }}
             >
                 {browseLeaguesQuery.data?.map((l) => {
-                    return <React.Fragment key={l.id}>
+                    return <React.Fragment key={l.league?.id}>
                         <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                            <PublicLeagueCard leagueId={l.id!} leagueName={l.leagueName!} leagueYear={l.year!} key={l.id} sport={l.sport!} numberOfMembers={l.userSeasons?.length!} />
+                            <PublicLeagueCard leagueId={l.league?.id!} leagueName={l.league?.leagueName!} leagueYear={l.league?.year!} key={l.league?.id} sport={l.league?.sport!} numberOfMembers={l.league?.userSeasons?.length!} />
                         </Grid>
                     </React.Fragment>;
                 })}
