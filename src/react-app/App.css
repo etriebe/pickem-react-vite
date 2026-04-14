@@ -6,10 +6,11 @@
 .teamlogoSmallScreen {
     max-width: 20px;
     max-height: 20px;
+    justify-content: center;
 }
 
 .teamPicked {
-    background-color:  gray;
+    background-color: gray;
 }
 
 .makePicksButtonsDiv {
@@ -210,4 +211,21 @@
 
 .standingsHeader {
     padding: 1ch;
+}
+
+.scoreInformation {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.gameStatus, .gameScore, .gameSpread, .gameStartTime {
+    width: 60px;
+}
+
+.gameStartTime {
+    text-align: right;
+}
+
+.teamAbbreviation {
+    margin-left: 1ch;
 }

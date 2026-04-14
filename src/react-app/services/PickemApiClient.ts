@@ -726,6 +726,54 @@ export class Client {
     }
 
     /**
+     * @return OK
+     */
+    queryAllActiveGames(): Promise<{ [key: string]: GameDTO[]; }> {
+        let url_ = this.baseUrl + "/api/games/QueryAllActiveGamesAsync";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processQueryAllActiveGames(_response);
+        });
+    }
+
+    protected processQueryAllActiveGames(response: Response): Promise<{ [key: string]: GameDTO[]; }> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200) {
+                result200 = {} as any;
+                for (let key in resultData200) {
+                    if (resultData200.hasOwnProperty(key))
+                        (result200 as any)![key] = resultData200[key] ? resultData200[key].map((i: any) => GameDTO.fromJS(i)) : [];
+                }
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<{ [key: string]: GameDTO[]; }>(null as any);
+    }
+
+    /**
      * @param username (optional) 
      * @return OK
      */
@@ -1541,118 +1589,6 @@ export class Client {
             });
         }
         return Promise.resolve<IWeekPick>(null as any);
-    }
-
-    /**
-     * @param leagueId (optional) 
-     * @param weekNumber (optional) 
-     * @return OK
-     */
-    getAllSpreadWeekPicks(leagueId: string | undefined, weekNumber: number | undefined): Promise<SpreadWeekPickDTO[]> {
-        let url_ = this.baseUrl + "/api/picks/GetAllSpreadWeekPicksAsync?";
-        if (leagueId === null)
-            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
-        else if (leagueId !== undefined)
-            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
-        if (weekNumber === null)
-            throw new globalThis.Error("The parameter 'weekNumber' cannot be null.");
-        else if (weekNumber !== undefined)
-            url_ += "weekNumber=" + encodeURIComponent("" + weekNumber) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            credentials: 'include',
-            mode: 'cors',
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetAllSpreadWeekPicks(_response);
-        });
-    }
-
-    protected processGetAllSpreadWeekPicks(response: Response): Promise<SpreadWeekPickDTO[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(SpreadWeekPickDTO.fromJS(item));
-            }
-            else {
-                result200 = null as any;
-            }
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SpreadWeekPickDTO[]>(null as any);
-    }
-
-    /**
-     * @param leagueId (optional) 
-     * @param weekNumber (optional) 
-     * @return OK
-     */
-    getAllTempSpreadWeekResults(leagueId: string | undefined, weekNumber: number | undefined): Promise<SpreadWeekResultDTO[]> {
-        let url_ = this.baseUrl + "/api/picks/GetAllTempSpreadWeekResultsAsync?";
-        if (leagueId === null)
-            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
-        else if (leagueId !== undefined)
-            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
-        if (weekNumber === null)
-            throw new globalThis.Error("The parameter 'weekNumber' cannot be null.");
-        else if (weekNumber !== undefined)
-            url_ += "weekNumber=" + encodeURIComponent("" + weekNumber) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            credentials: 'include',
-            mode: 'cors',
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetAllTempSpreadWeekResults(_response);
-        });
-    }
-
-    protected processGetAllTempSpreadWeekResults(response: Response): Promise<SpreadWeekResultDTO[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(SpreadWeekResultDTO.fromJS(item));
-            }
-            else {
-                result200 = null as any;
-            }
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SpreadWeekResultDTO[]>(null as any);
     }
 
     /**
@@ -5259,7 +5195,7 @@ export class SquaresBoardDTO implements ISquaresBoardDTO {
     gameId?: string;
     isArchived?: boolean;
     boardCreatorId?: string;
-    gameBoard?: any;
+    gameBoard?: string[][];
     homeScoreAxis?: number[];
     awayScoreAxis?: number[];
 
@@ -5285,7 +5221,11 @@ export class SquaresBoardDTO implements ISquaresBoardDTO {
             this.gameId = _data["gameId"];
             this.isArchived = _data["isArchived"];
             this.boardCreatorId = _data["boardCreatorId"];
-            this.gameBoard = _data["gameBoard"];
+            if (Array.isArray(_data["gameBoard"])) {
+                this.gameBoard = [] as any;
+                for (let item of _data["gameBoard"])
+                    this.gameBoard!.push(item);
+            }
             if (Array.isArray(_data["homeScoreAxis"])) {
                 this.homeScoreAxis = [] as any;
                 for (let item of _data["homeScoreAxis"])
@@ -5317,7 +5257,11 @@ export class SquaresBoardDTO implements ISquaresBoardDTO {
         data["gameId"] = this.gameId;
         data["isArchived"] = this.isArchived;
         data["boardCreatorId"] = this.boardCreatorId;
-        data["gameBoard"] = this.gameBoard;
+        if (Array.isArray(this.gameBoard)) {
+            data["gameBoard"] = [];
+            for (let item of this.gameBoard)
+                data["gameBoard"].push(item);
+        }
         if (Array.isArray(this.homeScoreAxis)) {
             data["homeScoreAxis"] = [];
             for (let item of this.homeScoreAxis)
@@ -5338,7 +5282,7 @@ export interface ISquaresBoardDTO {
     gameId?: string;
     isArchived?: boolean;
     boardCreatorId?: string;
-    gameBoard?: any;
+    gameBoard?: string[][];
     homeScoreAxis?: number[];
     awayScoreAxis?: number[];
 

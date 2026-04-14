@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import HighlightedCard from './HighlightedCard';
 import BrowseLeagues from './BrowseLeagues';
+import ViewGames from './ViewGames';
 
 export default function MainGrid() {
   return (
@@ -22,6 +23,9 @@ export default function MainGrid() {
         </Grid>
         <Grid size={{ xs: 12, sm: 12, lg: 12 }}>
           <BrowseLeagues />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 12, lg: 12 }}>
+          <ViewGames />
         </Grid>
         {/* <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <HighlightedCard />
