@@ -20,8 +20,7 @@ function BrowseLeagues({ }: Props) {
 
     return (
         <>
-
-            <Typography variant='h2'>Public Leagues</Typography>
+            <Typography variant='h2'>Join a Public League!</Typography>
 
             <FormControl
                 sx={{
