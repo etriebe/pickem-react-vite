@@ -1,8 +1,8 @@
 import React from 'react'
 import { GameDTO } from '../services/PickemApiClient';
-import { Card, Grid, Stack, Typography, ListItem } from '@mui/material';
+import { Card, Grid, Stack, Typography } from '@mui/material';
 import TeamIcon from './TeamIcon';
-import { SiteUtilities, Sports } from '../utilities/SiteUtilities';
+import { SiteUtilities } from '../utilities/SiteUtilities';
 
 export interface SportsGamesGridProps {
     games: GameDTO[];
