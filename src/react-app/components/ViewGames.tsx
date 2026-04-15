@@ -17,20 +17,18 @@ function ViewGames({ }: Props) {
 
     return (
         <>
-            <Typography variant='h2'>Scoreboard</Typography>
-
-            
-                {
-                    Sports.map(s => {
+            <Typography variant='h2'>Scoreboard</Typography>    
+            {
+                Sports.map(s => {
+                    if (viewGamesQuery.isSuccess) {
                         const games = viewGamesQuery.data![s.label];
                         if (games) {
                             return <SportsGamesGrid games={games} sport={s.label} sportNumber={s.value} />
                         }
-                        else {
-                            return <></>;
-                        }
-                    })
-                }
+                    }
+                    return <></>;
+                })
+            }
         </>
     )
 }
