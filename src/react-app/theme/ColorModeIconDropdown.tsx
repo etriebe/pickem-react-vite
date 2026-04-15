@@ -33,6 +33,7 @@ export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
           borderRadius: (theme.vars || theme).shape.borderRadius,
           border: '1px solid',
           borderColor: (theme.vars || theme).palette.divider,
+          borderWidth: '0px'
         })}
       />
     );
@@ -52,6 +53,9 @@ export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
         aria-controls={open ? 'color-scheme-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
+        sx={(theme) => ({
+          borderWidth: '0px'
+        })}
         {...props}
       >
         {icon}

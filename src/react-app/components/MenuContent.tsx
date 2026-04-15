@@ -5,9 +5,11 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, } from '@mui/icons-material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import LightModeIcon from '@mui/icons-material/LightModeRounded';
+import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 
 const mainListItems = [
   { text: 'My Leagues', icon: <HomeRoundedIcon />, path: '/' },
@@ -18,6 +20,10 @@ const mainListItems = [
 const secondaryListItems = [
   { text: 'Settings', icon: <SettingsRoundedIcon />, path: '/settings' },
 ];
+
+const goHome = () => () => {
+  window.location.href = '/';
+};
 
 export default function MenuContent() {
   return (
@@ -34,6 +40,14 @@ export default function MenuContent() {
           ))}
         </List>
         <List dense>
+          <ListItem key='lightMode' disablePadding sx={{ display: 'block' }}>
+                <ColorModeIconDropdown>
+            <ListItemButton onClick={goHome()}>
+              <ListItemIcon><LightModeIcon /></ListItemIcon>
+              <ListItemText primary='Light/Dark Mode' />
+            </ListItemButton>
+                </ColorModeIconDropdown>
+          </ListItem>
           {secondaryListItems.map((item, index) => (
             <ListItem key={index} disablePadding sx={{ display: 'block' }}>
               <ListItemButton component="a" href={item.path}>
