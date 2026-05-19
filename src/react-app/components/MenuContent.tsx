@@ -8,7 +8,6 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import { Add as AddIcon, } from '@mui/icons-material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import LightModeIcon from '@mui/icons-material/LightModeRounded';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 
 const mainListItems = [
@@ -20,10 +19,6 @@ const mainListItems = [
 const secondaryListItems = [
   { text: 'Settings', icon: <SettingsRoundedIcon />, path: '/settings' },
 ];
-
-const goHome = () => () => {
-  window.location.href = '/';
-};
 
 export default function MenuContent() {
   return (
@@ -41,12 +36,7 @@ export default function MenuContent() {
         </List>
         <List dense>
           <ListItem key='lightMode' disablePadding sx={{ display: 'block' }}>
-                <ColorModeIconDropdown>
-            <ListItemButton onClick={goHome()}>
-              <ListItemIcon><LightModeIcon /></ListItemIcon>
-              <ListItemText primary='Light/Dark Mode' />
-            </ListItemButton>
-                </ColorModeIconDropdown>
+            <ColorModeIconDropdown useListItemButton={true} />
           </ListItem>
           {secondaryListItems.map((item, index) => (
             <ListItem key={index} disablePadding sx={{ display: 'block' }}>
