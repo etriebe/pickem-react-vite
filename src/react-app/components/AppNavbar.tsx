@@ -80,7 +80,7 @@ export default function AppNavbar({ isAuthenticated, username, email }: SideMenu
           <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
             <MenuRoundedIcon />
           </MenuButton>
-          <ColorModeIconDropdown />
+          <ColorModeIconDropdown useListItemButton={false} />
           <SideMenuMobile open={open} toggleDrawer={toggleDrawer} isAuthenticated={isAuthenticated} email={email} username={username} />
         </Stack>
       </Toolbar>
