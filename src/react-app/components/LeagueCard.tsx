@@ -30,6 +30,7 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
     const weekDescription = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, currentWeekNumber!, longDescription);
     const leagueYear = league.year?.replace("_", "-");
     const isOffSeason = LeagueUtilities.isOffSeason(league);
+    const isSeasonInFuture = LeagueUtilities.isSeasonInFuture(league);
     const userInfo = AuthenticationUtilities.getUserInfoFromLocalStorage();
     const isAdmin = league.leagueAdminIds?.find(a => a === userInfo.id);
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -102,7 +103,7 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
                     <Button size="small" startIcon={<CalendarToday />} href={weekStandingLink}>Week Standings</Button>
                 </CardActions>
                 <CardActions>
-                    {isOffSeason ?
+                    {isOffSeason && !isSeasonInFuture ?
                         <Button size="large" startIcon={<Autorenew />} onClick={() => { renewLeague() }}>Renew League{!isAdmin && " - Notify League Admin"} </Button> :
                         <Button size="large" href={myPicksLink} startIcon={<Create />}>Make Picks</Button>
                     }

@@ -23,6 +23,19 @@ export class LeagueUtilities {
     }
   }
 
+  static isSeasonInFuture(league: League): boolean {
+    const numberOfDaysBuffer = 14;
+    const startOfWeekOne = new Date(league.seasonInformation!.startOfWeekOne!);
+    const currentDate = new Date();
+    startOfWeekOne.setDate(startOfWeekOne.getDate() - numberOfDaysBuffer);
+    if (currentDate < startOfWeekOne) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
   static getEndingWeekLabel(max: number): React.SetStateAction<string> {
       return `Ending Week Number (Max:${max})`;
   }
