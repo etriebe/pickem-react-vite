@@ -1,4 +1,4 @@
-import { League } from '../services/PickemApiClient';
+import { League, ApiException } from '../services/PickemApiClient';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -10,6 +10,8 @@ import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
 import { Create, Settings, Autorenew, CalendarToday, FormatListNumbered, Send } from '@mui/icons-material';
 import { Snackbar, SnackbarCloseReason } from '@mui/material';
 import { useState } from 'react';
+import PickemApiClientFactory from '../services/PickemApiClientFactory';
+import { queryClient } from '../main';
 
 export interface LeagueCardProps {
     league: League;
@@ -17,6 +19,7 @@ export interface LeagueCardProps {
 }
 
 export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) {
+    const [open, setOpen] = useState(false);
     const currentWeekNumber = LeagueUtilities.getCurrentWeekNumber(league);
     const weekStandingLink = SiteUtilities.getWeekStandingLink(league.type, league.id!, currentWeekNumber!);
     const leagueStandingLink = SiteUtilities.getLeagueStandingLink(league.type, league.id!);
@@ -29,14 +32,28 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
     const isOffSeason = LeagueUtilities.isOffSeason(league);
     const userInfo = AuthenticationUtilities.getUserInfoFromLocalStorage();
     const isAdmin = league.leagueAdminIds?.find(a => a === userInfo.id);
-    const [copyInviteMessage, setCopyInviteMessage] = useState('');
-    const [open, setOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const copyLeagueInvite = async () => {
         const fullCopyInviteLink = `${window.location.origin}${SiteUtilities.getInviteLink(league.id!)}`;
         navigator.clipboard.writeText(fullCopyInviteLink);
-        setCopyInviteMessage("Copied invite link!");
+        setSnackbarMessage("Copied invite link!");
         setOpen(true);
+    };
+
+    const renewLeague = async () => {
+        const pickemClient = PickemApiClientFactory.createClient();
+        try {
+            await pickemClient.renewLeague(league.id!);
+            queryClient.invalidateQueries({ queryKey: ['leagues'] });
+
+            setSnackbarMessage("League has been renewed!");
+            setOpen(true);
+        }
+        catch (error: ApiException | any) {
+            setSnackbarMessage(`There was an error renewing your league. ${error.response}`);
+            setOpen(true);
+        }
     };
 
     const handleClose = (
@@ -86,7 +103,7 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
                 </CardActions>
                 <CardActions>
                     {isOffSeason ?
-                        <Button size="large" startIcon={<Autorenew />}>Renew League{!isAdmin && " - Notify League Admin"} </Button> :
+                        <Button size="large" startIcon={<Autorenew />} onClick={() => { renewLeague() }}>Renew League{!isAdmin && " - Notify League Admin"} </Button> :
                         <Button size="large" href={myPicksLink} startIcon={<Create />}>Make Picks</Button>
                     }
                 </CardActions>
@@ -95,7 +112,7 @@ export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) 
                 open={open}
                 autoHideDuration={5000}
                 onClose={handleClose}
-                message={copyInviteMessage}
+                message={snackbarMessage}
             />
         </>
     );
