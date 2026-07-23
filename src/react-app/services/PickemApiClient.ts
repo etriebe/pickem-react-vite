@@ -1682,7 +1682,7 @@ export class Client {
     /**
      * @return OK
      */
-    getCurrentSportsSeasonInformation(): Promise<{ [key: string]: SeasonDateInformation2; }> {
+    getCurrentSportsSeasonInformation(): Promise<{ [key: string]: SeasonDateInformation; }> {
         let url_ = this.baseUrl + "/api/sports/GetCurrentSportsSeasonInformation";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1700,7 +1700,7 @@ export class Client {
         });
     }
 
-    protected processGetCurrentSportsSeasonInformation(response: Response): Promise<{ [key: string]: SeasonDateInformation2; }> {
+    protected processGetCurrentSportsSeasonInformation(response: Response): Promise<{ [key: string]: SeasonDateInformation; }> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1711,7 +1711,7 @@ export class Client {
                 result200 = {} as any;
                 for (let key in resultData200) {
                     if (resultData200.hasOwnProperty(key))
-                        (result200 as any)![key] = resultData200[key] ? SeasonDateInformation2.fromJS(resultData200[key]) : new SeasonDateInformation2();
+                        (result200 as any)![key] = resultData200[key] ? SeasonDateInformation.fromJS(resultData200[key]) : new SeasonDateInformation();
                 }
             }
             else {
@@ -1724,7 +1724,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<{ [key: string]: SeasonDateInformation2; }>(null as any);
+        return Promise.resolve<{ [key: string]: SeasonDateInformation; }>(null as any);
     }
 
     /**
@@ -2801,8 +2801,8 @@ export interface IForgotPasswordRequest {
 export class GameDTO implements IGameDTO {
     id?: string;
     partitionKey?: string | undefined;
+    gameSource?: string;
     isDeleted?: boolean;
-    sportsAPIGameID?: string | undefined;
     sport?: number;
     awayTeam?: TeamDTO;
     homeTeam?: TeamDTO;
@@ -2812,9 +2812,9 @@ export class GameDTO implements IGameDTO {
     moneylineAtLockTime?: Moneyline | undefined;
     currentTotalPointsSpread?: TotalPointsSpread | undefined;
     totalPointsAtLockTime?: TotalPointsSpread | undefined;
-    spreadHistory?: Spread2[];
-    moneylineHistory?: Moneyline2[];
-    totalSpreadHistory?: TotalPointsSpread2[];
+    spreadHistory?: Spread[];
+    moneylineHistory?: Moneyline[];
+    totalSpreadHistory?: TotalPointsSpread[];
     gameStartTime?: Date;
     weekNumber?: number;
     year?: string | undefined;
@@ -2841,8 +2841,8 @@ export class GameDTO implements IGameDTO {
             }
             this.id = _data["id"];
             this.partitionKey = _data["partitionKey"];
+            this.gameSource = _data["gameSource"];
             this.isDeleted = _data["isDeleted"];
-            this.sportsAPIGameID = _data["sportsAPIGameID"];
             this.sport = _data["sport"];
             this.awayTeam = _data["awayTeam"] ? TeamDTO.fromJS(_data["awayTeam"]) : undefined as any;
             this.homeTeam = _data["homeTeam"] ? TeamDTO.fromJS(_data["homeTeam"]) : undefined as any;
@@ -2855,17 +2855,17 @@ export class GameDTO implements IGameDTO {
             if (Array.isArray(_data["spreadHistory"])) {
                 this.spreadHistory = [] as any;
                 for (let item of _data["spreadHistory"])
-                    this.spreadHistory!.push(Spread2.fromJS(item));
+                    this.spreadHistory!.push(Spread.fromJS(item));
             }
             if (Array.isArray(_data["moneylineHistory"])) {
                 this.moneylineHistory = [] as any;
                 for (let item of _data["moneylineHistory"])
-                    this.moneylineHistory!.push(Moneyline2.fromJS(item));
+                    this.moneylineHistory!.push(Moneyline.fromJS(item));
             }
             if (Array.isArray(_data["totalSpreadHistory"])) {
                 this.totalSpreadHistory = [] as any;
                 for (let item of _data["totalSpreadHistory"])
-                    this.totalSpreadHistory!.push(TotalPointsSpread2.fromJS(item));
+                    this.totalSpreadHistory!.push(TotalPointsSpread.fromJS(item));
             }
             this.gameStartTime = _data["gameStartTime"] ? new Date(_data["gameStartTime"].toString()) : undefined as any;
             this.weekNumber = _data["weekNumber"];
@@ -2891,8 +2891,8 @@ export class GameDTO implements IGameDTO {
         }
         data["id"] = this.id;
         data["partitionKey"] = this.partitionKey;
+        data["gameSource"] = this.gameSource;
         data["isDeleted"] = this.isDeleted;
-        data["sportsAPIGameID"] = this.sportsAPIGameID;
         data["sport"] = this.sport;
         data["awayTeam"] = this.awayTeam ? this.awayTeam.toJSON() : undefined as any;
         data["homeTeam"] = this.homeTeam ? this.homeTeam.toJSON() : undefined as any;
@@ -2930,8 +2930,8 @@ export class GameDTO implements IGameDTO {
 export interface IGameDTO {
     id?: string;
     partitionKey?: string | undefined;
+    gameSource?: string;
     isDeleted?: boolean;
-    sportsAPIGameID?: string | undefined;
     sport?: number;
     awayTeam?: TeamDTO;
     homeTeam?: TeamDTO;
@@ -2941,9 +2941,9 @@ export interface IGameDTO {
     moneylineAtLockTime?: Moneyline | undefined;
     currentTotalPointsSpread?: TotalPointsSpread | undefined;
     totalPointsAtLockTime?: TotalPointsSpread | undefined;
-    spreadHistory?: Spread2[];
-    moneylineHistory?: Moneyline2[];
-    totalSpreadHistory?: TotalPointsSpread2[];
+    spreadHistory?: Spread[];
+    moneylineHistory?: Moneyline[];
+    totalSpreadHistory?: TotalPointsSpread[];
     gameStartTime?: Date;
     weekNumber?: number;
     year?: string | undefined;
@@ -3487,7 +3487,7 @@ export class League implements ILeague {
     endingWeekNumber?: number;
     sportsUtils?: ISportsUtils;
     currentWeekNumber?: number;
-    seasonInformation?: SeasonDateInformation | undefined;
+    seasonInformation?: SeasonDateInformation;
     isArchived?: boolean;
     premiumStatus?: number;
     renewalRequestedTimeSent?: Date | undefined;
@@ -3605,7 +3605,7 @@ export interface ILeague {
     endingWeekNumber?: number;
     sportsUtils?: ISportsUtils;
     currentWeekNumber?: number;
-    seasonInformation?: SeasonDateInformation | undefined;
+    seasonInformation?: SeasonDateInformation;
     isArchived?: boolean;
     premiumStatus?: number;
     renewalRequestedTimeSent?: Date | undefined;
@@ -3631,7 +3631,7 @@ export class LeagueDTO implements ILeagueDTO {
     endingWeekNumber?: number;
     isArchived?: boolean;
     premiumStatus?: number;
-    seasonInformation?: SeasonDateInformation2;
+    seasonInformation?: SeasonDateInformation;
 
     [key: string]: any;
 
@@ -3675,7 +3675,7 @@ export class LeagueDTO implements ILeagueDTO {
             this.endingWeekNumber = _data["endingWeekNumber"];
             this.isArchived = _data["isArchived"];
             this.premiumStatus = _data["premiumStatus"];
-            this.seasonInformation = _data["seasonInformation"] ? SeasonDateInformation2.fromJS(_data["seasonInformation"]) : undefined as any;
+            this.seasonInformation = _data["seasonInformation"] ? SeasonDateInformation.fromJS(_data["seasonInformation"]) : undefined as any;
         }
     }
 
@@ -3740,7 +3740,7 @@ export interface ILeagueDTO {
     endingWeekNumber?: number;
     isArchived?: boolean;
     premiumStatus?: number;
-    seasonInformation?: SeasonDateInformation2;
+    seasonInformation?: SeasonDateInformation;
 
     [key: string]: any;
 }
@@ -4001,62 +4001,6 @@ export interface IMoneyline {
     [key: string]: any;
 }
 
-export class Moneyline2 implements IMoneyline2 {
-    timeOfMeasurement?: Date;
-    homeTeamPrice?: number;
-    awayTeamPrice?: number;
-
-    [key: string]: any;
-
-    constructor(data?: IMoneyline2) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.timeOfMeasurement = _data["timeOfMeasurement"] ? new Date(_data["timeOfMeasurement"].toString()) : undefined as any;
-            this.homeTeamPrice = _data["homeTeamPrice"];
-            this.awayTeamPrice = _data["awayTeamPrice"];
-        }
-    }
-
-    static fromJS(data: any): Moneyline2 {
-        data = typeof data === 'object' ? data : {};
-        let result = new Moneyline2();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["timeOfMeasurement"] = this.timeOfMeasurement ? this.timeOfMeasurement.toISOString() : undefined as any;
-        data["homeTeamPrice"] = this.homeTeamPrice;
-        data["awayTeamPrice"] = this.awayTeamPrice;
-        return data;
-    }
-}
-
-export interface IMoneyline2 {
-    timeOfMeasurement?: Date;
-    homeTeamPrice?: number;
-    awayTeamPrice?: number;
-
-    [key: string]: any;
-}
-
 export class PickemLeagueStandingsResponse implements IPickemLeagueStandingsResponse {
     league?: LeagueDTO;
     results?: SpreadWeekResultDTO[];
@@ -4131,7 +4075,7 @@ export interface IPickemLeagueStandingsResponse {
 
 export class PickemMakePicksResponse implements IPickemMakePicksResponse {
     league?: LeagueDTO;
-    picks?: SpreadWeekPickDTO2 | undefined;
+    picks?: SpreadWeekPickDTO | undefined;
     games?: GameDTO[];
 
     [key: string]: any;
@@ -4152,7 +4096,7 @@ export class PickemMakePicksResponse implements IPickemMakePicksResponse {
                     this[property] = _data[property];
             }
             this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : undefined as any;
-            this.picks = _data["picks"] ? SpreadWeekPickDTO2.fromJS(_data["picks"]) : undefined as any;
+            this.picks = _data["picks"] ? SpreadWeekPickDTO.fromJS(_data["picks"]) : undefined as any;
             if (Array.isArray(_data["games"])) {
                 this.games = [] as any;
                 for (let item of _data["games"])
@@ -4187,7 +4131,7 @@ export class PickemMakePicksResponse implements IPickemMakePicksResponse {
 
 export interface IPickemMakePicksResponse {
     league?: LeagueDTO;
-    picks?: SpreadWeekPickDTO2 | undefined;
+    picks?: SpreadWeekPickDTO | undefined;
     games?: GameDTO[];
 
     [key: string]: any;
@@ -4629,70 +4573,6 @@ export interface ISeasonDateInformation {
     [key: string]: any;
 }
 
-export class SeasonDateInformation2 implements ISeasonDateInformation2 {
-    startOfWeekOne?: Date;
-    endOfSeason?: Date;
-    weekStartTimes?: WeekInformation[];
-
-    [key: string]: any;
-
-    constructor(data?: ISeasonDateInformation2) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.startOfWeekOne = _data["startOfWeekOne"] ? new Date(_data["startOfWeekOne"].toString()) : undefined as any;
-            this.endOfSeason = _data["endOfSeason"] ? new Date(_data["endOfSeason"].toString()) : undefined as any;
-            if (Array.isArray(_data["weekStartTimes"])) {
-                this.weekStartTimes = [] as any;
-                for (let item of _data["weekStartTimes"])
-                    this.weekStartTimes!.push(WeekInformation.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): SeasonDateInformation2 {
-        data = typeof data === 'object' ? data : {};
-        let result = new SeasonDateInformation2();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["startOfWeekOne"] = this.startOfWeekOne ? this.startOfWeekOne.toISOString() : undefined as any;
-        data["endOfSeason"] = this.endOfSeason ? this.endOfSeason.toISOString() : undefined as any;
-        if (Array.isArray(this.weekStartTimes)) {
-            data["weekStartTimes"] = [];
-            for (let item of this.weekStartTimes)
-                data["weekStartTimes"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface ISeasonDateInformation2 {
-    startOfWeekOne?: Date;
-    endOfSeason?: Date;
-    weekStartTimes?: WeekInformation[];
-
-    [key: string]: any;
-}
-
 export class Spread implements ISpread {
     timeOfMeasurement?: Date;
     awayPrice!: number;
@@ -4761,80 +4641,12 @@ export interface ISpread {
     [key: string]: any;
 }
 
-export class Spread2 implements ISpread2 {
-    timeOfMeasurement?: Date;
-    awayPrice!: number;
-    homePrice!: number;
-    spreadAmount?: number;
-    spreadAverage!: number;
-    isUnknownSpread?: boolean;
-
-    [key: string]: any;
-
-    constructor(data?: ISpread2) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.timeOfMeasurement = _data["timeOfMeasurement"] ? new Date(_data["timeOfMeasurement"].toString()) : undefined as any;
-            this.awayPrice = _data["awayPrice"];
-            this.homePrice = _data["homePrice"];
-            this.spreadAmount = _data["spreadAmount"];
-            this.spreadAverage = _data["spreadAverage"];
-            this.isUnknownSpread = _data["isUnknownSpread"];
-        }
-    }
-
-    static fromJS(data: any): Spread2 {
-        data = typeof data === 'object' ? data : {};
-        let result = new Spread2();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["timeOfMeasurement"] = this.timeOfMeasurement ? this.timeOfMeasurement.toISOString() : undefined as any;
-        data["awayPrice"] = this.awayPrice;
-        data["homePrice"] = this.homePrice;
-        data["spreadAmount"] = this.spreadAmount;
-        data["spreadAverage"] = this.spreadAverage;
-        data["isUnknownSpread"] = this.isUnknownSpread;
-        return data;
-    }
-}
-
-export interface ISpread2 {
-    timeOfMeasurement?: Date;
-    awayPrice: number;
-    homePrice: number;
-    spreadAmount?: number;
-    spreadAverage: number;
-    isUnknownSpread?: boolean;
-
-    [key: string]: any;
-}
-
 export class SpreadGamePickDTO implements ISpreadGamePickDTO {
     gameID?: string;
     gameStartTime?: Date;
     sidePicked?: number;
     isKeyPicked?: boolean;
-    spreadWhenPicked?: Spread2;
+    spreadWhenPicked?: Spread;
     timeOfPick?: Date;
     isLocked?: boolean;
     pickType?: number;
@@ -4861,7 +4673,7 @@ export class SpreadGamePickDTO implements ISpreadGamePickDTO {
             this.gameStartTime = _data["gameStartTime"] ? new Date(_data["gameStartTime"].toString()) : undefined as any;
             this.sidePicked = _data["sidePicked"];
             this.isKeyPicked = _data["isKeyPicked"];
-            this.spreadWhenPicked = _data["spreadWhenPicked"] ? Spread2.fromJS(_data["spreadWhenPicked"]) : undefined as any;
+            this.spreadWhenPicked = _data["spreadWhenPicked"] ? Spread.fromJS(_data["spreadWhenPicked"]) : undefined as any;
             this.timeOfPick = _data["timeOfPick"] ? new Date(_data["timeOfPick"].toString()) : undefined as any;
             this.isLocked = _data["isLocked"];
             this.pickType = _data["pickType"];
@@ -4900,7 +4712,7 @@ export interface ISpreadGamePickDTO {
     gameStartTime?: Date;
     sidePicked?: number;
     isKeyPicked?: boolean;
-    spreadWhenPicked?: Spread2;
+    spreadWhenPicked?: Spread;
     timeOfPick?: Date;
     isLocked?: boolean;
     pickType?: number;
@@ -4984,94 +4796,6 @@ export class SpreadWeekPickDTO implements ISpreadWeekPickDTO {
 }
 
 export interface ISpreadWeekPickDTO {
-    id?: string | undefined;
-    leagueId?: string | undefined;
-    userId?: string | undefined;
-    sport?: number;
-    weekNumber?: number;
-    year?: string | undefined;
-    gamePicks?: SpreadGamePickDTO[] | undefined;
-    isFinal?: boolean;
-    processed?: boolean;
-
-    [key: string]: any;
-}
-
-export class SpreadWeekPickDTO2 implements ISpreadWeekPickDTO2 {
-    id?: string | undefined;
-    leagueId?: string | undefined;
-    userId?: string | undefined;
-    sport?: number;
-    weekNumber?: number;
-    year?: string | undefined;
-    gamePicks?: SpreadGamePickDTO[] | undefined;
-    isFinal?: boolean;
-    processed?: boolean;
-
-    [key: string]: any;
-
-    constructor(data?: ISpreadWeekPickDTO2) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.id = _data["id"];
-            this.leagueId = _data["leagueId"];
-            this.userId = _data["userId"];
-            this.sport = _data["sport"];
-            this.weekNumber = _data["weekNumber"];
-            this.year = _data["year"];
-            if (Array.isArray(_data["gamePicks"])) {
-                this.gamePicks = [] as any;
-                for (let item of _data["gamePicks"])
-                    this.gamePicks!.push(SpreadGamePickDTO.fromJS(item));
-            }
-            this.isFinal = _data["isFinal"];
-            this.processed = _data["processed"];
-        }
-    }
-
-    static fromJS(data: any): SpreadWeekPickDTO2 {
-        data = typeof data === 'object' ? data : {};
-        let result = new SpreadWeekPickDTO2();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["id"] = this.id;
-        data["leagueId"] = this.leagueId;
-        data["userId"] = this.userId;
-        data["sport"] = this.sport;
-        data["weekNumber"] = this.weekNumber;
-        data["year"] = this.year;
-        if (Array.isArray(this.gamePicks)) {
-            data["gamePicks"] = [];
-            for (let item of this.gamePicks)
-                data["gamePicks"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["isFinal"] = this.isFinal;
-        data["processed"] = this.processed;
-        return data;
-    }
-}
-
-export interface ISpreadWeekPickDTO2 {
     id?: string | undefined;
     leagueId?: string | undefined;
     userId?: string | undefined;
@@ -6030,66 +5754,6 @@ export interface ITotalPointsSpread {
     [key: string]: any;
 }
 
-export class TotalPointsSpread2 implements ITotalPointsSpread2 {
-    timeOfMeasurement?: Date;
-    totalPoints!: number;
-    underPointsPrice?: number;
-    overPointsPrice?: number;
-
-    [key: string]: any;
-
-    constructor(data?: ITotalPointsSpread2) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.timeOfMeasurement = _data["timeOfMeasurement"] ? new Date(_data["timeOfMeasurement"].toString()) : undefined as any;
-            this.totalPoints = _data["totalPoints"];
-            this.underPointsPrice = _data["underPointsPrice"];
-            this.overPointsPrice = _data["overPointsPrice"];
-        }
-    }
-
-    static fromJS(data: any): TotalPointsSpread2 {
-        data = typeof data === 'object' ? data : {};
-        let result = new TotalPointsSpread2();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["timeOfMeasurement"] = this.timeOfMeasurement ? this.timeOfMeasurement.toISOString() : undefined as any;
-        data["totalPoints"] = this.totalPoints;
-        data["underPointsPrice"] = this.underPointsPrice;
-        data["overPointsPrice"] = this.overPointsPrice;
-        return data;
-    }
-}
-
-export interface ITotalPointsSpread2 {
-    timeOfMeasurement?: Date;
-    totalPoints: number;
-    underPointsPrice?: number;
-    overPointsPrice?: number;
-
-    [key: string]: any;
-}
-
 export class TwoFactorRequest implements ITwoFactorRequest {
     enable?: boolean | undefined;
     twoFactorCode?: string | undefined;
@@ -6628,7 +6292,7 @@ export class UserSettings implements IUserSettings {
     partitionKey?: string;
     discordUserId!: string;
     timeZoneInfoId!: string;
-    timeZoneInfo?: TimeZoneInfo | undefined;
+    timeZoneInfo?: TimeZoneInfo;
 
     [key: string]: any;
 
@@ -6685,7 +6349,7 @@ export interface IUserSettings {
     partitionKey?: string;
     discordUserId: string;
     timeZoneInfoId: string;
-    timeZoneInfo?: TimeZoneInfo | undefined;
+    timeZoneInfo?: TimeZoneInfo;
 
     [key: string]: any;
 }
