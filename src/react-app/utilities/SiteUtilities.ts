@@ -412,6 +412,9 @@ export const Sports: SportType[] = [
     { value: 4, label: 'NBA' },
     { value: 5, label: 'NCAAF' },
     { value: 6, label: 'NCAAB' },
+    { value: 7, label: 'WorldCup' },
+    { value: 8, label: 'EPL' },
+    { value: 9, label: 'UCL' },
 ];
 
 export const LeagueTypes: LeagueType[] = [
@@ -420,6 +423,7 @@ export const LeagueTypes: LeagueType[] = [
     { value: 3, label: 'Survivor Pool', urlPart: 'survivor' },
     { value: 4, label: 'All Bet Types', urlPart: 'allbets' },
     { value: 5, label: 'Squares', urlPart: 'squares' },
+    { value: 6, label: 'Bracket', urlPart: 'bracket' },
 ];
 
 export const GRID_DEFAULT_SORT_ORDER: GridSortDirection[] =  [ 'desc', 'asc' ];

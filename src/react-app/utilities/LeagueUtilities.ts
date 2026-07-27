@@ -1,5 +1,5 @@
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
-import { League, LeagueDTO, SeasonDateInformation2 } from "../services/PickemApiClient";
+import { League, LeagueDTO, SeasonDateInformation } from "../services/PickemApiClient";
 import { Sports } from "./SiteUtilities";
 
 export class LeagueUtilities {
@@ -40,15 +40,19 @@ export class LeagueUtilities {
       return `Ending Week Number (Max:${max})`;
   }
 
+  static getEndingWeekString(max: number): string {
+      return `Ending Week Number (Max:${max})`;
+  }
+
   static getSportNameFromNumber(sportNumber: number): string {
       return Sports.find(s => s.value === sportNumber)?.label!;
   }
 
-  static getCurrentMaxWeeksForSport(sportSeasonInformation: { [key: string]: SeasonDateInformation2; } | undefined, sportName: string) {
+  static getCurrentMaxWeeksForSport(sportSeasonInformation: { [key: string]: SeasonDateInformation; } | undefined, sportName: string) {
       return sportSeasonInformation ? sportSeasonInformation[sportName].weekStartTimes?.length! : -1;
   }
 
-  static getCurrentMaxWeeksForSeason(seasonInformation: SeasonDateInformation2 | undefined) {
+  static getCurrentMaxWeeksForSeason(seasonInformation: SeasonDateInformation | undefined) {
       return seasonInformation ? seasonInformation.weekStartTimes?.length! : -1;
   }
 
