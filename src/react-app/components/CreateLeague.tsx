@@ -230,7 +230,6 @@ export default function CreateLeague() {
                                     value={pointsForCorrectPickPerRoundCSV}
                                     onChange={e => setPointsForCorrectPickPerRoundCSV(e.target.value)}
                                     fullWidth
-                                    required
                                     inputProps={{ min: 0 }}
                                     variant="outlined"
                                     InputLabelProps={{ shrink: true }}
