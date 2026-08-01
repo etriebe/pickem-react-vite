@@ -5,20 +5,21 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import { CreateLeagueRequest } from '../services/PickemApiClient';
+import { CreateLeagueRequest, SeasonDateInformation } from '../services/PickemApiClient';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import { Sports, LeagueTypes } from '../utilities/SiteUtilities';
 import { LeagueUtilities } from '../utilities/LeagueUtilities';
 import { queryClient } from '../main';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { NumberInput } from '@mantine/core';
 
 export default function CreateLeague() {
     const [leagueName, setLeagueName] = useState('');
     const [leagueType, setLeagueType] = useState(1);
     const [sport, setSport] = useState(1);
-    const [startWeek, setStartWeek] = useState(1);
-    const [endWeek, setEndWeek] = useState(17);
-    const [totalPicks, setTotalPicks] = useState(6);
+    const [startWeek, setStartWeek] = useState<string | number>(1);
+    const [endWeek, setEndWeek] = useState<string | number>('');
+    const [totalPicks, setTotalPicks] = useState(7);
     const [keyPicks, setKeyPicks] = useState(1);
     const [keyPickBonus, setKeyPickBonus] = useState(1);
     const [maxWeeks, setMaxWeeks] = useState(-1);
@@ -37,11 +38,11 @@ export default function CreateLeague() {
         queryKey: ['sportseasoninformation'],
         queryFn: async () => {
             const pickemClient = PickemApiClientFactory.createClient();
-            return pickemClient.getCurrentSportsSeasonInformation();
+            const sportSeasonInformation = await pickemClient.getCurrentSportsSeasonInformation();
+            changeSport(setSport, 1 /* NFL */, sportSeasonInformation, setEndWeek, setMaxWeeks);
+            return sportSeasonInformation;
         },
     });
-
-    let max = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformationQuery.data, LeagueUtilities.getSportNameFromNumber(sport));
 
     let currentSportsBracket;
     let currentBracketName;
@@ -62,8 +63,8 @@ export default function CreateLeague() {
         createLeagueRequest.leagueName = leagueName;
         createLeagueRequest.leagueType = leagueType;
         createLeagueRequest.sport = sport;
-        createLeagueRequest.startingWeekNumber = startWeek;
-        createLeagueRequest.endingWeekNumber = endWeek;
+        createLeagueRequest.startingWeekNumber = Number(startWeek);
+        createLeagueRequest.endingWeekNumber = Number(endWeek);
         createLeagueRequest.totalPicks = totalPicks;
         createLeagueRequest.keyPicks = keyPicks;
         createLeagueRequest.keyPickBonus = keyPickBonus;
@@ -91,14 +92,7 @@ export default function CreateLeague() {
     */
 
     return (
-        <Box maxWidth={600} mx="auto" mt={4} sx={{
-            '& .MuiTextField-root': { m: 1 },
-            '& .MuiInputLabel-root.MuiInputLabel-shrink': {
-                background: 'var(--template-palette-background-default)',
-                padding: '0 4px',
-                zIndex: 1,
-            },
-        }}>
+        <Box sx={{ p: 2, maxWidth: 800, margin: '0 auto' }}>
             <Typography variant="h4" gutterBottom>Create a League</Typography>
             <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
@@ -110,7 +104,7 @@ export default function CreateLeague() {
                             fullWidth
                             required
                             variant="outlined"
-                            InputLabelProps={{ shrink: true }}
+                            helperText="Enter a name for your league"
                         />
                     </Grid>
                     <Grid size={5}>
@@ -121,8 +115,7 @@ export default function CreateLeague() {
                             onChange={e => setLeagueType(Number(e.target.value))}
                             fullWidth
                             required
-                            variant="outlined"
-                            InputLabelProps={{ shrink: true }}>
+                            variant="outlined">
 
                             {LeagueTypes.map(option => (
                                 <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
@@ -135,12 +128,9 @@ export default function CreateLeague() {
                             label="Sport"
                             value={sport}
                             onChange={e => {
-                                setSport(Number(e.target.value));
-                                const sportNumber = Number(e.target.value);
-                                const sportName: string = LeagueUtilities.getSportNameFromNumber(sportNumber);
-                                const newMaxWeeks = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformationQuery.data, sportName);
-                                setEndWeek(newMaxWeeks);
-                                setMaxWeeks(newMaxWeeks);
+                                if (sportSeasonInformationQuery.isSuccess) {
+                                    changeSport(setSport, Number(e.target.value), sportSeasonInformationQuery.data!, setEndWeek, setMaxWeeks);
+                                }
                             }}
                             fullWidth
                             required
@@ -155,68 +145,56 @@ export default function CreateLeague() {
                         leagueType != 6 && // We don't need the rest of these parameters for a squares league
                         <>
                             <Grid size={6}>
-                                <TextField
+                                <NumberInput 
                                     label="Starting Week Number"
-                                    type="number"
                                     value={startWeek}
-                                    onChange={e => setStartWeek(Number(e.target.value))}
-                                    fullWidth
+                                    onChange={(val: any) => setStartWeek(val)}
                                     required
-                                    inputProps={{ min: 1 }}
+                                    min={1}
                                     variant="outlined"
                                 />
                             </Grid>
                             <Grid size={6}>
-                                <TextField
-                                    label={LeagueUtilities.getEndingWeekString(max)}
-                                    type="number"
+                                <NumberInput 
+                                    label={LeagueUtilities.getEndingWeekString(maxWeeks)}
                                     value={endWeek}
-                                    onChange={e => setEndWeek(Number(e.target.value))}
-                                    fullWidth
+                                    onChange={(val: any) => setEndWeek(val)}
                                     required
-                                    inputProps={{ min: startWeek, max: maxWeeks }}
+                                    min={startWeek}
+                                    max={maxWeeks}
                                     variant="outlined"
                                 />
-                                <Typography variant="caption" display="block" gutterBottom sx={{ ml: 1 }}>
+                                <Typography gutterBottom sx={{ ml: 1 }}>
                                 </Typography>
                             </Grid>
                             <Grid size={4}>
-                                <TextField
+                                <NumberInput 
                                     label="Total Number of Picks"
-                                    type="number"
                                     value={totalPicks}
-                                    onChange={e => setTotalPicks(Number(e.target.value))}
-                                    fullWidth
+                                    onChange={(val: any) => setTotalPicks(val)}
                                     required
-                                    inputProps={{ min: 1 }}
+                                    min={1}
                                     variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
                             <Grid size={4}>
-                                <TextField
+                                <NumberInput 
                                     label="Total Number of Key Picks"
-                                    type="number"
                                     value={keyPicks}
-                                    onChange={e => setKeyPicks(Number(e.target.value))}
-                                    fullWidth
+                                    onChange={(val: any) => setKeyPicks(val)}
                                     required
-                                    inputProps={{ min: 0 }}
+                                    min={0}
                                     variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
                             <Grid size={4}>
-                                <TextField
+                                <NumberInput 
                                     label="Key Pick Bonus"
-                                    type="number"
                                     value={keyPickBonus}
-                                    onChange={e => setKeyPickBonus(Number(e.target.value))}
-                                    fullWidth
+                                    onChange={(val: any) => setKeyPickBonus(val)}
                                     required
-                                    inputProps={{ min: 0 }}
+                                    min={0}
                                     variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
                         </>
@@ -232,22 +210,17 @@ export default function CreateLeague() {
                                     value={pointsForCorrectPickPerRoundCSV}
                                     onChange={e => setPointsForCorrectPickPerRoundCSV(e.target.value)}
                                     fullWidth
-                                    inputProps={{ min: 0 }}
                                     variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
                             <Grid size={4}>
-                                <TextField
+                                <NumberInput 
                                     label="# of Brackets/Person"
-                                    type="number"
                                     value={numberOfBracketsPerPerson}
-                                    onChange={e => setNumberOfBracketsPerPerson(Number(e.target.value))}
-                                    fullWidth
+                                    onChange={(val: any) => setNumberOfBracketsPerPerson(val)}
                                     required
-                                    inputProps={{ min: 0 }}
+                                    min={0}
                                     variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
                         </>
@@ -263,3 +236,11 @@ export default function CreateLeague() {
         </Box>
     );
 }
+function changeSport(setSport: React.Dispatch<React.SetStateAction<number>>, sportNumber: number, sportSeasonInformation: {[key: string]: SeasonDateInformation}, setEndWeek: React.Dispatch<React.SetStateAction<string | number>>, setMaxWeeks: React.Dispatch<React.SetStateAction<number>>) {
+    setSport(sportNumber);
+    const sportName: string = LeagueUtilities.getSportNameFromNumber(sportNumber);
+    const newMaxWeeks = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformation, sportName);
+    setEndWeek(newMaxWeeks);
+    setMaxWeeks(newMaxWeeks);
+}
+
