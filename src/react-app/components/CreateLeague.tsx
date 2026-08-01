@@ -22,7 +22,7 @@ export default function CreateLeague() {
     const [keyPicks, setKeyPicks] = useState(1);
     const [keyPickBonus, setKeyPickBonus] = useState(1);
     const [maxWeeks, setMaxWeeks] = useState(-1);
-    const [pointsForCorrectPickPerRoundCSV, setPointsForCorrectPickPerRoundCSV] = useState('Default value');
+    const [pointsForCorrectPickPerRoundCSV, setPointsForCorrectPickPerRoundCSV] = useState('');
     const [numberOfBracketsPerPerson, setNumberOfBracketsPerPerson] = useState(1);
 
     const allBracketsQuery = useQuery({
