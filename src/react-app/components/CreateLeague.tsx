@@ -22,7 +22,7 @@ export default function CreateLeague() {
     const [keyPicks, setKeyPicks] = useState(1);
     const [keyPickBonus, setKeyPickBonus] = useState(1);
     const [maxWeeks, setMaxWeeks] = useState(-1);
-    const [pointsForCorrectPickPerRoundCSV, setPointsForCorrectPickPerRoundCSV] = useState('');
+    const [pointsForCorrectPickPerRoundCSV, setPointsForCorrectPickPerRoundCSV] = useState('Default value');
     const [numberOfBracketsPerPerson, setNumberOfBracketsPerPerson] = useState(1);
 
     const allBracketsQuery = useQuery({
@@ -46,7 +46,7 @@ export default function CreateLeague() {
     let currentSportsBracket;
     let currentBracketName;
     if (allBracketsQuery.isSuccess) {
-        currentSportsBracket = allBracketsQuery.data![sport];
+        currentSportsBracket = allBracketsQuery.data.find(b => b.sport === sport);
         if (currentSportsBracket) {
             currentBracketName = currentSportsBracket.bracketName;
         }
@@ -223,7 +223,9 @@ export default function CreateLeague() {
                     }
                     {leagueType == 6 &&
                         <>
-                            <Typography variant="h6" gutterBottom>{currentBracketName}</Typography>
+                            <Grid size={12}>
+                                <Typography variant="h6" gutterBottom>Bracket: {currentBracketName}</Typography>
+                            </Grid>
                             <Grid size={8}>
                                 <TextField
                                     label="Points per correct pick per round (CSV)"
