@@ -5,12 +5,12 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import { CreateLeagueRequest } from '../services/PickemApiClient';
+import { CreateLeagueRequest, SeasonDateInformation } from '../services/PickemApiClient';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import { Sports, LeagueTypes } from '../utilities/SiteUtilities';
 import { LeagueUtilities } from '../utilities/LeagueUtilities';
 import { queryClient } from '../main';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
 export default function CreateLeague() {
     const [leagueName, setLeagueName] = useState('');
@@ -37,7 +37,9 @@ export default function CreateLeague() {
         queryKey: ['sportseasoninformation'],
         queryFn: async () => {
             const pickemClient = PickemApiClientFactory.createClient();
-            return pickemClient.getCurrentSportsSeasonInformation();
+            const seasonInformation = await pickemClient.getCurrentSportsSeasonInformation()
+            changeSport(setSport, 1 /* NFL */, seasonInformation, setEndWeek, setMaxWeeks);
+            return seasonInformation;
         },
     });
 
@@ -91,7 +93,10 @@ export default function CreateLeague() {
     */
 
     return (
-        <Box maxWidth={600} mx="auto" mt={4} sx={{
+        <Box sx={{
+            maxWidth: 600,
+            mx: 'auto',
+            mt: 4,
             '& .MuiTextField-root': { m: 1 },
             '& .MuiInputLabel-root.MuiInputLabel-shrink': {
                 background: 'var(--template-palette-background-default)',
@@ -110,7 +115,7 @@ export default function CreateLeague() {
                             fullWidth
                             required
                             variant="outlined"
-                            InputLabelProps={{ shrink: true }}
+                            slotProps={{ inputLabel: { shrink: true } }}
                         />
                     </Grid>
                     <Grid size={5}>
@@ -122,7 +127,7 @@ export default function CreateLeague() {
                             fullWidth
                             required
                             variant="outlined"
-                            InputLabelProps={{ shrink: true }}>
+                            slotProps={{ inputLabel: { shrink: true } }}>
 
                             {LeagueTypes.map(option => (
                                 <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
@@ -135,12 +140,9 @@ export default function CreateLeague() {
                             label="Sport"
                             value={sport}
                             onChange={e => {
-                                setSport(Number(e.target.value));
-                                const sportNumber = Number(e.target.value);
-                                const sportName: string = LeagueUtilities.getSportNameFromNumber(sportNumber);
-                                const newMaxWeeks = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformationQuery.data, sportName);
-                                setEndWeek(newMaxWeeks);
-                                setMaxWeeks(newMaxWeeks);
+                                if (sportSeasonInformationQuery.isSuccess) {
+                                    changeSport(setSport, Number(e.target.value), sportSeasonInformationQuery.data, setEndWeek, setMaxWeeks);
+                                }
                             }}
                             fullWidth
                             required
@@ -159,10 +161,15 @@ export default function CreateLeague() {
                                     label="Starting Week Number"
                                     type="number"
                                     value={startWeek}
-                                    onChange={e => setStartWeek(Number(e.target.value))}
+                                    onChange={e => {
+                                        const v = Number(e.target.value);
+                                        if (isNaN(v)) return;
+                                        const maxAllowed = maxWeeks > 0 ? maxWeeks : v;
+                                        const clamped = Math.max(1, Math.min(maxAllowed, v));
+                                        setStartWeek(clamped);
+                                    }}
                                     fullWidth
                                     required
-                                    inputProps={{ min: 1 }}
                                     variant="outlined"
                                 />
                             </Grid>
@@ -171,13 +178,18 @@ export default function CreateLeague() {
                                     label={LeagueUtilities.getEndingWeekString(max)}
                                     type="number"
                                     value={endWeek}
-                                    onChange={e => setEndWeek(Number(e.target.value))}
+                                    onChange={e => {
+                                        const v = Number(e.target.value);
+                                        if (isNaN(v)) return;
+                                        const maxAllowed = maxWeeks > 0 ? maxWeeks : v;
+                                        const clamped = Math.max(1, Math.min(maxAllowed, v));
+                                        setEndWeek(clamped);
+                                    }}
                                     fullWidth
                                     required
-                                    inputProps={{ min: startWeek, max: maxWeeks }}
                                     variant="outlined"
                                 />
-                                <Typography variant="caption" display="block" gutterBottom sx={{ ml: 1 }}>
+                                <Typography variant="caption" gutterBottom sx={{ ml: 1 }}>
                                 </Typography>
                             </Grid>
                             <Grid size={4}>
@@ -185,12 +197,24 @@ export default function CreateLeague() {
                                     label="Total Number of Picks"
                                     type="number"
                                     value={totalPicks}
-                                    onChange={e => setTotalPicks(Number(e.target.value))}
+                                    onChange={e => {
+                                        const v = Number(e.target.value);
+                                        if (isNaN(v)) {
+                                            return;
+                                        }
+                                        if (v < 1) {
+                                            return;
+                                        }
+                                        if (v < keyPicks) {
+                                            return;
+                                        }
+                                        setTotalPicks(v);
+                                    }}
+                                    // onChange={e => setTotalPicks(Number(e.target.value))}
                                     fullWidth
                                     required
-                                    inputProps={{ min: 1 }}
+                                    slotProps={{ inputLabel: { shrink: true } }}
                                     variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
                             <Grid size={4}>
@@ -198,12 +222,23 @@ export default function CreateLeague() {
                                     label="Total Number of Key Picks"
                                     type="number"
                                     value={keyPicks}
-                                    onChange={e => setKeyPicks(Number(e.target.value))}
+                                    onChange={e => {
+                                        const v = Number(e.target.value);
+                                        if (isNaN(v)) {
+                                            return;
+                                        }
+                                        if (v < 1) {
+                                            return;
+                                        }
+                                        if (v > totalPicks) {
+                                            return;
+                                        }
+                                        setKeyPicks(v);
+                                    }}
                                     fullWidth
                                     required
-                                    inputProps={{ min: 0 }}
+                                    slotProps={{ inputLabel: { shrink: true } }}
                                     variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
                             <Grid size={4}>
@@ -211,12 +246,20 @@ export default function CreateLeague() {
                                     label="Key Pick Bonus"
                                     type="number"
                                     value={keyPickBonus}
-                                    onChange={e => setKeyPickBonus(Number(e.target.value))}
+                                    onChange={e => {
+                                        const v = Number(e.target.value);
+                                        if (isNaN(v)) {
+                                            return;
+                                        }
+                                        if (v < 1) {
+                                            return;
+                                        }
+                                        setKeyPickBonus(v);
+                                    }}
                                     fullWidth
                                     required
-                                    inputProps={{ min: 0 }}
+                                    slotProps={{ inputLabel: { shrink: true } }}
                                     variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
                         </>
@@ -232,9 +275,8 @@ export default function CreateLeague() {
                                     value={pointsForCorrectPickPerRoundCSV}
                                     onChange={e => setPointsForCorrectPickPerRoundCSV(e.target.value)}
                                     fullWidth
-                                    inputProps={{ min: 0 }}
+                                    slotProps={{ inputLabel: { shrink: true } }}
                                     variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
                             <Grid size={4}>
@@ -242,12 +284,20 @@ export default function CreateLeague() {
                                     label="# of Brackets/Person"
                                     type="number"
                                     value={numberOfBracketsPerPerson}
-                                    onChange={e => setNumberOfBracketsPerPerson(Number(e.target.value))}
+                                    onChange={e => {
+                                        const v = Number(e.target.value);
+                                        if (isNaN(v)) {
+                                            return;
+                                        }
+                                        if (v < 1) {
+                                            return;
+                                        }
+                                        setNumberOfBracketsPerPerson(v);
+                                    }}
                                     fullWidth
                                     required
-                                    inputProps={{ min: 0 }}
+                                    slotProps={{ inputLabel: { shrink: true } }}
                                     variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
                         </>
@@ -263,3 +313,15 @@ export default function CreateLeague() {
         </Box>
     );
 }
+function changeSport(setSport: React.Dispatch<React.SetStateAction<number>>, 
+        sportNumber: number, 
+        sportSeasonInformation: { [key: string]: SeasonDateInformation; },
+        setEndWeek: React.Dispatch<React.SetStateAction<number>>, 
+        setMaxWeeks: React.Dispatch<React.SetStateAction<number>>) {
+    setSport(sportNumber);
+    const sportName: string = LeagueUtilities.getSportNameFromNumber(sportNumber);
+    const newMaxWeeks = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformation, sportName);
+    setEndWeek(newMaxWeeks);
+    setMaxWeeks(newMaxWeeks);
+}
+

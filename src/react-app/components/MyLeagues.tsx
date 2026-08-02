@@ -49,7 +49,6 @@ export default function MyLeagues() {
                 <Grid
                     container
                     spacing={2}
-                    padding={2}
                     sx={{ mb: (theme) => theme.spacing(2), width: '100%' }}
                 >
                     {leaguesQuery.data.map((l) => {
