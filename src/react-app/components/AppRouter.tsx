@@ -11,11 +11,9 @@ import SignUp from "./SignUp";
 import MainGrid from './MainGrid';
 import { useQuery } from '@tanstack/react-query';
 import Loading from './Loading';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
+import { Box, Stack, useMantineTheme } from '@mantine/core';
 import SideMenu from "./SideMenu";
 import AppNavbar from "./AppNavbar";
-import { alpha } from '@mui/material/styles';
 import EditUserSettings from './EditUserSettings';
 import EditLeague from './EditLeague';
 import JoinLeague from './JoinLeague';
@@ -36,6 +34,8 @@ function AppRouter({ }: Props) {
         retry: false,
     });
 
+    const theme = useMantineTheme();
+
     return (
         <>
             <Box sx={{ display: 'flex' }}>
@@ -44,21 +44,19 @@ function AppRouter({ }: Props) {
                 {/* Main content */}
                 <Box
                     component="main"
-                    sx={(theme) => ({
+                    sx={{
                         flexGrow: 1,
-                        backgroundColor: theme.vars
-                            ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
-                            : alpha(theme.palette.background.default, 1),
+                        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
                         overflow: 'auto',
-                    })}
+                    }}
                 >
                     <Stack
                         spacing={2}
                         sx={{
                             alignItems: 'center',
-                            mx: 3,
-                            pb: 5,
-                            mt: { xs: 8, md: 0 },
+                            mx: 16,
+                            pb: 40,
+                            mt: 64,
                         }}
                     >
                         {/* <Header /> */}

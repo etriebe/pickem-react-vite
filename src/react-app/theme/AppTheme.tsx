@@ -1,53 +1,57 @@
-import * as React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import type { ThemeOptions } from '@mui/material/styles';
-import { inputsCustomizations } from './customizations/inputs';
-import { dataDisplayCustomizations } from './customizations/dataDisplay';
-import { feedbackCustomizations } from './customizations/feedback';
-import { navigationCustomizations } from './customizations/navigation';
-import { surfacesCustomizations } from './customizations/surfaces';
-import { colorSchemes, typography, shadows, shape } from './themePrimitives';
+import { ReactNode, useMemo } from 'react';
+import { MantineProvider, ColorScheme, ColorSchemeProvider } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 
-interface AppThemeProps {
-  children: React.ReactNode;
-  /**
-   * This is for the docs site. You can ignore it or remove it.
-   */
-  disableCustomTheme?: boolean;
-  themeComponents?: ThemeOptions['components'];
-}
+const brand = [
+  'hsl(210, 100%, 95%)',
+  'hsl(210, 100%, 92%)',
+  'hsl(210, 100%, 80%)',
+  'hsl(210, 100%, 65%)',
+  'hsl(210, 98%, 48%)',
+  'hsl(210, 98%, 42%)',
+  'hsl(210, 98%, 55%)',
+  'hsl(210, 100%, 35%)',
+  'hsl(210, 100%, 16%)',
+  'hsl(210, 100%, 21%)',
+] as const;
 
-export default function AppTheme(props: AppThemeProps) {
-  const { children, disableCustomTheme, themeComponents } = props;
-  const theme = React.useMemo(() => {
-    return disableCustomTheme
-      ? {}
-      : createTheme({
-          // For more details about CSS variables configuration, see https://mui.com/material-ui/customization/css-theme-variables/configuration/
-          cssVariables: {
-            colorSchemeSelector: 'data-mui-color-scheme',
-            cssVarPrefix: 'template',
-          },
-          colorSchemes, // Recently added in v6 for building light & dark mode app, see https://mui.com/material-ui/customization/palette/#color-schemes
-          typography,
-          shadows,
-          shape,
-          components: {
-            ...inputsCustomizations,
-            ...dataDisplayCustomizations,
-            ...feedbackCustomizations,
-            ...navigationCustomizations,
-            ...surfacesCustomizations,
-            ...themeComponents,
-          },
-        });
-  }, [disableCustomTheme, themeComponents]);
-  if (disableCustomTheme) {
-    return <React.Fragment>{children}</React.Fragment>;
-  }
+export default function AppTheme(props: { children: ReactNode }) {
+  const { children } = props;
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+    key: 'mantine-color-scheme',
+    defaultValue: 'light',
+    getInitialValueInEffect: true,
+  });
+
+  const toggleColorScheme = (value?: ColorScheme) =>
+    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+
+  const theme = useMemo(
+    () => ({
+      colorScheme,
+      fontFamily: 'Roboto, Helvetica, Arial, Inter, sans-serif',
+      primaryColor: 'brand',
+      defaultRadius: 8,
+      colors: {
+        brand: brand as [string, string, string, string, string, string, string, string, string, string],
+      },
+      headings: {
+        fontFamily: 'Roboto, Helvetica, Arial, Inter, sans-serif',
+        fontWeight: 600,
+      },
+    }),
+    [colorScheme],
+  );
+
   return (
-    <ThemeProvider theme={theme} disableTransitionOnChange>
-      {children}
-    </ThemeProvider>
+    <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+      <MantineProvider
+        withGlobalStyles
+        withNormalizeCSS
+        theme={theme}
+      >
+        {children}
+      </MantineProvider>
+    </ColorSchemeProvider>
   );
 }

@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router';
 import { useMediaQuery } from '@mantine/hooks';
 import { Container, SimpleGrid, Title } from '@mantine/core';
-import PickemApiClientFactory from '../../services/PickemApiClientFactory';
+import { useParams } from 'react-router';
+import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import SquaresGameCreateCard from './SquaresGameCreateCard';
 
 function SquaresCreateBoard() {
     const { leagueId } = useParams<{ leagueId: string }>();
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
-    const chooseGameQuery = useQuery({
+    const chooseGameQuery = useQuery<any>({
         queryKey: ['squareschoosegame', leagueId],
         queryFn: async () => {
             const pickemClient = PickemApiClientFactory.createClient();
@@ -25,8 +25,8 @@ function SquaresCreateBoard() {
             </Title>
             <SimpleGrid cols={1} spacing="md" breakpoints={[{ minWidth: 640, cols: 2 }, { minWidth: 1024, cols: 3 }]}> 
                 {chooseGameQuery.data?.games
-                    .filter((g) => g.result?.status !== 2)
-                    .map((g) => (
+                        ?.filter((g: any) => g.result?.status !== 2)
+                        .map((g: any) => (
                         <React.Fragment key={g.id}>
                             <SquaresGameCreateCard
                                 game={g}

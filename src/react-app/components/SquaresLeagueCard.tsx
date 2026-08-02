@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Alert, Button, Card, Group, Stack, Text } from '@mantine/core';
-import { League } from '../../services/PickemApiClient';
-import { SiteUtilities } from '../../utilities/SiteUtilities';
-import { LeagueUtilities } from '../../utilities/LeagueUtilities';
-import { AuthenticationUtilities } from '../../utilities/AuthenticationUtilities';
+import { League } from '../services/PickemApiClient';
+import { SiteUtilities } from '../utilities/SiteUtilities';
+import { LeagueUtilities } from '../utilities/LeagueUtilities';
+import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
 
 export interface SquaresLeagueCardProps {
     league: League;
@@ -61,11 +61,11 @@ export default function SquaresLeagueCard({ league }: SquaresLeagueCardProps) {
                         </Button>
                     )}
                 </Group>
-                {copyInviteMessage ? (
+                {copyInviteMessage && (
                     <Alert title="Success" color="green">
                         {copyInviteMessage}
                     </Alert>
-                ) : null}
+                )}
             </Stack>
         </Card>
     );

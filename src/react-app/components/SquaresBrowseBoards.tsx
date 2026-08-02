@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router';
 import { useMediaQuery } from '@mantine/hooks';
 import { Container, SimpleGrid, Title } from '@mantine/core';
-import PickemApiClientFactory from '../../services/PickemApiClientFactory';
+import { useParams } from 'react-router';
+import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import SquaresGameBrowseCard from './SquaresGameBrowseCard';
 
 function SquaresBrowseBoards() {
     const { leagueId } = useParams<{ leagueId: string }>();
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
-    const browseBoardsQuery = useQuery({
+    const browseBoardsQuery = useQuery<any>({
         queryKey: ['browseboards', leagueId],
         queryFn: async () => {
             const pickemClient = PickemApiClientFactory.createClient();
@@ -24,9 +24,9 @@ function SquaresBrowseBoards() {
                 Active Squares Boards
             </Title>
             <SimpleGrid cols={1} spacing="md" breakpoints={[{ minWidth: 640, cols: 2 }, { minWidth: 1024, cols: 3 }]}> 
-                {browseBoardsQuery.data?.boards?.map((b) => {
+                {browseBoardsQuery.data?.boards?.map((b: any) => {
                     const gameId = b.gameId;
-                    const gameObject = browseBoardsQuery.data.games.find((g) => g.id === gameId);
+                    const gameObject = browseBoardsQuery.data?.games?.find((g: any) => g.id === gameId);
                     return (
                         <React.Fragment key={b.id}>
                             <SquaresGameBrowseCard

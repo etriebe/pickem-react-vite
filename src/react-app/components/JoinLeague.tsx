@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
-import { useParams } from 'react-router'
-import PickemApiClientFactory from '../services/PickemApiClientFactory';
+import { useState } from 'react';
+import { useParams } from 'react-router';
+import { Alert, Button, Container, Stack, Text } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Snackbar, SnackbarCloseReason, Typography } from '@mui/material';
+import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import Loading from './Loading';
 import { SiteUtilities } from '../utilities/SiteUtilities';
 
 type Props = {}
 
-function JoinLeague({ }: Props) {
+function JoinLeague({}: Props) {
     const { leagueId } = useParams();
     const [joinMessage, setJoinMessage] = useState('');
     const [open, setOpen] = useState(false);
@@ -23,57 +23,39 @@ function JoinLeague({ }: Props) {
 
     const handleJoinLeague = async () => {
         const pickemClient = PickemApiClientFactory.createClient();
-        let message = "";
+        let message = '';
         try {
             message = await pickemClient.addUserToLeague(leagueId);
             setJoinMessage(message);
             setOpen(true);
-        }
-        catch (error) {
-
-            setJoinMessage(message);
+        } catch (error) {
+            setJoinMessage(message || 'Unable to join league.');
             setOpen(true);
         }
     };
-    const handleClose = (
-        _event: React.SyntheticEvent | Event,
-        reason?: SnackbarCloseReason,
-    ) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setOpen(false);
-    };
 
     if (leagueQuery.isPending) {
-        return <Loading />
+        return <Loading />;
     }
+
     return (
-        <>
-            <Typography variant="h2">
-                Join "{leagueQuery.data?.leagueName}"
-            </Typography>
-            <Typography variant="body1">
-                # of Members: {leagueQuery.data?.userSeasons?.length}
-            </Typography>
-            <Typography variant="body1">
-                Sport: {SiteUtilities.getSportTypeFromNumber(leagueQuery.data?.sport!)?.label}
-            </Typography>
-            <Typography variant="body1">
-                League Type: {SiteUtilities.getLeagueTypeFromNumber(leagueQuery.data?.sport!)?.label}
-            </Typography>
-            <Button variant='contained' onClick={() => { handleJoinLeague() }}>
-                Join League
-            </Button>
-            <Snackbar
-                open={open}
-                autoHideDuration={5000}
-                onClose={handleClose}
-                message={joinMessage}
-            />
-        </>
-    )
+        <Container size="sm" py="xl">
+            <Stack spacing="xl">
+                <Text size="xl" weight={700}>
+                    Join "{leagueQuery.data?.leagueName}"
+                </Text>
+                <Text>Members: {leagueQuery.data?.userSeasons?.length ?? 0}</Text>
+                <Text>Sport: {SiteUtilities.getSportTypeFromNumber(leagueQuery.data?.sport!)?.label}</Text>
+                <Text>League Type: {SiteUtilities.getLeagueTypeFromNumber(leagueQuery.data?.sport!)?.label}</Text>
+                <Button onClick={handleJoinLeague}>Join League</Button>
+                {open && (
+                    <Alert title="League join status" color="blue" onClose={() => setOpen(false)}>
+                        {joinMessage}
+                    </Alert>
+                )}
+            </Stack>
+        </Container>
+    );
 }
 
-export default JoinLeague
+export default JoinLeague;

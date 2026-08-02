@@ -1,17 +1,25 @@
-import { useQuery } from "@tanstack/react-query";
-import PickemApiClientFactory from "../services/PickemApiClientFactory";
-import Loading from "./Loading";
-import { Box, Button, Grid, MenuItem, TextField, Typography } from "@mui/material";
-import { useState } from "react";
-import { timezones } from "../utilities/TimeZoneUtilities";
-import { UserSettings } from "../services/PickemApiClient";
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Button, Container, Grid, Paper, Select, Stack, Text, TextInput, Title } from '@mantine/core';
+import PickemApiClientFactory from '../services/PickemApiClientFactory';
+import Loading from './Loading';
+import { timezones } from '../utilities/TimeZoneUtilities';
+import { UserSettings } from '../services/PickemApiClient';
 
 type Props = {}
 
-function EditUserSettings({ }: Props) {
+function EditUserSettings({}: Props) {
     const [userName, setUserName] = useState<string>();
     const [discordUserId, setDiscordUserId] = useState<string>();
     const [timeZone, setTimeZone] = useState<string>();
+
+    const userSettingsQuery = useQuery({
+        queryKey: ['usersettings'],
+        queryFn: async () => {
+            const pickemClient = PickemApiClientFactory.createClient();
+            return pickemClient.getUserSettingFromUserId();
+        },
+    });
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -26,84 +34,55 @@ function EditUserSettings({ }: Props) {
         window.location.href = '/';
     };
 
-    const userSettingsQuery = useQuery({
-        queryKey: ['usersettings'],
-        queryFn: async () => {
-            const pickemClient = PickemApiClientFactory.createClient();
-            return pickemClient.getUserSettingFromUserId();
-        },
-    });
+    const timeZoneOptions = timezones.map((tz) => ({ value: tz.id, label: tz.label }));
 
     return (
-        <>
-            {userSettingsQuery.isPending && <Loading />}
-            {userSettingsQuery.isError &&
-                <Typography variant="h4" gutterBottom>Failed to load user settinsg</Typography>
-            }
-            {userSettingsQuery.isSuccess &&
-                <Box maxWidth={600} mx="auto" mt={4} sx={{
-                    '& .MuiTextField-root': { m: 1 },
-                    '& .MuiInputLabel-root.MuiInputLabel-shrink': {
-                        background: 'var(--template-palette-background-default)',
-                        padding: '0 4px',
-                        zIndex: 1,
-                    },
-                }}>
-                    <Typography variant="h4" gutterBottom>User Settings</Typography>
-                    <form onSubmit={handleSubmit}>
-                        <Grid container spacing={2}>
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
-                                    label="User Name"
-                                    name="username"
-                                    defaultValue={userSettingsQuery.data.userName}
-                                    onChange={e => setUserName(e.target.value)}
-                                    fullWidth
-                                    required
-                                    variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
-                                />
+        <Container size="md" py="xl">
+            <Paper withBorder p="xl" radius="md">
+                <Stack spacing="xl">
+                    <Title order={2}>User Settings</Title>
+                    {userSettingsQuery.isPending && <Loading />}
+                    {userSettingsQuery.isError && <Text color="red">Failed to load user settings</Text>}
+                    {userSettingsQuery.isSuccess && (
+                        <form onSubmit={handleSubmit}>
+                            <Grid gutter="md">
+                                <Grid.Col xs={12} md={6}>
+                                    <TextInput
+                                        label="User Name"
+                                        defaultValue={userSettingsQuery.data.userName}
+                                        onChange={(e) => setUserName(e.currentTarget.value)}
+                                        required
+                                    />
+                                </Grid.Col>
+                                <Grid.Col xs={12} md={6}>
+                                    <TextInput
+                                        label="Discord User Id"
+                                        defaultValue={userSettingsQuery.data.discordUserId}
+                                        onChange={(e) => setDiscordUserId(e.currentTarget.value)}
+                                        required
+                                    />
+                                </Grid.Col>
+                                <Grid.Col xs={12} md={6}>
+                                    <Select
+                                        label="Time Zone"
+                                        data={timeZoneOptions}
+                                        value={timeZone ?? userSettingsQuery.data.timeZoneInfoId}
+                                        onChange={(value) => setTimeZone(value ?? '')}
+                                        required
+                                    />
+                                </Grid.Col>
+                                <Grid.Col xs={12}>
+                                    <Button type="submit" fullWidth>
+                                        Save
+                                    </Button>
+                                </Grid.Col>
                             </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
-                                    label="Discord User Id"
-                                    name="discorduserid"
-                                    defaultValue={userSettingsQuery.data.discordUserId}
-                                    onChange={e => setDiscordUserId(e.target.value)}
-                                    fullWidth
-                                    required
-                                    variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
-                                />
-                            </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
-                                    select
-                                    label="Time Zone:"
-                                    name="timezone"
-                                    defaultValue={userSettingsQuery.data.timeZoneInfoId}
-                                    onChange={e => setTimeZone(e.target.value)}
-                                    fullWidth
-                                    required
-                                    variant="outlined"
-                                    InputLabelProps={{ shrink: true }}
-                                >
-                                    {timezones.map(tz =>
-                                        <MenuItem key={tz.id} value={tz.id}>{tz.label}</MenuItem>
-                                    )}
-                                </TextField>
-                            </Grid>
-                            <Grid size={{ xs: 12, sm: 12, lg: 12 }}>
-                                <Button type="submit" variant="contained" color="primary" fullWidth>
-                                    Save
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </form>
-                </Box>
-            }
-        </>
-    )
+                        </form>
+                    )}
+                </Stack>
+            </Paper>
+        </Container>
+    );
 }
 
-export default EditUserSettings
+export default EditUserSettings;

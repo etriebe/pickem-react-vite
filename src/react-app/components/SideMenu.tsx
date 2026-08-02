@@ -1,26 +1,7 @@
-import { styled } from '@mui/material/styles';
-import Avatar from '@mui/material/Avatar';
-import MuiDrawer, { drawerClasses } from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import { Anchor, Avatar, Navbar, ScrollArea, Stack, Text } from '@mantine/core';
 import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
 import SiteLogo from './SiteLogo';
-import { Link } from '@mui/material';
-const drawerWidth = 240;
-
-const Drawer = styled(MuiDrawer)({
-  width: drawerWidth,
-  flexShrink: 0,
-  boxSizing: 'border-box',
-  mt: 10,
-  [`& .${drawerClasses.paper}`]: {
-    width: drawerWidth,
-    boxSizing: 'border-box',
-  },
-});
 
 export interface SideMenuProps {
   isAuthenticated: boolean;
@@ -28,77 +9,35 @@ export interface SideMenuProps {
   email?: string;
 }
 
-
-export default function SideMenu({ isAuthenticated, username, email } : SideMenuProps ) {
+export default function SideMenu({ isAuthenticated, username, email }: SideMenuProps) {
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        display: { xs: 'none', md: 'block' },
-        [`& .${drawerClasses.paper}`]: {
-          backgroundColor: 'background.paper',
-        },
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          mt: 'calc(var(--template-frame-height, 0px) + 4px)',
-          p: 1.5,
-        }}
-      >
+    <Navbar p="sm" width={{ base: 0, md: 240 }} sx={{ display: 'none', '@media (min-width: 900px)': { display: 'block' } }}>
+      <Navbar.Section>
         <SiteLogo />
-      </Box>
-      <Divider />
-      <Box
-        sx={{
-          overflow: 'auto',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+      </Navbar.Section>
+
+      <Navbar.Section grow component={ScrollArea} py="xs">
         <MenuContent />
-      </Box>
-      <Stack
-        direction="row"
-        sx={{
-          p: 2,
-          gap: 1,
-          alignItems: 'center',
-          borderTop: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Avatar
-          sizes="small"
-          alt={username}
-          src="/static/images/avatar/7.jpg"
-          sx={{ width: 36, height: 36 }}
-        />
-        <Box sx={{ mr: 'auto' }}>
-          {
-            isAuthenticated ?
-            <>
-            <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
-              {username}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              {email}
-            </Typography>
-            </>
-            :
-            <Link
-              href="/signin"
-              variant="body2"
-              sx={{ alignSelf: 'center' }}
-            >
-              Sign in
-            </Link>
-          }
-        </Box>
-        <OptionsMenu />
-      </Stack>
-    </Drawer>
+      </Navbar.Section>
+
+      <Navbar.Section>
+        <Stack spacing="xs" mt="sm">
+          <Stack spacing={2}>
+            <Avatar radius="xl" alt={username} src="/static/images/avatar/7.jpg" />
+            {isAuthenticated ? (
+              <>
+                <Text weight={500}>{username}</Text>
+                <Text color="dimmed" size="sm">
+                  {email}
+                </Text>
+              </>
+            ) : (
+              <Anchor href="/signin">Sign in</Anchor>
+            )}
+          </Stack>
+          <OptionsMenu />
+        </Stack>
+      </Navbar.Section>
+    </Navbar>
   );
 }

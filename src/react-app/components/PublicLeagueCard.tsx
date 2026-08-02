@@ -1,40 +1,37 @@
-import { PersonAdd } from '@mui/icons-material'
-import { Button, Card, CardActions, CardContent, Typography } from '@mui/material'
-import { SiteUtilities } from '../utilities/SiteUtilities'
+import { Button, Card, Group, Stack, Text } from '@mantine/core';
+import { SiteUtilities } from '../utilities/SiteUtilities';
 
 type Props = {
-    leagueId: string,
-    leagueName: string,
-    leagueYear: string,
-    sport: number,
-    numberOfMembers: number
-}
+    leagueId: string;
+    leagueName: string;
+    leagueYear: string;
+    sport: number;
+    numberOfMembers: number;
+};
 
 function PublicLeagueCard({ leagueId, leagueName, leagueYear, sport, numberOfMembers }: Props) {
-    leagueYear = leagueYear.replace("_","-");
+    const formattedLeagueYear = leagueYear.replace('_', '-');
     const sportType = SiteUtilities.getSportTypeFromNumber(sport);
+    const inviteLink = SiteUtilities.getInviteLink(leagueId!);
+
     return (
-        <>
-            <Card sx={{}}>
-                <CardContent>
-                    <Typography variant="h5" component="div">
-                        {leagueName}
-                    </Typography>
-                    <Typography variant="body1" component="div">
-                        {leagueYear} - {sportType?.label}
-                    </Typography>
-                    <Typography variant="caption" component="div">
-                        {numberOfMembers} member(s)
-                    </Typography>
-                </CardContent>
-                <CardActions>
-                    <Button size="small" href={SiteUtilities.getInviteLink(leagueId!)} startIcon={<PersonAdd />}>
+        <Card shadow="sm" radius="md" p="lg">
+            <Stack spacing="xs">
+                <Text weight={700} size="lg">
+                    {leagueName}
+                </Text>
+                <Text>{formattedLeagueYear} - {sportType?.label}</Text>
+                <Text size="sm" color="dimmed">
+                    {numberOfMembers} member(s)
+                </Text>
+                <Group position="right" mt="md">
+                    <Button component="a" href={inviteLink} variant="light">
                         Join League
                     </Button>
-                </CardActions>
-            </Card>
-        </>
-    )
+                </Group>
+            </Stack>
+        </Card>
+    );
 }
 
-export default PublicLeagueCard
+export default PublicLeagueCard;
