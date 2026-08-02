@@ -7,6 +7,7 @@ import { LeagueUtilities } from "../utilities/LeagueUtilities";
 import { LeagueType, SiteUtilities } from "../utilities/SiteUtilities";
 import { useParams } from "react-router";
 import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
+import { queryClient } from "../main";
 
 type Props = {}
 
@@ -109,6 +110,7 @@ function EditLeague({ }: Props) {
         leagueSettings.weekStartingMoney = weekStartingMoney;
         updateLeagueSettings.settings = leagueSettings;
         await pickemClient.updateLeagueSettings(updateLeagueSettings);
+        queryClient.invalidateQueries({ queryKey: ['leagues'] });
         window.location.href = '/';
     };
 

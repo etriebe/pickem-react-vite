@@ -1,5 +1,5 @@
 import PickemApiClientFactory from "../services/PickemApiClientFactory";
-import { League, LeagueDTO, SeasonDateInformation2 } from "../services/PickemApiClient";
+import { League, LeagueDTO, SeasonDateInformation } from "../services/PickemApiClient";
 import { Sports } from "./SiteUtilities";
 
 export class LeagueUtilities {
@@ -23,7 +23,24 @@ export class LeagueUtilities {
     }
   }
 
+  static isSeasonInFuture(league: League): boolean {
+    const numberOfDaysBuffer = 14;
+    const startOfWeekOne = new Date(league.seasonInformation!.startOfWeekOne!);
+    const currentDate = new Date();
+    startOfWeekOne.setDate(startOfWeekOne.getDate() - numberOfDaysBuffer);
+    if (currentDate < startOfWeekOne) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
   static getEndingWeekLabel(max: number): React.SetStateAction<string> {
+      return `Ending Week Number (Max:${max})`;
+  }
+
+  static getEndingWeekString(max: number): string {
       return `Ending Week Number (Max:${max})`;
   }
 
@@ -31,11 +48,11 @@ export class LeagueUtilities {
       return Sports.find(s => s.value === sportNumber)?.label!;
   }
 
-  static getCurrentMaxWeeksForSport(sportSeasonInformation: { [key: string]: SeasonDateInformation2; } | undefined, sportName: string) {
+  static getCurrentMaxWeeksForSport(sportSeasonInformation: { [key: string]: SeasonDateInformation; } | undefined, sportName: string) {
       return sportSeasonInformation ? sportSeasonInformation[sportName].weekStartTimes?.length! : -1;
   }
 
-  static getCurrentMaxWeeksForSeason(seasonInformation: SeasonDateInformation2 | undefined) {
+  static getCurrentMaxWeeksForSeason(seasonInformation: SeasonDateInformation | undefined) {
       return seasonInformation ? seasonInformation.weekStartTimes?.length! : -1;
   }
 

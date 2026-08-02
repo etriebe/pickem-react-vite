@@ -14,7 +14,7 @@ export class Client {
 
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "https://pickemapi20250725110234-hmfrfjgjdafwbpgd.centralus-01.azurewebsites.net/";
+        this.baseUrl = baseUrl ?? "https://localhost:32773/";
     }
 
     /**
@@ -723,6 +723,54 @@ export class Client {
             });
         }
         return Promise.resolve<GameDTO[]>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    queryAllActiveGames(): Promise<{ [key: string]: GameDTO[]; }> {
+        let url_ = this.baseUrl + "/api/games/QueryAllActiveGamesAsync";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processQueryAllActiveGames(_response);
+        });
+    }
+
+    protected processQueryAllActiveGames(response: Response): Promise<{ [key: string]: GameDTO[]; }> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200) {
+                result200 = {} as any;
+                for (let key in resultData200) {
+                    if (resultData200.hasOwnProperty(key))
+                        (result200 as any)![key] = resultData200[key] ? resultData200[key].map((i: any) => GameDTO.fromJS(i)) : [];
+                }
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<{ [key: string]: GameDTO[]; }>(null as any);
     }
 
     /**
@@ -1548,118 +1596,6 @@ export class Client {
      * @param weekNumber (optional) 
      * @return OK
      */
-    getAllSpreadWeekPicks(leagueId: string | undefined, weekNumber: number | undefined): Promise<SpreadWeekPickDTO[]> {
-        let url_ = this.baseUrl + "/api/picks/GetAllSpreadWeekPicksAsync?";
-        if (leagueId === null)
-            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
-        else if (leagueId !== undefined)
-            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
-        if (weekNumber === null)
-            throw new globalThis.Error("The parameter 'weekNumber' cannot be null.");
-        else if (weekNumber !== undefined)
-            url_ += "weekNumber=" + encodeURIComponent("" + weekNumber) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            credentials: 'include',
-            mode: 'cors',
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetAllSpreadWeekPicks(_response);
-        });
-    }
-
-    protected processGetAllSpreadWeekPicks(response: Response): Promise<SpreadWeekPickDTO[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(SpreadWeekPickDTO.fromJS(item));
-            }
-            else {
-                result200 = null as any;
-            }
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SpreadWeekPickDTO[]>(null as any);
-    }
-
-    /**
-     * @param leagueId (optional) 
-     * @param weekNumber (optional) 
-     * @return OK
-     */
-    getAllTempSpreadWeekResults(leagueId: string | undefined, weekNumber: number | undefined): Promise<SpreadWeekResultDTO[]> {
-        let url_ = this.baseUrl + "/api/picks/GetAllTempSpreadWeekResultsAsync?";
-        if (leagueId === null)
-            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
-        else if (leagueId !== undefined)
-            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
-        if (weekNumber === null)
-            throw new globalThis.Error("The parameter 'weekNumber' cannot be null.");
-        else if (weekNumber !== undefined)
-            url_ += "weekNumber=" + encodeURIComponent("" + weekNumber) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            credentials: 'include',
-            mode: 'cors',
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetAllTempSpreadWeekResults(_response);
-        });
-    }
-
-    protected processGetAllTempSpreadWeekResults(response: Response): Promise<SpreadWeekResultDTO[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(SpreadWeekResultDTO.fromJS(item));
-            }
-            else {
-                result200 = null as any;
-            }
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SpreadWeekResultDTO[]>(null as any);
-    }
-
-    /**
-     * @param leagueId (optional) 
-     * @param weekNumber (optional) 
-     * @return OK
-     */
     getSpreadWeekPicksForUser(leagueId: string | undefined, weekNumber: number | undefined): Promise<SpreadWeekPickDTO> {
         let url_ = this.baseUrl + "/api/picks/GetSpreadWeekPicksForUserAsync?";
         if (leagueId === null)
@@ -1746,7 +1682,7 @@ export class Client {
     /**
      * @return OK
      */
-    getCurrentSportsSeasonInformation(): Promise<{ [key: string]: SeasonDateInformation2; }> {
+    getCurrentSportsSeasonInformation(): Promise<{ [key: string]: SeasonDateInformation; }> {
         let url_ = this.baseUrl + "/api/sports/GetCurrentSportsSeasonInformation";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1764,7 +1700,7 @@ export class Client {
         });
     }
 
-    protected processGetCurrentSportsSeasonInformation(response: Response): Promise<{ [key: string]: SeasonDateInformation2; }> {
+    protected processGetCurrentSportsSeasonInformation(response: Response): Promise<{ [key: string]: SeasonDateInformation; }> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1775,7 +1711,7 @@ export class Client {
                 result200 = {} as any;
                 for (let key in resultData200) {
                     if (resultData200.hasOwnProperty(key))
-                        (result200 as any)![key] = resultData200[key] ? SeasonDateInformation2.fromJS(resultData200[key]) : new SeasonDateInformation2();
+                        (result200 as any)![key] = resultData200[key] ? SeasonDateInformation.fromJS(resultData200[key]) : new SeasonDateInformation();
                 }
             }
             else {
@@ -1788,7 +1724,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<{ [key: string]: SeasonDateInformation2; }>(null as any);
+        return Promise.resolve<{ [key: string]: SeasonDateInformation; }>(null as any);
     }
 
     /**
@@ -2002,6 +1938,135 @@ export class Client {
             });
         }
         return Promise.resolve<SpreadWeekResultDTO[]>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    upsertBracketPick(body: BracketPickRequest): Promise<void> {
+        let url_ = this.baseUrl + "/api/bracket/UpsertBracketPickAsync";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpsertBracketPick(_response);
+        });
+    }
+
+    protected processUpsertBracketPick(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getActiveBrackets(): Promise<Bracket[]> {
+        let url_ = this.baseUrl + "/api/bracket/GetActiveBrackets";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetActiveBrackets(_response);
+        });
+    }
+
+    protected processGetActiveBrackets(response: Response): Promise<Bracket[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Bracket.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Bracket[]>(null as any);
+    }
+
+    /**
+     * @param leagueId (optional) 
+     * @return OK
+     */
+    getBracketLeaguePage(leagueId: string | undefined): Promise<BracketPageResponse> {
+        let url_ = this.baseUrl + "/api/bracket/GetBracketLeaguePage?";
+        if (leagueId === null)
+            throw new globalThis.Error("The parameter 'leagueId' cannot be null.");
+        else if (leagueId !== undefined)
+            url_ += "leagueId=" + encodeURIComponent("" + leagueId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetBracketLeaguePage(_response);
+        });
+    }
+
+    protected processGetBracketLeaguePage(response: Response): Promise<BracketPageResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BracketPageResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BracketPageResponse>(null as any);
     }
 
     /**
@@ -2690,6 +2755,573 @@ export interface IAllLeagueSquaresBoardsResponse {
     [key: string]: any;
 }
 
+export class Bracket implements IBracket {
+    bracketName!: string;
+    seedsAreHidden!: boolean;
+    id?: string | undefined;
+    type!: number;
+    sport!: number;
+    initialTeams?: BracketTeam[] | undefined;
+    rounds?: Round[] | undefined;
+    currentRoundIndex?: number;
+    currentRound?: Round;
+    isFinished?: boolean;
+    winner?: BracketTeam;
+
+    [key: string]: any;
+
+    constructor(data?: IBracket) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.bracketName = _data["bracketName"];
+            this.seedsAreHidden = _data["seedsAreHidden"];
+            this.id = _data["id"];
+            this.type = _data["type"];
+            this.sport = _data["sport"];
+            if (Array.isArray(_data["initialTeams"])) {
+                this.initialTeams = [] as any;
+                for (let item of _data["initialTeams"])
+                    this.initialTeams!.push(BracketTeam.fromJS(item));
+            }
+            if (Array.isArray(_data["rounds"])) {
+                this.rounds = [] as any;
+                for (let item of _data["rounds"])
+                    this.rounds!.push(Round.fromJS(item));
+            }
+            this.currentRoundIndex = _data["currentRoundIndex"];
+            this.currentRound = _data["currentRound"] ? Round.fromJS(_data["currentRound"]) : undefined as any;
+            this.isFinished = _data["isFinished"];
+            this.winner = _data["winner"] ? BracketTeam.fromJS(_data["winner"]) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): Bracket {
+        data = typeof data === 'object' ? data : {};
+        let result = new Bracket();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["bracketName"] = this.bracketName;
+        data["seedsAreHidden"] = this.seedsAreHidden;
+        data["id"] = this.id;
+        data["type"] = this.type;
+        data["sport"] = this.sport;
+        if (Array.isArray(this.initialTeams)) {
+            data["initialTeams"] = [];
+            for (let item of this.initialTeams)
+                data["initialTeams"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.rounds)) {
+            data["rounds"] = [];
+            for (let item of this.rounds)
+                data["rounds"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["currentRoundIndex"] = this.currentRoundIndex;
+        data["currentRound"] = this.currentRound ? this.currentRound.toJSON() : undefined as any;
+        data["isFinished"] = this.isFinished;
+        data["winner"] = this.winner ? this.winner.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface IBracket {
+    bracketName: string;
+    seedsAreHidden: boolean;
+    id?: string | undefined;
+    type: number;
+    sport: number;
+    initialTeams?: BracketTeam[] | undefined;
+    rounds?: Round[] | undefined;
+    currentRoundIndex?: number;
+    currentRound?: Round;
+    isFinished?: boolean;
+    winner?: BracketTeam;
+
+    [key: string]: any;
+}
+
+export class BracketMatchPick implements IBracketMatchPick {
+    id?: string | undefined;
+    userId?: string | undefined;
+    leagueId?: string | undefined;
+    bracketId?: string | undefined;
+    userBracketId?: string | undefined;
+    bracketMatchId?: string | undefined;
+    bracketTeamIdPicked?: string | undefined;
+    gamesToWinPrediction?: number | undefined;
+    isCorrect?: boolean | undefined;
+    isProcessed?: boolean | undefined;
+    pointsAwarded?: number | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IBracketMatchPick) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.userId = _data["userId"];
+            this.leagueId = _data["leagueId"];
+            this.bracketId = _data["bracketId"];
+            this.userBracketId = _data["userBracketId"];
+            this.bracketMatchId = _data["bracketMatchId"];
+            this.bracketTeamIdPicked = _data["bracketTeamIdPicked"];
+            this.gamesToWinPrediction = _data["gamesToWinPrediction"];
+            this.isCorrect = _data["isCorrect"];
+            this.isProcessed = _data["isProcessed"];
+            this.pointsAwarded = _data["pointsAwarded"];
+        }
+    }
+
+    static fromJS(data: any): BracketMatchPick {
+        data = typeof data === 'object' ? data : {};
+        let result = new BracketMatchPick();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["userId"] = this.userId;
+        data["leagueId"] = this.leagueId;
+        data["bracketId"] = this.bracketId;
+        data["userBracketId"] = this.userBracketId;
+        data["bracketMatchId"] = this.bracketMatchId;
+        data["bracketTeamIdPicked"] = this.bracketTeamIdPicked;
+        data["gamesToWinPrediction"] = this.gamesToWinPrediction;
+        data["isCorrect"] = this.isCorrect;
+        data["isProcessed"] = this.isProcessed;
+        data["pointsAwarded"] = this.pointsAwarded;
+        return data;
+    }
+}
+
+export interface IBracketMatchPick {
+    id?: string | undefined;
+    userId?: string | undefined;
+    leagueId?: string | undefined;
+    bracketId?: string | undefined;
+    userBracketId?: string | undefined;
+    bracketMatchId?: string | undefined;
+    bracketTeamIdPicked?: string | undefined;
+    gamesToWinPrediction?: number | undefined;
+    isCorrect?: boolean | undefined;
+    isProcessed?: boolean | undefined;
+    pointsAwarded?: number | undefined;
+
+    [key: string]: any;
+}
+
+export class BracketMatchPickDTO implements IBracketMatchPickDTO {
+    id?: string | undefined;
+    userId?: string | undefined;
+    leagueId?: string | undefined;
+    bracketId?: string | undefined;
+    userBracketId?: string | undefined;
+    bracketMatchId?: string | undefined;
+    bracketTeamIdPicked?: string | undefined;
+    gamesToWinPrediction?: number | undefined;
+    isCorrect?: boolean | undefined;
+    isProcessed?: boolean | undefined;
+    pointsAwarded?: number | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IBracketMatchPickDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.userId = _data["userId"];
+            this.leagueId = _data["leagueId"];
+            this.bracketId = _data["bracketId"];
+            this.userBracketId = _data["userBracketId"];
+            this.bracketMatchId = _data["bracketMatchId"];
+            this.bracketTeamIdPicked = _data["bracketTeamIdPicked"];
+            this.gamesToWinPrediction = _data["gamesToWinPrediction"];
+            this.isCorrect = _data["isCorrect"];
+            this.isProcessed = _data["isProcessed"];
+            this.pointsAwarded = _data["pointsAwarded"];
+        }
+    }
+
+    static fromJS(data: any): BracketMatchPickDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new BracketMatchPickDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["userId"] = this.userId;
+        data["leagueId"] = this.leagueId;
+        data["bracketId"] = this.bracketId;
+        data["userBracketId"] = this.userBracketId;
+        data["bracketMatchId"] = this.bracketMatchId;
+        data["bracketTeamIdPicked"] = this.bracketTeamIdPicked;
+        data["gamesToWinPrediction"] = this.gamesToWinPrediction;
+        data["isCorrect"] = this.isCorrect;
+        data["isProcessed"] = this.isProcessed;
+        data["pointsAwarded"] = this.pointsAwarded;
+        return data;
+    }
+}
+
+export interface IBracketMatchPickDTO {
+    id?: string | undefined;
+    userId?: string | undefined;
+    leagueId?: string | undefined;
+    bracketId?: string | undefined;
+    userBracketId?: string | undefined;
+    bracketMatchId?: string | undefined;
+    bracketTeamIdPicked?: string | undefined;
+    gamesToWinPrediction?: number | undefined;
+    isCorrect?: boolean | undefined;
+    isProcessed?: boolean | undefined;
+    pointsAwarded?: number | undefined;
+
+    [key: string]: any;
+}
+
+export class BracketMatchup implements IBracketMatchup {
+    id?: string | undefined;
+    matchId!: string;
+    team1!: BracketTeam;
+    team2!: BracketTeam;
+    gamesPlayed?: number | undefined;
+    label!: string;
+    gameIds?: string[] | undefined;
+    isBye?: boolean;
+    winner?: BracketTeam;
+
+    [key: string]: any;
+
+    constructor(data?: IBracketMatchup) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.team1 = new BracketTeam();
+            this.team2 = new BracketTeam();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.matchId = _data["matchId"];
+            this.team1 = _data["team1"] ? BracketTeam.fromJS(_data["team1"]) : new BracketTeam();
+            this.team2 = _data["team2"] ? BracketTeam.fromJS(_data["team2"]) : new BracketTeam();
+            this.gamesPlayed = _data["gamesPlayed"];
+            this.label = _data["label"];
+            if (Array.isArray(_data["gameIds"])) {
+                this.gameIds = [] as any;
+                for (let item of _data["gameIds"])
+                    this.gameIds!.push(item);
+            }
+            this.isBye = _data["isBye"];
+            this.winner = _data["winner"] ? BracketTeam.fromJS(_data["winner"]) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): BracketMatchup {
+        data = typeof data === 'object' ? data : {};
+        let result = new BracketMatchup();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["matchId"] = this.matchId;
+        data["team1"] = this.team1 ? this.team1.toJSON() : undefined as any;
+        data["team2"] = this.team2 ? this.team2.toJSON() : undefined as any;
+        data["gamesPlayed"] = this.gamesPlayed;
+        data["label"] = this.label;
+        if (Array.isArray(this.gameIds)) {
+            data["gameIds"] = [];
+            for (let item of this.gameIds)
+                data["gameIds"].push(item);
+        }
+        data["isBye"] = this.isBye;
+        data["winner"] = this.winner ? this.winner.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface IBracketMatchup {
+    id?: string | undefined;
+    matchId: string;
+    team1: BracketTeam;
+    team2: BracketTeam;
+    gamesPlayed?: number | undefined;
+    label: string;
+    gameIds?: string[] | undefined;
+    isBye?: boolean;
+    winner?: BracketTeam;
+
+    [key: string]: any;
+}
+
+export class BracketPageResponse implements IBracketPageResponse {
+    league?: League | undefined;
+    bracket?: Bracket | undefined;
+    userBrackets?: FullUserBracket[] | undefined;
+    bracketGames?: Game[] | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IBracketPageResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.league = _data["league"] ? League.fromJS(_data["league"]) : undefined as any;
+            this.bracket = _data["bracket"] ? Bracket.fromJS(_data["bracket"]) : undefined as any;
+            if (Array.isArray(_data["userBrackets"])) {
+                this.userBrackets = [] as any;
+                for (let item of _data["userBrackets"])
+                    this.userBrackets!.push(FullUserBracket.fromJS(item));
+            }
+            if (Array.isArray(_data["bracketGames"])) {
+                this.bracketGames = [] as any;
+                for (let item of _data["bracketGames"])
+                    this.bracketGames!.push(Game.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): BracketPageResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new BracketPageResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["league"] = this.league ? this.league.toJSON() : undefined as any;
+        data["bracket"] = this.bracket ? this.bracket.toJSON() : undefined as any;
+        if (Array.isArray(this.userBrackets)) {
+            data["userBrackets"] = [];
+            for (let item of this.userBrackets)
+                data["userBrackets"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.bracketGames)) {
+            data["bracketGames"] = [];
+            for (let item of this.bracketGames)
+                data["bracketGames"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IBracketPageResponse {
+    league?: League | undefined;
+    bracket?: Bracket | undefined;
+    userBrackets?: FullUserBracket[] | undefined;
+    bracketGames?: Game[] | undefined;
+
+    [key: string]: any;
+}
+
+export class BracketPickRequest implements IBracketPickRequest {
+    picks?: BracketMatchPickDTO[] | undefined;
+    userBracket?: UserBracket;
+
+    [key: string]: any;
+
+    constructor(data?: IBracketPickRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (Array.isArray(_data["picks"])) {
+                this.picks = [] as any;
+                for (let item of _data["picks"])
+                    this.picks!.push(BracketMatchPickDTO.fromJS(item));
+            }
+            this.userBracket = _data["userBracket"] ? UserBracket.fromJS(_data["userBracket"]) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): BracketPickRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new BracketPickRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (Array.isArray(this.picks)) {
+            data["picks"] = [];
+            for (let item of this.picks)
+                data["picks"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["userBracket"] = this.userBracket ? this.userBracket.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface IBracketPickRequest {
+    picks?: BracketMatchPickDTO[] | undefined;
+    userBracket?: UserBracket;
+
+    [key: string]: any;
+}
+
+export class BracketTeam implements IBracketTeam {
+    bracketTeamId!: string;
+    team!: Team;
+    seed!: number;
+
+    [key: string]: any;
+
+    constructor(data?: IBracketTeam) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.team = new Team();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.bracketTeamId = _data["bracketTeamId"];
+            this.team = _data["team"] ? Team.fromJS(_data["team"]) : new Team();
+            this.seed = _data["seed"];
+        }
+    }
+
+    static fromJS(data: any): BracketTeam {
+        data = typeof data === 'object' ? data : {};
+        let result = new BracketTeam();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["bracketTeamId"] = this.bracketTeamId;
+        data["team"] = this.team ? this.team.toJSON() : undefined as any;
+        data["seed"] = this.seed;
+        return data;
+    }
+}
+
+export interface IBracketTeam {
+    bracketTeamId: string;
+    team: Team;
+    seed: number;
+
+    [key: string]: any;
+}
+
 export class CreateLeagueRequest implements ICreateLeagueRequest {
     leagueName!: string;
     leagueType!: number;
@@ -2699,6 +3331,8 @@ export class CreateLeagueRequest implements ICreateLeagueRequest {
     totalPicks!: number;
     keyPicks!: number;
     keyPickBonus!: number;
+    pointsForCorrectPickPerRoundCSV?: string | undefined;
+    numberOfBracketsPerPerson?: number | undefined;
 
     [key: string]: any;
 
@@ -2725,6 +3359,8 @@ export class CreateLeagueRequest implements ICreateLeagueRequest {
             this.totalPicks = _data["totalPicks"];
             this.keyPicks = _data["keyPicks"];
             this.keyPickBonus = _data["keyPickBonus"];
+            this.pointsForCorrectPickPerRoundCSV = _data["pointsForCorrectPickPerRoundCSV"];
+            this.numberOfBracketsPerPerson = _data["numberOfBracketsPerPerson"];
         }
     }
 
@@ -2749,6 +3385,8 @@ export class CreateLeagueRequest implements ICreateLeagueRequest {
         data["totalPicks"] = this.totalPicks;
         data["keyPicks"] = this.keyPicks;
         data["keyPickBonus"] = this.keyPickBonus;
+        data["pointsForCorrectPickPerRoundCSV"] = this.pointsForCorrectPickPerRoundCSV;
+        data["numberOfBracketsPerPerson"] = this.numberOfBracketsPerPerson;
         return data;
     }
 }
@@ -2762,6 +3400,8 @@ export interface ICreateLeagueRequest {
     totalPicks: number;
     keyPicks: number;
     keyPickBonus: number;
+    pointsForCorrectPickPerRoundCSV?: string | undefined;
+    numberOfBracketsPerPerson?: number | undefined;
 
     [key: string]: any;
 }
@@ -2862,11 +3502,266 @@ export interface IForgotPasswordRequest {
     [key: string]: any;
 }
 
+export class FullUserBracket implements IFullUserBracket {
+    bracketMatchPicks?: BracketMatchPick[] | undefined;
+    userBracket?: UserBracket | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IFullUserBracket) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (Array.isArray(_data["bracketMatchPicks"])) {
+                this.bracketMatchPicks = [] as any;
+                for (let item of _data["bracketMatchPicks"])
+                    this.bracketMatchPicks!.push(BracketMatchPick.fromJS(item));
+            }
+            this.userBracket = _data["userBracket"] ? UserBracket.fromJS(_data["userBracket"]) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): FullUserBracket {
+        data = typeof data === 'object' ? data : {};
+        let result = new FullUserBracket();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (Array.isArray(this.bracketMatchPicks)) {
+            data["bracketMatchPicks"] = [];
+            for (let item of this.bracketMatchPicks)
+                data["bracketMatchPicks"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["userBracket"] = this.userBracket ? this.userBracket.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface IFullUserBracket {
+    bracketMatchPicks?: BracketMatchPick[] | undefined;
+    userBracket?: UserBracket | undefined;
+
+    [key: string]: any;
+}
+
+export class Game implements IGame {
+    id?: string;
+    partitionKey?: string | undefined;
+    headlines?: Headline[];
+    seasonType?: string | undefined;
+    nextGameId?: string | undefined;
+    gameSource?: string;
+    isDeleted?: boolean;
+    sport?: number;
+    awayTeam?: Team;
+    homeTeam?: Team;
+    currentSpread?: Spread | undefined;
+    spreadAtLockTime?: Spread | undefined;
+    currentSpreadArb?: number | undefined;
+    teamWithArb?: Team;
+    currentMoneyline?: Moneyline | undefined;
+    moneylineAtLockTime?: Moneyline | undefined;
+    currentTotalPointsSpread?: TotalPointsSpread | undefined;
+    totalPointsAtLockTime?: TotalPointsSpread | undefined;
+    spreadHistory?: Spread[];
+    moneylineHistory?: Moneyline[];
+    totalSpreadHistory?: TotalPointsSpread[];
+    gameStartTime?: Date;
+    weekNumber?: number;
+    sportsUtility?: ISportsUtils;
+    gameDescriptorShort?: string | undefined;
+    year?: string | undefined;
+    isLocked?: boolean;
+    result?: GameResult | undefined;
+    summary?: GameSummaryObject | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IGame) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.partitionKey = _data["partitionKey"];
+            if (Array.isArray(_data["headlines"])) {
+                this.headlines = [] as any;
+                for (let item of _data["headlines"])
+                    this.headlines!.push(Headline.fromJS(item));
+            }
+            this.seasonType = _data["seasonType"];
+            this.nextGameId = _data["nextGameId"];
+            this.gameSource = _data["gameSource"];
+            this.isDeleted = _data["isDeleted"];
+            this.sport = _data["sport"];
+            this.awayTeam = _data["awayTeam"] ? Team.fromJS(_data["awayTeam"]) : undefined as any;
+            this.homeTeam = _data["homeTeam"] ? Team.fromJS(_data["homeTeam"]) : undefined as any;
+            this.currentSpread = _data["currentSpread"] ? Spread.fromJS(_data["currentSpread"]) : undefined as any;
+            this.spreadAtLockTime = _data["spreadAtLockTime"] ? Spread.fromJS(_data["spreadAtLockTime"]) : undefined as any;
+            this.currentSpreadArb = _data["currentSpreadArb"];
+            this.teamWithArb = _data["teamWithArb"] ? Team.fromJS(_data["teamWithArb"]) : undefined as any;
+            this.currentMoneyline = _data["currentMoneyline"] ? Moneyline.fromJS(_data["currentMoneyline"]) : undefined as any;
+            this.moneylineAtLockTime = _data["moneylineAtLockTime"] ? Moneyline.fromJS(_data["moneylineAtLockTime"]) : undefined as any;
+            this.currentTotalPointsSpread = _data["currentTotalPointsSpread"] ? TotalPointsSpread.fromJS(_data["currentTotalPointsSpread"]) : undefined as any;
+            this.totalPointsAtLockTime = _data["totalPointsAtLockTime"] ? TotalPointsSpread.fromJS(_data["totalPointsAtLockTime"]) : undefined as any;
+            if (Array.isArray(_data["spreadHistory"])) {
+                this.spreadHistory = [] as any;
+                for (let item of _data["spreadHistory"])
+                    this.spreadHistory!.push(Spread.fromJS(item));
+            }
+            if (Array.isArray(_data["moneylineHistory"])) {
+                this.moneylineHistory = [] as any;
+                for (let item of _data["moneylineHistory"])
+                    this.moneylineHistory!.push(Moneyline.fromJS(item));
+            }
+            if (Array.isArray(_data["totalSpreadHistory"])) {
+                this.totalSpreadHistory = [] as any;
+                for (let item of _data["totalSpreadHistory"])
+                    this.totalSpreadHistory!.push(TotalPointsSpread.fromJS(item));
+            }
+            this.gameStartTime = _data["gameStartTime"] ? new Date(_data["gameStartTime"].toString()) : undefined as any;
+            this.weekNumber = _data["weekNumber"];
+            this.sportsUtility = _data["sportsUtility"] ? ISportsUtils.fromJS(_data["sportsUtility"]) : undefined as any;
+            this.gameDescriptorShort = _data["gameDescriptorShort"];
+            this.year = _data["year"];
+            this.isLocked = _data["isLocked"];
+            this.result = _data["result"] ? GameResult.fromJS(_data["result"]) : undefined as any;
+            this.summary = _data["summary"] ? GameSummaryObject.fromJS(_data["summary"]) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): Game {
+        data = typeof data === 'object' ? data : {};
+        let result = new Game();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["partitionKey"] = this.partitionKey;
+        if (Array.isArray(this.headlines)) {
+            data["headlines"] = [];
+            for (let item of this.headlines)
+                data["headlines"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["seasonType"] = this.seasonType;
+        data["nextGameId"] = this.nextGameId;
+        data["gameSource"] = this.gameSource;
+        data["isDeleted"] = this.isDeleted;
+        data["sport"] = this.sport;
+        data["awayTeam"] = this.awayTeam ? this.awayTeam.toJSON() : undefined as any;
+        data["homeTeam"] = this.homeTeam ? this.homeTeam.toJSON() : undefined as any;
+        data["currentSpread"] = this.currentSpread ? this.currentSpread.toJSON() : undefined as any;
+        data["spreadAtLockTime"] = this.spreadAtLockTime ? this.spreadAtLockTime.toJSON() : undefined as any;
+        data["currentSpreadArb"] = this.currentSpreadArb;
+        data["teamWithArb"] = this.teamWithArb ? this.teamWithArb.toJSON() : undefined as any;
+        data["currentMoneyline"] = this.currentMoneyline ? this.currentMoneyline.toJSON() : undefined as any;
+        data["moneylineAtLockTime"] = this.moneylineAtLockTime ? this.moneylineAtLockTime.toJSON() : undefined as any;
+        data["currentTotalPointsSpread"] = this.currentTotalPointsSpread ? this.currentTotalPointsSpread.toJSON() : undefined as any;
+        data["totalPointsAtLockTime"] = this.totalPointsAtLockTime ? this.totalPointsAtLockTime.toJSON() : undefined as any;
+        if (Array.isArray(this.spreadHistory)) {
+            data["spreadHistory"] = [];
+            for (let item of this.spreadHistory)
+                data["spreadHistory"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.moneylineHistory)) {
+            data["moneylineHistory"] = [];
+            for (let item of this.moneylineHistory)
+                data["moneylineHistory"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.totalSpreadHistory)) {
+            data["totalSpreadHistory"] = [];
+            for (let item of this.totalSpreadHistory)
+                data["totalSpreadHistory"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["gameStartTime"] = this.gameStartTime ? this.gameStartTime.toISOString() : undefined as any;
+        data["weekNumber"] = this.weekNumber;
+        data["sportsUtility"] = this.sportsUtility ? this.sportsUtility.toJSON() : undefined as any;
+        data["gameDescriptorShort"] = this.gameDescriptorShort;
+        data["year"] = this.year;
+        data["isLocked"] = this.isLocked;
+        data["result"] = this.result ? this.result.toJSON() : undefined as any;
+        data["summary"] = this.summary ? this.summary.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface IGame {
+    id?: string;
+    partitionKey?: string | undefined;
+    headlines?: Headline[];
+    seasonType?: string | undefined;
+    nextGameId?: string | undefined;
+    gameSource?: string;
+    isDeleted?: boolean;
+    sport?: number;
+    awayTeam?: Team;
+    homeTeam?: Team;
+    currentSpread?: Spread | undefined;
+    spreadAtLockTime?: Spread | undefined;
+    currentSpreadArb?: number | undefined;
+    teamWithArb?: Team;
+    currentMoneyline?: Moneyline | undefined;
+    moneylineAtLockTime?: Moneyline | undefined;
+    currentTotalPointsSpread?: TotalPointsSpread | undefined;
+    totalPointsAtLockTime?: TotalPointsSpread | undefined;
+    spreadHistory?: Spread[];
+    moneylineHistory?: Moneyline[];
+    totalSpreadHistory?: TotalPointsSpread[];
+    gameStartTime?: Date;
+    weekNumber?: number;
+    sportsUtility?: ISportsUtils;
+    gameDescriptorShort?: string | undefined;
+    year?: string | undefined;
+    isLocked?: boolean;
+    result?: GameResult | undefined;
+    summary?: GameSummaryObject | undefined;
+
+    [key: string]: any;
+}
+
 export class GameDTO implements IGameDTO {
     id?: string;
     partitionKey?: string | undefined;
+    headlines?: Headline[];
+    seasonType?: string | undefined;
+    nextGameId?: string | undefined;
+    gameSource?: string;
     isDeleted?: boolean;
-    sportsAPIGameID?: string | undefined;
     sport?: number;
     awayTeam?: TeamDTO;
     homeTeam?: TeamDTO;
@@ -2876,9 +3771,9 @@ export class GameDTO implements IGameDTO {
     moneylineAtLockTime?: Moneyline | undefined;
     currentTotalPointsSpread?: TotalPointsSpread | undefined;
     totalPointsAtLockTime?: TotalPointsSpread | undefined;
-    spreadHistory?: Spread2[];
-    moneylineHistory?: Moneyline2[];
-    totalSpreadHistory?: TotalPointsSpread2[];
+    spreadHistory?: Spread[];
+    moneylineHistory?: Moneyline[];
+    totalSpreadHistory?: TotalPointsSpread[];
     gameStartTime?: Date;
     weekNumber?: number;
     year?: string | undefined;
@@ -2905,8 +3800,15 @@ export class GameDTO implements IGameDTO {
             }
             this.id = _data["id"];
             this.partitionKey = _data["partitionKey"];
+            if (Array.isArray(_data["headlines"])) {
+                this.headlines = [] as any;
+                for (let item of _data["headlines"])
+                    this.headlines!.push(Headline.fromJS(item));
+            }
+            this.seasonType = _data["seasonType"];
+            this.nextGameId = _data["nextGameId"];
+            this.gameSource = _data["gameSource"];
             this.isDeleted = _data["isDeleted"];
-            this.sportsAPIGameID = _data["sportsAPIGameID"];
             this.sport = _data["sport"];
             this.awayTeam = _data["awayTeam"] ? TeamDTO.fromJS(_data["awayTeam"]) : undefined as any;
             this.homeTeam = _data["homeTeam"] ? TeamDTO.fromJS(_data["homeTeam"]) : undefined as any;
@@ -2919,17 +3821,17 @@ export class GameDTO implements IGameDTO {
             if (Array.isArray(_data["spreadHistory"])) {
                 this.spreadHistory = [] as any;
                 for (let item of _data["spreadHistory"])
-                    this.spreadHistory!.push(Spread2.fromJS(item));
+                    this.spreadHistory!.push(Spread.fromJS(item));
             }
             if (Array.isArray(_data["moneylineHistory"])) {
                 this.moneylineHistory = [] as any;
                 for (let item of _data["moneylineHistory"])
-                    this.moneylineHistory!.push(Moneyline2.fromJS(item));
+                    this.moneylineHistory!.push(Moneyline.fromJS(item));
             }
             if (Array.isArray(_data["totalSpreadHistory"])) {
                 this.totalSpreadHistory = [] as any;
                 for (let item of _data["totalSpreadHistory"])
-                    this.totalSpreadHistory!.push(TotalPointsSpread2.fromJS(item));
+                    this.totalSpreadHistory!.push(TotalPointsSpread.fromJS(item));
             }
             this.gameStartTime = _data["gameStartTime"] ? new Date(_data["gameStartTime"].toString()) : undefined as any;
             this.weekNumber = _data["weekNumber"];
@@ -2955,8 +3857,15 @@ export class GameDTO implements IGameDTO {
         }
         data["id"] = this.id;
         data["partitionKey"] = this.partitionKey;
+        if (Array.isArray(this.headlines)) {
+            data["headlines"] = [];
+            for (let item of this.headlines)
+                data["headlines"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["seasonType"] = this.seasonType;
+        data["nextGameId"] = this.nextGameId;
+        data["gameSource"] = this.gameSource;
         data["isDeleted"] = this.isDeleted;
-        data["sportsAPIGameID"] = this.sportsAPIGameID;
         data["sport"] = this.sport;
         data["awayTeam"] = this.awayTeam ? this.awayTeam.toJSON() : undefined as any;
         data["homeTeam"] = this.homeTeam ? this.homeTeam.toJSON() : undefined as any;
@@ -2994,8 +3903,11 @@ export class GameDTO implements IGameDTO {
 export interface IGameDTO {
     id?: string;
     partitionKey?: string | undefined;
+    headlines?: Headline[];
+    seasonType?: string | undefined;
+    nextGameId?: string | undefined;
+    gameSource?: string;
     isDeleted?: boolean;
-    sportsAPIGameID?: string | undefined;
     sport?: number;
     awayTeam?: TeamDTO;
     homeTeam?: TeamDTO;
@@ -3005,9 +3917,9 @@ export interface IGameDTO {
     moneylineAtLockTime?: Moneyline | undefined;
     currentTotalPointsSpread?: TotalPointsSpread | undefined;
     totalPointsAtLockTime?: TotalPointsSpread | undefined;
-    spreadHistory?: Spread2[];
-    moneylineHistory?: Moneyline2[];
-    totalSpreadHistory?: TotalPointsSpread2[];
+    spreadHistory?: Spread[];
+    moneylineHistory?: Moneyline[];
+    totalSpreadHistory?: TotalPointsSpread[];
     gameStartTime?: Date;
     weekNumber?: number;
     year?: string | undefined;
@@ -3024,6 +3936,8 @@ export class GameResult implements IGameResult {
     homeTeamName?: string;
     awayScore?: number;
     homeScore?: number;
+    awayScoreExtraTime?: number | undefined;
+    homeScoreExtraTime?: number | undefined;
     status?: number;
     awayScoreByPeriod?: number[];
     homeScoreByPeriod?: number[];
@@ -3053,6 +3967,8 @@ export class GameResult implements IGameResult {
             this.homeTeamName = _data["homeTeamName"];
             this.awayScore = _data["awayScore"];
             this.homeScore = _data["homeScore"];
+            this.awayScoreExtraTime = _data["awayScoreExtraTime"];
+            this.homeScoreExtraTime = _data["homeScoreExtraTime"];
             this.status = _data["status"];
             if (Array.isArray(_data["awayScoreByPeriod"])) {
                 this.awayScoreByPeriod = [] as any;
@@ -3092,6 +4008,8 @@ export class GameResult implements IGameResult {
         data["homeTeamName"] = this.homeTeamName;
         data["awayScore"] = this.awayScore;
         data["homeScore"] = this.homeScore;
+        data["awayScoreExtraTime"] = this.awayScoreExtraTime;
+        data["homeScoreExtraTime"] = this.homeScoreExtraTime;
         data["status"] = this.status;
         if (Array.isArray(this.awayScoreByPeriod)) {
             data["awayScoreByPeriod"] = [];
@@ -3120,6 +4038,8 @@ export interface IGameResult {
     homeTeamName?: string;
     awayScore?: number;
     homeScore?: number;
+    awayScoreExtraTime?: number | undefined;
+    homeScoreExtraTime?: number | undefined;
     status?: number;
     awayScoreByPeriod?: number[];
     homeScoreByPeriod?: number[];
@@ -3133,6 +4053,8 @@ export interface IGameResult {
 export class GameScoreSnapshot implements IGameScoreSnapshot {
     awayScore?: number;
     homeScore?: number;
+    awayScoreExtraTime?: number | undefined;
+    homeScoreExtraTime?: number | undefined;
     periodTimeRemaining?: string | undefined;
     currentPeriod?: number;
     snapshotTime?: Date;
@@ -3156,6 +4078,8 @@ export class GameScoreSnapshot implements IGameScoreSnapshot {
             }
             this.awayScore = _data["awayScore"];
             this.homeScore = _data["homeScore"];
+            this.awayScoreExtraTime = _data["awayScoreExtraTime"];
+            this.homeScoreExtraTime = _data["homeScoreExtraTime"];
             this.periodTimeRemaining = _data["periodTimeRemaining"];
             this.currentPeriod = _data["currentPeriod"];
             this.snapshotTime = _data["snapshotTime"] ? new Date(_data["snapshotTime"].toString()) : undefined as any;
@@ -3177,6 +4101,8 @@ export class GameScoreSnapshot implements IGameScoreSnapshot {
         }
         data["awayScore"] = this.awayScore;
         data["homeScore"] = this.homeScore;
+        data["awayScoreExtraTime"] = this.awayScoreExtraTime;
+        data["homeScoreExtraTime"] = this.homeScoreExtraTime;
         data["periodTimeRemaining"] = this.periodTimeRemaining;
         data["currentPeriod"] = this.currentPeriod;
         data["snapshotTime"] = this.snapshotTime ? this.snapshotTime.toISOString() : undefined as any;
@@ -3187,6 +4113,8 @@ export class GameScoreSnapshot implements IGameScoreSnapshot {
 export interface IGameScoreSnapshot {
     awayScore?: number;
     homeScore?: number;
+    awayScoreExtraTime?: number | undefined;
+    homeScoreExtraTime?: number | undefined;
     periodTimeRemaining?: string | undefined;
     currentPeriod?: number;
     snapshotTime?: Date;
@@ -3246,6 +4174,62 @@ export interface IGameSummaryObject {
     leadChanges?: number;
     spreadResultChanges?: number;
     numberOfBackdoorCovers?: number;
+
+    [key: string]: any;
+}
+
+export class Headline implements IHeadline {
+    description!: string;
+    type!: string;
+    shortLinkText!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IHeadline) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.description = _data["description"];
+            this.type = _data["type"];
+            this.shortLinkText = _data["shortLinkText"];
+        }
+    }
+
+    static fromJS(data: any): Headline {
+        data = typeof data === 'object' ? data : {};
+        let result = new Headline();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["description"] = this.description;
+        data["type"] = this.type;
+        data["shortLinkText"] = this.shortLinkText;
+        return data;
+    }
+}
+
+export interface IHeadline {
+    description: string;
+    type: string;
+    shortLinkText: string;
 
     [key: string]: any;
 }
@@ -3551,10 +4535,11 @@ export class League implements ILeague {
     endingWeekNumber?: number;
     sportsUtils?: ISportsUtils;
     currentWeekNumber?: number;
-    seasonInformation?: SeasonDateInformation | undefined;
+    seasonInformation?: SeasonDateInformation;
     isArchived?: boolean;
     premiumStatus?: number;
     renewalRequestedTimeSent?: Date | undefined;
+    bracketId?: string | undefined;
 
     [key: string]: any;
 
@@ -3604,6 +4589,7 @@ export class League implements ILeague {
             this.isArchived = _data["isArchived"];
             this.premiumStatus = _data["premiumStatus"];
             this.renewalRequestedTimeSent = _data["renewalRequestedTimeSent"] ? new Date(_data["renewalRequestedTimeSent"].toString()) : undefined as any;
+            this.bracketId = _data["bracketId"];
         }
     }
 
@@ -3648,6 +4634,7 @@ export class League implements ILeague {
         data["isArchived"] = this.isArchived;
         data["premiumStatus"] = this.premiumStatus;
         data["renewalRequestedTimeSent"] = this.renewalRequestedTimeSent ? this.renewalRequestedTimeSent.toISOString() : undefined as any;
+        data["bracketId"] = this.bracketId;
         return data;
     }
 }
@@ -3669,10 +4656,11 @@ export interface ILeague {
     endingWeekNumber?: number;
     sportsUtils?: ISportsUtils;
     currentWeekNumber?: number;
-    seasonInformation?: SeasonDateInformation | undefined;
+    seasonInformation?: SeasonDateInformation;
     isArchived?: boolean;
     premiumStatus?: number;
     renewalRequestedTimeSent?: Date | undefined;
+    bracketId?: string | undefined;
 
     [key: string]: any;
 }
@@ -3695,7 +4683,8 @@ export class LeagueDTO implements ILeagueDTO {
     endingWeekNumber?: number;
     isArchived?: boolean;
     premiumStatus?: number;
-    seasonInformation?: SeasonDateInformation2;
+    seasonInformation?: SeasonDateInformation;
+    bracketId?: string | undefined;
 
     [key: string]: any;
 
@@ -3739,7 +4728,8 @@ export class LeagueDTO implements ILeagueDTO {
             this.endingWeekNumber = _data["endingWeekNumber"];
             this.isArchived = _data["isArchived"];
             this.premiumStatus = _data["premiumStatus"];
-            this.seasonInformation = _data["seasonInformation"] ? SeasonDateInformation2.fromJS(_data["seasonInformation"]) : undefined as any;
+            this.seasonInformation = _data["seasonInformation"] ? SeasonDateInformation.fromJS(_data["seasonInformation"]) : undefined as any;
+            this.bracketId = _data["bracketId"];
         }
     }
 
@@ -3782,6 +4772,7 @@ export class LeagueDTO implements ILeagueDTO {
         data["isArchived"] = this.isArchived;
         data["premiumStatus"] = this.premiumStatus;
         data["seasonInformation"] = this.seasonInformation ? this.seasonInformation.toJSON() : undefined as any;
+        data["bracketId"] = this.bracketId;
         return data;
     }
 }
@@ -3804,7 +4795,8 @@ export interface ILeagueDTO {
     endingWeekNumber?: number;
     isArchived?: boolean;
     premiumStatus?: number;
-    seasonInformation?: SeasonDateInformation2;
+    seasonInformation?: SeasonDateInformation;
+    bracketId?: string | undefined;
 
     [key: string]: any;
 }
@@ -3819,6 +4811,8 @@ export class LeagueSettings implements ILeagueSettings {
     allowWinningsForBetting?: boolean;
     lockPicksAfterTheyAreMade?: boolean;
     lockSpreadsDuringWeek?: boolean;
+    pointsForCorrectPickPerRound?: number[] | undefined;
+    numberOfBracketsPerPerson?: number | undefined;
 
     [key: string]: any;
 
@@ -3846,6 +4840,12 @@ export class LeagueSettings implements ILeagueSettings {
             this.allowWinningsForBetting = _data["allowWinningsForBetting"];
             this.lockPicksAfterTheyAreMade = _data["lockPicksAfterTheyAreMade"];
             this.lockSpreadsDuringWeek = _data["lockSpreadsDuringWeek"];
+            if (Array.isArray(_data["pointsForCorrectPickPerRound"])) {
+                this.pointsForCorrectPickPerRound = [] as any;
+                for (let item of _data["pointsForCorrectPickPerRound"])
+                    this.pointsForCorrectPickPerRound!.push(item);
+            }
+            this.numberOfBracketsPerPerson = _data["numberOfBracketsPerPerson"];
         }
     }
 
@@ -3871,6 +4871,12 @@ export class LeagueSettings implements ILeagueSettings {
         data["allowWinningsForBetting"] = this.allowWinningsForBetting;
         data["lockPicksAfterTheyAreMade"] = this.lockPicksAfterTheyAreMade;
         data["lockSpreadsDuringWeek"] = this.lockSpreadsDuringWeek;
+        if (Array.isArray(this.pointsForCorrectPickPerRound)) {
+            data["pointsForCorrectPickPerRound"] = [];
+            for (let item of this.pointsForCorrectPickPerRound)
+                data["pointsForCorrectPickPerRound"].push(item);
+        }
+        data["numberOfBracketsPerPerson"] = this.numberOfBracketsPerPerson;
         return data;
     }
 }
@@ -3885,6 +4891,8 @@ export interface ILeagueSettings {
     allowWinningsForBetting?: boolean;
     lockPicksAfterTheyAreMade?: boolean;
     lockSpreadsDuringWeek?: boolean;
+    pointsForCorrectPickPerRound?: number[] | undefined;
+    numberOfBracketsPerPerson?: number | undefined;
 
     [key: string]: any;
 }
@@ -4065,62 +5073,6 @@ export interface IMoneyline {
     [key: string]: any;
 }
 
-export class Moneyline2 implements IMoneyline2 {
-    timeOfMeasurement?: Date;
-    homeTeamPrice?: number;
-    awayTeamPrice?: number;
-
-    [key: string]: any;
-
-    constructor(data?: IMoneyline2) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.timeOfMeasurement = _data["timeOfMeasurement"] ? new Date(_data["timeOfMeasurement"].toString()) : undefined as any;
-            this.homeTeamPrice = _data["homeTeamPrice"];
-            this.awayTeamPrice = _data["awayTeamPrice"];
-        }
-    }
-
-    static fromJS(data: any): Moneyline2 {
-        data = typeof data === 'object' ? data : {};
-        let result = new Moneyline2();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["timeOfMeasurement"] = this.timeOfMeasurement ? this.timeOfMeasurement.toISOString() : undefined as any;
-        data["homeTeamPrice"] = this.homeTeamPrice;
-        data["awayTeamPrice"] = this.awayTeamPrice;
-        return data;
-    }
-}
-
-export interface IMoneyline2 {
-    timeOfMeasurement?: Date;
-    homeTeamPrice?: number;
-    awayTeamPrice?: number;
-
-    [key: string]: any;
-}
-
 export class PickemLeagueStandingsResponse implements IPickemLeagueStandingsResponse {
     league?: LeagueDTO;
     results?: SpreadWeekResultDTO[];
@@ -4195,7 +5147,7 @@ export interface IPickemLeagueStandingsResponse {
 
 export class PickemMakePicksResponse implements IPickemMakePicksResponse {
     league?: LeagueDTO;
-    picks?: SpreadWeekPickDTO2 | undefined;
+    picks?: SpreadWeekPickDTO | undefined;
     games?: GameDTO[];
 
     [key: string]: any;
@@ -4216,7 +5168,7 @@ export class PickemMakePicksResponse implements IPickemMakePicksResponse {
                     this[property] = _data[property];
             }
             this.league = _data["league"] ? LeagueDTO.fromJS(_data["league"]) : undefined as any;
-            this.picks = _data["picks"] ? SpreadWeekPickDTO2.fromJS(_data["picks"]) : undefined as any;
+            this.picks = _data["picks"] ? SpreadWeekPickDTO.fromJS(_data["picks"]) : undefined as any;
             if (Array.isArray(_data["games"])) {
                 this.games = [] as any;
                 for (let item of _data["games"])
@@ -4251,7 +5203,7 @@ export class PickemMakePicksResponse implements IPickemMakePicksResponse {
 
 export interface IPickemMakePicksResponse {
     league?: LeagueDTO;
-    picks?: SpreadWeekPickDTO2 | undefined;
+    picks?: SpreadWeekPickDTO | undefined;
     games?: GameDTO[];
 
     [key: string]: any;
@@ -4629,6 +5581,122 @@ export interface IResetPasswordRequest {
     [key: string]: any;
 }
 
+export class Round implements IRound {
+    index!: number;
+    matches?: BracketMatchup[] | undefined;
+    scoringSettings?: RoundScoringSettings;
+
+    [key: string]: any;
+
+    constructor(data?: IRound) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.index = _data["index"];
+            if (Array.isArray(_data["matches"])) {
+                this.matches = [] as any;
+                for (let item of _data["matches"])
+                    this.matches!.push(BracketMatchup.fromJS(item));
+            }
+            this.scoringSettings = _data["scoringSettings"] ? RoundScoringSettings.fromJS(_data["scoringSettings"]) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): Round {
+        data = typeof data === 'object' ? data : {};
+        let result = new Round();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["index"] = this.index;
+        if (Array.isArray(this.matches)) {
+            data["matches"] = [];
+            for (let item of this.matches)
+                data["matches"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["scoringSettings"] = this.scoringSettings ? this.scoringSettings.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface IRound {
+    index: number;
+    matches?: BracketMatchup[] | undefined;
+    scoringSettings?: RoundScoringSettings;
+
+    [key: string]: any;
+}
+
+export class RoundScoringSettings implements IRoundScoringSettings {
+    correctPickPoints?: number;
+    correctGamesToWinPoints?: number;
+
+    [key: string]: any;
+
+    constructor(data?: IRoundScoringSettings) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.correctPickPoints = _data["correctPickPoints"];
+            this.correctGamesToWinPoints = _data["correctGamesToWinPoints"];
+        }
+    }
+
+    static fromJS(data: any): RoundScoringSettings {
+        data = typeof data === 'object' ? data : {};
+        let result = new RoundScoringSettings();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["correctPickPoints"] = this.correctPickPoints;
+        data["correctGamesToWinPoints"] = this.correctGamesToWinPoints;
+        return data;
+    }
+}
+
+export interface IRoundScoringSettings {
+    correctPickPoints?: number;
+    correctGamesToWinPoints?: number;
+
+    [key: string]: any;
+}
+
 export class SeasonDateInformation implements ISeasonDateInformation {
     startOfWeekOne?: Date;
     endOfSeason?: Date;
@@ -4686,70 +5754,6 @@ export class SeasonDateInformation implements ISeasonDateInformation {
 }
 
 export interface ISeasonDateInformation {
-    startOfWeekOne?: Date;
-    endOfSeason?: Date;
-    weekStartTimes?: WeekInformation[];
-
-    [key: string]: any;
-}
-
-export class SeasonDateInformation2 implements ISeasonDateInformation2 {
-    startOfWeekOne?: Date;
-    endOfSeason?: Date;
-    weekStartTimes?: WeekInformation[];
-
-    [key: string]: any;
-
-    constructor(data?: ISeasonDateInformation2) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.startOfWeekOne = _data["startOfWeekOne"] ? new Date(_data["startOfWeekOne"].toString()) : undefined as any;
-            this.endOfSeason = _data["endOfSeason"] ? new Date(_data["endOfSeason"].toString()) : undefined as any;
-            if (Array.isArray(_data["weekStartTimes"])) {
-                this.weekStartTimes = [] as any;
-                for (let item of _data["weekStartTimes"])
-                    this.weekStartTimes!.push(WeekInformation.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): SeasonDateInformation2 {
-        data = typeof data === 'object' ? data : {};
-        let result = new SeasonDateInformation2();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["startOfWeekOne"] = this.startOfWeekOne ? this.startOfWeekOne.toISOString() : undefined as any;
-        data["endOfSeason"] = this.endOfSeason ? this.endOfSeason.toISOString() : undefined as any;
-        if (Array.isArray(this.weekStartTimes)) {
-            data["weekStartTimes"] = [];
-            for (let item of this.weekStartTimes)
-                data["weekStartTimes"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface ISeasonDateInformation2 {
     startOfWeekOne?: Date;
     endOfSeason?: Date;
     weekStartTimes?: WeekInformation[];
@@ -4825,80 +5829,12 @@ export interface ISpread {
     [key: string]: any;
 }
 
-export class Spread2 implements ISpread2 {
-    timeOfMeasurement?: Date;
-    awayPrice!: number;
-    homePrice!: number;
-    spreadAmount?: number;
-    spreadAverage!: number;
-    isUnknownSpread?: boolean;
-
-    [key: string]: any;
-
-    constructor(data?: ISpread2) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.timeOfMeasurement = _data["timeOfMeasurement"] ? new Date(_data["timeOfMeasurement"].toString()) : undefined as any;
-            this.awayPrice = _data["awayPrice"];
-            this.homePrice = _data["homePrice"];
-            this.spreadAmount = _data["spreadAmount"];
-            this.spreadAverage = _data["spreadAverage"];
-            this.isUnknownSpread = _data["isUnknownSpread"];
-        }
-    }
-
-    static fromJS(data: any): Spread2 {
-        data = typeof data === 'object' ? data : {};
-        let result = new Spread2();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["timeOfMeasurement"] = this.timeOfMeasurement ? this.timeOfMeasurement.toISOString() : undefined as any;
-        data["awayPrice"] = this.awayPrice;
-        data["homePrice"] = this.homePrice;
-        data["spreadAmount"] = this.spreadAmount;
-        data["spreadAverage"] = this.spreadAverage;
-        data["isUnknownSpread"] = this.isUnknownSpread;
-        return data;
-    }
-}
-
-export interface ISpread2 {
-    timeOfMeasurement?: Date;
-    awayPrice: number;
-    homePrice: number;
-    spreadAmount?: number;
-    spreadAverage: number;
-    isUnknownSpread?: boolean;
-
-    [key: string]: any;
-}
-
 export class SpreadGamePickDTO implements ISpreadGamePickDTO {
     gameID?: string;
     gameStartTime?: Date;
     sidePicked?: number;
     isKeyPicked?: boolean;
-    spreadWhenPicked?: Spread2;
+    spreadWhenPicked?: Spread;
     timeOfPick?: Date;
     isLocked?: boolean;
     pickType?: number;
@@ -4925,7 +5861,7 @@ export class SpreadGamePickDTO implements ISpreadGamePickDTO {
             this.gameStartTime = _data["gameStartTime"] ? new Date(_data["gameStartTime"].toString()) : undefined as any;
             this.sidePicked = _data["sidePicked"];
             this.isKeyPicked = _data["isKeyPicked"];
-            this.spreadWhenPicked = _data["spreadWhenPicked"] ? Spread2.fromJS(_data["spreadWhenPicked"]) : undefined as any;
+            this.spreadWhenPicked = _data["spreadWhenPicked"] ? Spread.fromJS(_data["spreadWhenPicked"]) : undefined as any;
             this.timeOfPick = _data["timeOfPick"] ? new Date(_data["timeOfPick"].toString()) : undefined as any;
             this.isLocked = _data["isLocked"];
             this.pickType = _data["pickType"];
@@ -4964,7 +5900,7 @@ export interface ISpreadGamePickDTO {
     gameStartTime?: Date;
     sidePicked?: number;
     isKeyPicked?: boolean;
-    spreadWhenPicked?: Spread2;
+    spreadWhenPicked?: Spread;
     timeOfPick?: Date;
     isLocked?: boolean;
     pickType?: number;
@@ -5048,94 +5984,6 @@ export class SpreadWeekPickDTO implements ISpreadWeekPickDTO {
 }
 
 export interface ISpreadWeekPickDTO {
-    id?: string | undefined;
-    leagueId?: string | undefined;
-    userId?: string | undefined;
-    sport?: number;
-    weekNumber?: number;
-    year?: string | undefined;
-    gamePicks?: SpreadGamePickDTO[] | undefined;
-    isFinal?: boolean;
-    processed?: boolean;
-
-    [key: string]: any;
-}
-
-export class SpreadWeekPickDTO2 implements ISpreadWeekPickDTO2 {
-    id?: string | undefined;
-    leagueId?: string | undefined;
-    userId?: string | undefined;
-    sport?: number;
-    weekNumber?: number;
-    year?: string | undefined;
-    gamePicks?: SpreadGamePickDTO[] | undefined;
-    isFinal?: boolean;
-    processed?: boolean;
-
-    [key: string]: any;
-
-    constructor(data?: ISpreadWeekPickDTO2) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.id = _data["id"];
-            this.leagueId = _data["leagueId"];
-            this.userId = _data["userId"];
-            this.sport = _data["sport"];
-            this.weekNumber = _data["weekNumber"];
-            this.year = _data["year"];
-            if (Array.isArray(_data["gamePicks"])) {
-                this.gamePicks = [] as any;
-                for (let item of _data["gamePicks"])
-                    this.gamePicks!.push(SpreadGamePickDTO.fromJS(item));
-            }
-            this.isFinal = _data["isFinal"];
-            this.processed = _data["processed"];
-        }
-    }
-
-    static fromJS(data: any): SpreadWeekPickDTO2 {
-        data = typeof data === 'object' ? data : {};
-        let result = new SpreadWeekPickDTO2();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["id"] = this.id;
-        data["leagueId"] = this.leagueId;
-        data["userId"] = this.userId;
-        data["sport"] = this.sport;
-        data["weekNumber"] = this.weekNumber;
-        data["year"] = this.year;
-        if (Array.isArray(this.gamePicks)) {
-            data["gamePicks"] = [];
-            for (let item of this.gamePicks)
-                data["gamePicks"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["isFinal"] = this.isFinal;
-        data["processed"] = this.processed;
-        return data;
-    }
-}
-
-export interface ISpreadWeekPickDTO2 {
     id?: string | undefined;
     leagueId?: string | undefined;
     userId?: string | undefined;
@@ -5259,7 +6107,7 @@ export class SquaresBoardDTO implements ISquaresBoardDTO {
     gameId?: string;
     isArchived?: boolean;
     boardCreatorId?: string;
-    gameBoard?: any;
+    gameBoard?: string[][];
     homeScoreAxis?: number[];
     awayScoreAxis?: number[];
 
@@ -5285,7 +6133,11 @@ export class SquaresBoardDTO implements ISquaresBoardDTO {
             this.gameId = _data["gameId"];
             this.isArchived = _data["isArchived"];
             this.boardCreatorId = _data["boardCreatorId"];
-            this.gameBoard = _data["gameBoard"];
+            if (Array.isArray(_data["gameBoard"])) {
+                this.gameBoard = [] as any;
+                for (let item of _data["gameBoard"])
+                    this.gameBoard!.push(item);
+            }
             if (Array.isArray(_data["homeScoreAxis"])) {
                 this.homeScoreAxis = [] as any;
                 for (let item of _data["homeScoreAxis"])
@@ -5317,7 +6169,11 @@ export class SquaresBoardDTO implements ISquaresBoardDTO {
         data["gameId"] = this.gameId;
         data["isArchived"] = this.isArchived;
         data["boardCreatorId"] = this.boardCreatorId;
-        data["gameBoard"] = this.gameBoard;
+        if (Array.isArray(this.gameBoard)) {
+            data["gameBoard"] = [];
+            for (let item of this.gameBoard)
+                data["gameBoard"].push(item);
+        }
         if (Array.isArray(this.homeScoreAxis)) {
             data["homeScoreAxis"] = [];
             for (let item of this.homeScoreAxis)
@@ -5338,7 +6194,7 @@ export interface ISquaresBoardDTO {
     gameId?: string;
     isArchived?: boolean;
     boardCreatorId?: string;
-    gameBoard?: any;
+    gameBoard?: string[][];
     homeScoreAxis?: number[];
     awayScoreAxis?: number[];
 
@@ -5874,6 +6730,90 @@ export interface ISurvivorWeekResultDTO {
     [key: string]: any;
 }
 
+export class Team implements ITeam {
+    id?: string | undefined;
+    sport?: number | undefined;
+    partitionKey?: string | undefined;
+    city?: string | undefined;
+    name?: string | undefined;
+    abbreviation?: string | undefined;
+    conference?: string | undefined;
+    division?: string | undefined;
+    emoji?: string;
+    logo?: string;
+
+    [key: string]: any;
+
+    constructor(data?: ITeam) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.sport = _data["sport"];
+            this.partitionKey = _data["partitionKey"];
+            this.city = _data["city"];
+            this.name = _data["name"];
+            this.abbreviation = _data["abbreviation"];
+            this.conference = _data["conference"];
+            this.division = _data["division"];
+            this.emoji = _data["emoji"];
+            this.logo = _data["logo"];
+        }
+    }
+
+    static fromJS(data: any): Team {
+        data = typeof data === 'object' ? data : {};
+        let result = new Team();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["sport"] = this.sport;
+        data["partitionKey"] = this.partitionKey;
+        data["city"] = this.city;
+        data["name"] = this.name;
+        data["abbreviation"] = this.abbreviation;
+        data["conference"] = this.conference;
+        data["division"] = this.division;
+        data["emoji"] = this.emoji;
+        data["logo"] = this.logo;
+        return data;
+    }
+}
+
+export interface ITeam {
+    id?: string | undefined;
+    sport?: number | undefined;
+    partitionKey?: string | undefined;
+    city?: string | undefined;
+    name?: string | undefined;
+    abbreviation?: string | undefined;
+    conference?: string | undefined;
+    division?: string | undefined;
+    emoji?: string;
+    logo?: string;
+
+    [key: string]: any;
+}
+
 export class TeamDTO implements ITeamDTO {
     id?: string | undefined;
     sport?: number | undefined;
@@ -6086,66 +7026,6 @@ export interface ITotalPointsSpread {
     [key: string]: any;
 }
 
-export class TotalPointsSpread2 implements ITotalPointsSpread2 {
-    timeOfMeasurement?: Date;
-    totalPoints!: number;
-    underPointsPrice?: number;
-    overPointsPrice?: number;
-
-    [key: string]: any;
-
-    constructor(data?: ITotalPointsSpread2) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.timeOfMeasurement = _data["timeOfMeasurement"] ? new Date(_data["timeOfMeasurement"].toString()) : undefined as any;
-            this.totalPoints = _data["totalPoints"];
-            this.underPointsPrice = _data["underPointsPrice"];
-            this.overPointsPrice = _data["overPointsPrice"];
-        }
-    }
-
-    static fromJS(data: any): TotalPointsSpread2 {
-        data = typeof data === 'object' ? data : {};
-        let result = new TotalPointsSpread2();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["timeOfMeasurement"] = this.timeOfMeasurement ? this.timeOfMeasurement.toISOString() : undefined as any;
-        data["totalPoints"] = this.totalPoints;
-        data["underPointsPrice"] = this.underPointsPrice;
-        data["overPointsPrice"] = this.overPointsPrice;
-        return data;
-    }
-}
-
-export interface ITotalPointsSpread2 {
-    timeOfMeasurement?: Date;
-    totalPoints: number;
-    underPointsPrice?: number;
-    overPointsPrice?: number;
-
-    [key: string]: any;
-}
-
 export class TwoFactorRequest implements ITwoFactorRequest {
     enable?: boolean | undefined;
     twoFactorCode?: string | undefined;
@@ -6290,6 +7170,8 @@ export class UpdateLeagueSettingsRequest implements IUpdateLeagueSettingsRequest
     isArchived!: boolean;
     startingWeekNumber!: number;
     endingWeekNumber!: number;
+    pointsForCorrectPickPerRoundCSV?: string | undefined;
+    numberOfBracketsPerPerson?: number | undefined;
 
     [key: string]: any;
 
@@ -6318,6 +7200,8 @@ export class UpdateLeagueSettingsRequest implements IUpdateLeagueSettingsRequest
             this.isArchived = _data["isArchived"];
             this.startingWeekNumber = _data["startingWeekNumber"];
             this.endingWeekNumber = _data["endingWeekNumber"];
+            this.pointsForCorrectPickPerRoundCSV = _data["pointsForCorrectPickPerRoundCSV"];
+            this.numberOfBracketsPerPerson = _data["numberOfBracketsPerPerson"];
         }
     }
 
@@ -6341,6 +7225,8 @@ export class UpdateLeagueSettingsRequest implements IUpdateLeagueSettingsRequest
         data["isArchived"] = this.isArchived;
         data["startingWeekNumber"] = this.startingWeekNumber;
         data["endingWeekNumber"] = this.endingWeekNumber;
+        data["pointsForCorrectPickPerRoundCSV"] = this.pointsForCorrectPickPerRoundCSV;
+        data["numberOfBracketsPerPerson"] = this.numberOfBracketsPerPerson;
         return data;
     }
 }
@@ -6353,6 +7239,8 @@ export interface IUpdateLeagueSettingsRequest {
     isArchived: boolean;
     startingWeekNumber: number;
     endingWeekNumber: number;
+    pointsForCorrectPickPerRoundCSV?: string | undefined;
+    numberOfBracketsPerPerson?: number | undefined;
 
     [key: string]: any;
 }
@@ -6426,6 +7314,66 @@ export interface IUpdateSquaresBoardResponse {
     board: SquaresBoardDTO;
     users: UserInfo[];
     squareUpdated: boolean;
+
+    [key: string]: any;
+}
+
+export class UserBracket implements IUserBracket {
+    id?: string | undefined;
+    userId?: string | undefined;
+    bracketName?: string | undefined;
+    leagueId?: string | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IUserBracket) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.userId = _data["userId"];
+            this.bracketName = _data["bracketName"];
+            this.leagueId = _data["leagueId"];
+        }
+    }
+
+    static fromJS(data: any): UserBracket {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserBracket();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["userId"] = this.userId;
+        data["bracketName"] = this.bracketName;
+        data["leagueId"] = this.leagueId;
+        return data;
+    }
+}
+
+export interface IUserBracket {
+    id?: string | undefined;
+    userId?: string | undefined;
+    bracketName?: string | undefined;
+    leagueId?: string | undefined;
 
     [key: string]: any;
 }
@@ -6684,7 +7632,7 @@ export class UserSettings implements IUserSettings {
     partitionKey?: string;
     discordUserId!: string;
     timeZoneInfoId!: string;
-    timeZoneInfo?: TimeZoneInfo | undefined;
+    timeZoneInfo?: TimeZoneInfo;
 
     [key: string]: any;
 
@@ -6741,7 +7689,7 @@ export interface IUserSettings {
     partitionKey?: string;
     discordUserId: string;
     timeZoneInfoId: string;
-    timeZoneInfo?: TimeZoneInfo | undefined;
+    timeZoneInfo?: TimeZoneInfo;
 
     [key: string]: any;
 }

@@ -5,9 +5,10 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, } from '@mui/icons-material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 
 const mainListItems = [
   { text: 'My Leagues', icon: <HomeRoundedIcon />, path: '/' },
@@ -34,6 +35,9 @@ export default function MenuContent() {
           ))}
         </List>
         <List dense>
+          <ListItem key='lightMode' disablePadding sx={{ display: 'block' }}>
+            <ColorModeIconDropdown useListItemButton={true} />
+          </ListItem>
           {secondaryListItems.map((item, index) => (
             <ListItem key={index} disablePadding sx={{ display: 'block' }}>
               <ListItemButton component="a" href={item.path}>

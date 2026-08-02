@@ -169,6 +169,37 @@ export class SiteUtilities {
         return formattedDate;
     }
 
+    static getFormattedGameDate(gameStart: Date, isSmallScreen: boolean): string {
+        let options: Intl.DateTimeFormatOptions = {
+            year: "numeric",
+            month: "numeric",
+            day: "2-digit",
+        };
+
+        if (isSmallScreen) {
+            options = {
+                month: "numeric",
+                day: "2-digit",
+            };
+        }
+
+        const gameStartDate = new Date(gameStart);
+        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStartDate);
+        return formattedDate;
+    }
+
+    static getFormattedGameTimeOnly(gameStart: Date): string {
+        let options: Intl.DateTimeFormatOptions = {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        };
+
+        const gameStartDate = new Date(gameStart);
+        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(gameStartDate);
+        return formattedDate;
+    }
+
     static getWeekStandingsHeaderGameTimeInProgress(game: GameDTO): string {
         let periodSuffix = SiteUtilities.getNumberWithOrdinalSuffix(game.result?.currentPeriod!);
         if (game.sport === 3) { // MLB
@@ -176,6 +207,22 @@ export class SiteUtilities {
             return `${game.result?.currentPeriod!}${periodSuffix}`;
         }
         return `${game.result?.currentPeriod!}${periodSuffix} - ${game.result?.periodTimeRemaining!}`
+    }
+
+    static getGamePeriod(game: GameDTO): string {
+        let periodSuffix = SiteUtilities.getNumberWithOrdinalSuffix(game.result?.currentPeriod!);
+        if (game.sport === 3) { // MLB
+            
+            return `${game.result?.currentPeriod!}${periodSuffix}`;
+        }
+        return `${game.result?.currentPeriod!}${periodSuffix}`
+    }
+
+    static getGameTimeLeft(game: GameDTO): string {
+        if (game.sport === 3) { // MLB
+            return ``;
+        }
+        return `${game.result?.periodTimeRemaining!}`
     }
 
     static getWeekStandingsHeaderGameTime(gameStart: Date): string {
@@ -250,6 +297,24 @@ export class SiteUtilities {
                 return `NCAA`;
             default:
                 throw new Error("Unknown league type");
+        }
+    }
+
+    static isGameScheduled(game: GameDTO): boolean {
+        if (game.result?.status === 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    static isGameInProgress(game: GameDTO): boolean {
+        if (game.result?.status === 1) {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
@@ -347,6 +412,9 @@ export const Sports: SportType[] = [
     { value: 4, label: 'NBA' },
     { value: 5, label: 'NCAAF' },
     { value: 6, label: 'NCAAB' },
+    { value: 7, label: 'WorldCup' },
+    { value: 8, label: 'EPL' },
+    { value: 9, label: 'UCL' },
 ];
 
 export const LeagueTypes: LeagueType[] = [
@@ -355,6 +423,7 @@ export const LeagueTypes: LeagueType[] = [
     { value: 3, label: 'Survivor Pool', urlPart: 'survivor' },
     { value: 4, label: 'All Bet Types', urlPart: 'allbets' },
     { value: 5, label: 'Squares', urlPart: 'squares' },
+    { value: 6, label: 'Bracket', urlPart: 'bracket' },
 ];
 
 export const GRID_DEFAULT_SORT_ORDER: GridSortDirection[] =  [ 'desc', 'asc' ];

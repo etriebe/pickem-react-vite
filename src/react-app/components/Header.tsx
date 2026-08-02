@@ -26,7 +26,7 @@ export default function Header({ leagueId, weekNumber, isSmallScreen }: NavbarBr
       <Stack direction="row" sx={{ 
         gap: 1,
       }}>
-        {!isSmallScreen && <ColorModeIconDropdown />}
+        {!isSmallScreen && <ColorModeIconDropdown useListItemButton={false} />}
       </Stack>
     </Stack>
   );
