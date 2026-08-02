@@ -2,17 +2,21 @@ import PickemApiClientFactory from "../services/PickemApiClientFactory";
 import Loading from "./Loading";
 import { Box, Button, Checkbox, FormControlLabel, Grid, TextField, Typography, useMediaQuery } from "@mui/material";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { LeagueDTO, LeagueSettings, UpdateLeagueSettingsRequest, UserInfo } from "../services/PickemApiClient";
+import { LeagueDTO, LeagueSettings, SeasonDateInformation, UpdateLeagueSettingsRequest, UserInfo } from "../services/PickemApiClient";
 import { LeagueUtilities } from "../utilities/LeagueUtilities";
 import { LeagueType, SiteUtilities } from "../utilities/SiteUtilities";
 import { useParams } from "react-router";
 import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
 import { queryClient } from "../main";
+import { useQuery } from "@tanstack/react-query";
 
 type Props = {}
 
 function EditLeague({ }: Props) {
     const [leagueName, setLeagueName] = useState('');
+    const [pointsForCorrectPickPerRoundCSV, setPointsForCorrectPickPerRoundCSV] = useState('');
+    const [numberOfBracketsPerPerson, setNumberOfBracketsPerPerson] = useState(1);
+    const [sport, setSport] = useState(1);
     const [startWeek, setStartWeek] = useState(1);
     const [endWeek, setEndWeek] = useState(17);
     const [isArchived, setIsArchived] = useState(false);
@@ -58,6 +62,19 @@ function EditLeague({ }: Props) {
         const user = params.row;
         return <div className='centerDivContainer standingsUserName'><span>{user.email}</span></div>;
     }
+
+    const sportSeasonInformationQuery = useQuery({
+        queryKey: ['sportseasoninformation'],
+        queryFn: async () => {
+            const pickemClient = PickemApiClientFactory.createClient();
+            const seasonInformation = await pickemClient.getCurrentSportsSeasonInformation()
+            changeSport(setSport, 1 /* NFL */, seasonInformation, setEndWeek, setMaxWeeks);
+            return seasonInformation;
+        },
+    });
+
+    let max = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformationQuery.data, LeagueUtilities.getSportNameFromNumber(sport));
+
 
     const renderAdminCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>): React.ReactNode => {
         const user = params.row;
@@ -120,7 +137,7 @@ function EditLeague({ }: Props) {
             const data = await pickemClient.getLeagueByIdWithUserMapping(leagueId);
             const league = data.league;
             const settings = data.league?.settings;
-            const max = LeagueUtilities.getCurrentMaxWeeksForSeason(league?.seasonInformation);1
+            const max = LeagueUtilities.getCurrentMaxWeeksForSeason(league?.seasonInformation); 1
             setLeague(league);
             setUsers(data.users);
             setEndWeek(max);
@@ -194,7 +211,10 @@ function EditLeague({ }: Props) {
     }
 
     return (
-        <Box maxWidth={600} mx="auto" mt={4} sx={{
+        <Box sx={{
+            maxWidth: 600,
+            mx: 'auto',
+            mt: 4,
             '& .MuiTextField-root': { m: 1 },
             '& .MuiInputLabel-root.MuiInputLabel-shrink': {
                 background: 'var(--template-palette-background-default)',
@@ -213,7 +233,7 @@ function EditLeague({ }: Props) {
                             fullWidth
                             required
                             variant="outlined"
-                            InputLabelProps={{ shrink: true }}
+                            slotProps={{ inputLabel: { shrink: true } }}
                         />
                     </Grid>
                     <Grid size={6}>
@@ -221,25 +241,35 @@ function EditLeague({ }: Props) {
                             label="Starting Week Number"
                             type="number"
                             value={startWeek}
-                            onChange={e => setStartWeek(Number(e.target.value))}
+                            onChange={e => {
+                                const v = Number(e.target.value);
+                                if (isNaN(v)) return;
+                                const maxAllowed = maxWeeks > 0 ? maxWeeks : v;
+                                const clamped = Math.max(1, Math.min(maxAllowed, v));
+                                setStartWeek(clamped);
+                            }}
                             fullWidth
                             required
-                            inputProps={{ min: 1 }}
                             variant="outlined"
                         />
                     </Grid>
                     <Grid size={6}>
                         <TextField
-                            label={endingWeekNumberLabel}
+                            label={LeagueUtilities.getEndingWeekString(max)}
                             type="number"
                             value={endWeek}
-                            onChange={e => setEndWeek(Number(e.target.value))}
+                            onChange={e => {
+                                const v = Number(e.target.value);
+                                if (isNaN(v)) return;
+                                const maxAllowed = maxWeeks > 0 ? maxWeeks : v;
+                                const clamped = Math.max(1, Math.min(maxAllowed, v));
+                                setEndWeek(clamped);
+                            }}
                             fullWidth
                             required
-                            inputProps={{ min: startWeek, max: maxWeeks }}
                             variant="outlined"
                         />
-                        <Typography variant="caption" display="block" gutterBottom sx={{ ml: 1 }}>
+                        <Typography variant="caption" gutterBottom sx={{ ml: 1 }}>
                         </Typography>
                     </Grid>
                     <Grid size={6}>
@@ -247,12 +277,24 @@ function EditLeague({ }: Props) {
                             label="Total Number of Picks"
                             type="number"
                             value={totalPicks}
-                            onChange={e => setTotalPicks(Number(e.target.value))}
+                            onChange={e => {
+                                const v = Number(e.target.value);
+                                if (isNaN(v)) {
+                                    return;
+                                }
+                                if (v < 1) {
+                                    return;
+                                }
+                                if (v < keyPicks) {
+                                    return;
+                                }
+                                setTotalPicks(v);
+                            }}
+                            // onChange={e => setTotalPicks(Number(e.target.value))}
                             fullWidth
                             required
-                            inputProps={{ min: 1 }}
+                            slotProps={{ inputLabel: { shrink: true } }}
                             variant="outlined"
-                            InputLabelProps={{ shrink: true }}
                         />
                     </Grid>
                     <Grid size={6}>
@@ -260,12 +302,23 @@ function EditLeague({ }: Props) {
                             label="Total Number of Key Picks"
                             type="number"
                             value={keyPicks}
-                            onChange={e => setKeyPicks(Number(e.target.value))}
+                            onChange={e => {
+                                const v = Number(e.target.value);
+                                if (isNaN(v)) {
+                                    return;
+                                }
+                                if (v < 1) {
+                                    return;
+                                }
+                                if (v > totalPicks) {
+                                    return;
+                                }
+                                setKeyPicks(v);
+                            }}
                             fullWidth
                             required
-                            inputProps={{ min: 0 }}
+                            slotProps={{ inputLabel: { shrink: true } }}
                             variant="outlined"
-                            InputLabelProps={{ shrink: true }}
                         />
                     </Grid>
                     <Grid size={6}>
@@ -273,14 +326,57 @@ function EditLeague({ }: Props) {
                             label="Key Pick Bonus"
                             type="number"
                             value={keyPickBonus}
-                            onChange={e => setKeyPickBonus(Number(e.target.value))}
+                            onChange={e => {
+                                const v = Number(e.target.value);
+                                if (isNaN(v)) {
+                                    return;
+                                }
+                                if (v < 1) {
+                                    return;
+                                }
+                                setKeyPickBonus(v);
+                            }}
                             fullWidth
                             required
-                            inputProps={{ min: 0 }}
+                            slotProps={{ inputLabel: { shrink: true } }}
                             variant="outlined"
-                            InputLabelProps={{ shrink: true }}
                         />
                     </Grid>
+                    {leagueType && leagueType.label === "Bracket" &&
+                        <>
+                            <Grid size={8}>
+                                <TextField
+                                    label="Points per correct pick per round (CSV)"
+                                    value={pointsForCorrectPickPerRoundCSV}
+                                    onChange={e => setPointsForCorrectPickPerRoundCSV(e.target.value)}
+                                    fullWidth
+                                    slotProps={{ inputLabel: { shrink: true } }}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid size={4}>
+                                <TextField
+                                    label="# of Brackets/Person"
+                                    type="number"
+                                    value={numberOfBracketsPerPerson}
+                                    onChange={e => {
+                                        const v = Number(e.target.value);
+                                        if (isNaN(v)) {
+                                            return;
+                                        }
+                                        if (v < 1) {
+                                            return;
+                                        }
+                                        setNumberOfBracketsPerPerson(v);
+                                    }}
+                                    fullWidth
+                                    required
+                                    slotProps={{ inputLabel: { shrink: true } }}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                        </>
+                    }
                     <Grid size={6}>
                         <FormControlLabel
                             label="Is Archived"
@@ -385,6 +481,17 @@ function EditLeague({ }: Props) {
             </form>
         </Box>
     );
+}
+function changeSport(setSport: React.Dispatch<React.SetStateAction<number>>,
+    sportNumber: number,
+    sportSeasonInformation: { [key: string]: SeasonDateInformation; },
+    setEndWeek: React.Dispatch<React.SetStateAction<number>>,
+    setMaxWeeks: React.Dispatch<React.SetStateAction<number>>) {
+    setSport(sportNumber);
+    const sportName: string = LeagueUtilities.getSportNameFromNumber(sportNumber);
+    const newMaxWeeks = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformation, sportName);
+    setEndWeek(newMaxWeeks);
+    setMaxWeeks(newMaxWeeks);
 }
 
 export default EditLeague
