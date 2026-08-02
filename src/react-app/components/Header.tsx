@@ -1,4 +1,4 @@
-import Stack from '@mui/material/Stack';
+import { Group, Stack } from '@mantine/core';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 import NavbarBreadcrumbs from './NavbarBreadcrumbs';
 
@@ -9,25 +9,22 @@ export interface NavbarBreadcrumbsProps {
 }
 export default function Header({ leagueId, weekNumber, isSmallScreen }: NavbarBreadcrumbsProps) {
   return (
-    <Stack
-      direction="row"
+    <Group
+      position="apart"
+      align="flex-start"
       sx={{
-        display: { md: 'flex' },
         width: '100%',
-        alignItems: { xs: 'flex-start', md: 'center' },
-        justifyContent: 'space-between',
-        maxWidth: { sm: '100%', md: '1700px' },
-        pt: 1.5,
+        maxWidth: '1700px',
+        flexWrap: 'wrap',
         padding: 0,
       }}
-      spacing={2}
     >
       <NavbarBreadcrumbs leagueId={leagueId} weekNumber={weekNumber} />
-      <Stack direction="row" sx={{ 
-        gap: 1,
-      }}>
-        {!isSmallScreen && <ColorModeIconDropdown />}
-      </Stack>
-    </Stack>
+      {!isSmallScreen && (
+        <Stack spacing="xs">
+          <ColorModeIconDropdown />
+        </Stack>
+      )}
+    </Group>
   );
 }

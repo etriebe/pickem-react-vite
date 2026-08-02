@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
+import { Box, Button, Container, Grid, NumberInput, Paper, Select, Stack, Text, TextInput } from '@mantine/core';
 import { CreateLeagueRequest, SeasonDateInformation2 } from '../services/PickemApiClient';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import { Sports, LeagueTypes } from '../utilities/SiteUtilities';
 import { LeagueUtilities } from '../utilities/LeagueUtilities';
 import { queryClient } from '../main';
 
-export default function CreateLeague() {
+type Props = {}
+
+export default function CreateLeague({}: Props) {
     const [leagueName, setLeagueName] = useState('');
     const [leagueType, setLeagueType] = useState(1);
     const [sport, setSport] = useState(1);
@@ -23,6 +20,20 @@ export default function CreateLeague() {
     const [sportSeasonInformation, setSportSeasonInformation] = useState<{ [key: string]: SeasonDateInformation2; }>();
     const [maxWeeks, setMaxWeeks] = useState(-1);
     const [endingWeekNumberLabel, setEndingWeekNumberLabel] = useState('');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const pickemClient = PickemApiClientFactory.createClient();
+            const seasonInfo = await pickemClient.getCurrentSportsSeasonInformation();
+            setSportSeasonInformation(seasonInfo);
+            const max = LeagueUtilities.getCurrentMaxWeeksForSport(seasonInfo, LeagueUtilities.getSportNameFromNumber(sport));
+            setEndWeek(max);
+            setMaxWeeks(max);
+            setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(max));
+        };
+
+        fetchData();
+    }, [sport]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,159 +52,112 @@ export default function CreateLeague() {
         window.location.href = '/';
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const pickemClient = PickemApiClientFactory.createClient();
-            const sportSeasonInformation = await pickemClient.getCurrentSportsSeasonInformation();
-            setSportSeasonInformation(sportSeasonInformation);
-            const max = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformation, LeagueUtilities.getSportNameFromNumber(sport));
-            setEndWeek(max);
-            setMaxWeeks(max);
-            setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(max));
-        }
-
-        fetchData();
-    }, []);
+    const leagueTypeOptions = LeagueTypes.map((option) => ({ value: option.value.toString(), label: option.label }));
+    const sportOptions = Sports.map((option) => ({ value: option.value.toString(), label: option.label }));
 
     return (
-        <Box maxWidth={600} mx="auto" mt={4} sx={{
-            '& .MuiTextField-root': { m: 1 },
-            '& .MuiInputLabel-root.MuiInputLabel-shrink': {
-                background: 'var(--template-palette-background-default)',
-                padding: '0 4px',
-                zIndex: 1,
-            },
-        }}>
-            <Typography variant="h4" gutterBottom>Create a League</Typography>
-            <form onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
-                    <Grid size={4}>
-                        <TextField
-                            label="League Name"
-                            value={leagueName}
-                            onChange={e => setLeagueName(e.target.value)}
-                            fullWidth
-                            required
-                            variant="outlined"
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
-                    <Grid size={5}>
-                        <TextField
-                            select
-                            label="League Type"
-                            value={leagueType}
-                            onChange={e => setLeagueType(Number(e.target.value))}
-                            fullWidth
-                            required
-                            variant="outlined"
-                            InputLabelProps={{ shrink: true }}>
+        <Container size="md" py="xl">
+            <Paper withBorder p="xl" radius="md">
+                <Stack spacing="xl">
+                    <Text size="xl" weight={700}>Create a League</Text>
+                    <Box component="form" onSubmit={handleSubmit}>
+                        <Grid gutter="md">
+                            <Grid.Col xs={12} md={4}>
+                                <TextInput
+                                    label="League Name"
+                                    value={leagueName}
+                                    onChange={(event) => setLeagueName(event.currentTarget.value)}
+                                    required
+                                />
+                            </Grid.Col>
+                            <Grid.Col xs={12} md={5}>
+                                <Select
+                                    label="League Type"
+                                    value={leagueType.toString()}
+                                    data={leagueTypeOptions}
+                                    onChange={(value) => value && setLeagueType(Number(value))}
+                                    required
+                                />
+                            </Grid.Col>
+                            <Grid.Col xs={12} md={3}>
+                                <Select
+                                    label="Sport"
+                                    value={sport.toString()}
+                                    data={sportOptions}
+                                    onChange={(value) => {
+                                        if (!value) return;
+                                        const sportNumber = Number(value);
+                                        setSport(sportNumber);
+                                        const sportName: string = LeagueUtilities.getSportNameFromNumber(sportNumber);
+                                        const newMaxWeeks = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformation, sportName);
+                                        setEndWeek(newMaxWeeks);
+                                        setMaxWeeks(newMaxWeeks);
+                                        setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(newMaxWeeks));
+                                    }}
+                                    required
+                                />
+                            </Grid.Col>
 
-                            {LeagueTypes.map(option => (
-                                <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-                    <Grid size={3}>
-                        <TextField
-                            select
-                            label="Sport"
-                            value={sport}
-                            onChange={e => {
-                                setSport(Number(e.target.value));
-                                const sportNumber = Number(e.target.value);
-                                const sportName: string = LeagueUtilities.getSportNameFromNumber(sportNumber);
-                                const newMaxWeeks = LeagueUtilities.getCurrentMaxWeeksForSport(sportSeasonInformation, sportName);
-                                setEndWeek(newMaxWeeks);
-                                setMaxWeeks(newMaxWeeks);
-                                setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(newMaxWeeks));
-                            }}
-                            fullWidth
-                            required
-                            variant="outlined"
-                        >
-                            {Sports.map(option => (
-                                <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-                    {leagueType != 5 && // We don't need the rest of these parameters for a squares league
-                    <>
-                        <Grid size={6}>
-                            <TextField
-                                label="Starting Week Number"
-                                type="number"
-                                value={startWeek}
-                                onChange={e => setStartWeek(Number(e.target.value))}
-                                fullWidth
-                                required
-                                inputProps={{ min: 1 }}
-                                variant="outlined"
-                            />
-                        </Grid>
-                        <Grid size={6}>
-                            <TextField
-                                label={endingWeekNumberLabel}
-                                type="number"
-                                value={endWeek}
-                                onChange={e => setEndWeek(Number(e.target.value))}
-                                fullWidth
-                                required
-                                inputProps={{ min: startWeek, max: maxWeeks }}
-                                variant="outlined"
-                            />
-                            <Typography variant="caption" display="block" gutterBottom sx={{ ml: 1 }}>
-                            </Typography>
-                        </Grid>
-                        <Grid size={4}>
-                            <TextField
-                                label="Total Number of Picks"
-                                type="number"
-                                value={totalPicks}
-                                onChange={e => setTotalPicks(Number(e.target.value))}
-                                fullWidth
-                                required
-                                inputProps={{ min: 1 }}
-                                variant="outlined"
-                                InputLabelProps={{ shrink: true }}
-                            />
-                        </Grid>
-                        <Grid size={4}>
-                            <TextField
-                                label="Total Number of Key Picks"
-                                type="number"
-                                value={keyPicks}
-                                onChange={e => setKeyPicks(Number(e.target.value))}
-                                fullWidth
-                                required
-                                inputProps={{ min: 0 }}
-                                variant="outlined"
-                                InputLabelProps={{ shrink: true }}
-                            />
-                        </Grid>
-                        <Grid size={4}>
-                            <TextField
-                                label="Key Pick Bonus"
-                                type="number"
-                                value={keyPickBonus}
-                                onChange={e => setKeyPickBonus(Number(e.target.value))}
-                                fullWidth
-                                required
-                                inputProps={{ min: 0 }}
-                                variant="outlined"
-                                InputLabelProps={{ shrink: true }}
-                            />
-                        </Grid>
-                    </>
-                    }
+                            {leagueType !== 5 && (
+                                <>
+                                    <Grid.Col xs={12} md={6}>
+                                        <NumberInput
+                                            label="Starting Week Number"
+                                            value={startWeek}
+                                            onChange={(value) => setStartWeek(typeof value === 'number' ? value : 1)}
+                                            min={1}
+                                            required
+                                        />
+                                    </Grid.Col>
+                                    <Grid.Col xs={12} md={6}>
+                                        <NumberInput
+                                            label={endingWeekNumberLabel || 'Ending Week Number'}
+                                            value={endWeek}
+                                            onChange={(value) => setEndWeek(typeof value === 'number' ? value : 1)}
+                                            min={startWeek}
+                                            max={maxWeeks}
+                                            required
+                                        />
+                                    </Grid.Col>
+                                    <Grid.Col xs={12} md={4}>
+                                        <NumberInput
+                                            label="Total Number of Picks"
+                                            value={totalPicks}
+                                            onChange={(value) => setTotalPicks(typeof value === 'number' ? value : 1)}
+                                            min={1}
+                                            required
+                                        />
+                                    </Grid.Col>
+                                    <Grid.Col xs={12} md={4}>
+                                        <NumberInput
+                                            label="Total Number of Key Picks"
+                                            value={keyPicks}
+                                            onChange={(value) => setKeyPicks(typeof value === 'number' ? value : 1)}
+                                            min={0}
+                                            required
+                                        />
+                                    </Grid.Col>
+                                    <Grid.Col xs={12} md={4}>
+                                        <NumberInput
+                                            label="Key Pick Bonus"
+                                            value={keyPickBonus}
+                                            onChange={(value) => setKeyPickBonus(typeof value === 'number' ? value : 1)}
+                                            min={0}
+                                            required
+                                        />
+                                    </Grid.Col>
+                                </>
+                            )}
 
-                    <Grid size={{ xs: 12, sm: 12, lg: 12 }}>
-                        <Button type="submit" variant="contained" color="primary" fullWidth>
-                            Create League
-                        </Button>
-                    </Grid>
-                </Grid>
-            </form>
-        </Box>
+                            <Grid.Col xs={12}>
+                                <Button type="submit" fullWidth>
+                                    Create League
+                                </Button>
+                            </Grid.Col>
+                        </Grid>
+                    </Box>
+                </Stack>
+            </Paper>
+        </Container>
     );
 }

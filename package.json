@@ -15,12 +15,10 @@
     "publish": true
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.6",
-    "@mui/icons-material": "^7.2.0",
-    "@mui/material": "^7.2.0",
-    "@mui/x-data-grid": "^8.10.0",
+    "@mantine/core": "^6.0.22",
+    "@mantine/hooks": "^6.0.22",
+    "@tabler/icons-react": "^3.46.0",
     "@tanstack/query-async-storage-persister": "^5.90.2",
     "@tanstack/react-query": "^5.87.4",
     "@tanstack/react-query-persist-client": "^5.90.2",

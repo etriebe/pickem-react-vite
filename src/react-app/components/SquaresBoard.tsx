@@ -1,7 +1,7 @@
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { Container, Text, Title } from '@mantine/core';
-import PickemApiClientFactory from '../../services/PickemApiClientFactory';
+import PickemApiClientFactory from '../services/PickemApiClientFactory';
 
 function SquaresBoard() {
     const { leagueId, boardId } = useParams<{ leagueId: string; boardId: string }>();

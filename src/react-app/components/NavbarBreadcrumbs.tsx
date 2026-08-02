@@ -1,19 +1,7 @@
-import { styled } from '@mui/material/styles';
-import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
-import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+import { Breadcrumbs, Anchor, Box } from '@mantine/core';
+import { IconChevronRight } from '@tabler/icons-react';
 import { PageType, SiteUtilities } from '../utilities/SiteUtilities';
 import { Link } from 'react-router';
-
-const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
-  margin: theme.spacing(1, 0),
-  [`& .${breadcrumbsClasses.separator}`]: {
-    color: (theme.vars || theme).palette.action.disabled,
-    margin: 1,
-  },
-  [`& .${breadcrumbsClasses.ol}`]: {
-    alignItems: 'center',
-  },
-}));
 
 export interface NavbarBreadcrumbsProps {
   leagueId: string | undefined;
@@ -37,27 +25,24 @@ export default function NavbarBreadcrumbs({ leagueId, weekNumber }: NavbarBreadc
   }
 
   return (
-    <div
-        style={{
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '0px',
-        }}
-      >
-      <StyledBreadcrumbs
-        aria-label="breadcrumb"
-        separator={<NavigateNextRoundedIcon fontSize="small" />}
-      >
-        {currentPageType !== PageType.LeagueStandingsPage && leagueStandingLink &&
-          <Link to={leagueStandingLink}>League Standings</Link>
-        }
-        {currentPageType !== PageType.WeekStandingsPage && weekStandingLink &&
-          <Link to={weekStandingLink}>Week Standings</Link>
-        }
-        {currentPageType !== PageType.MakePicksPage && makePicksLink &&
-          <Link to={makePicksLink}>Make Picks</Link>
-        }
-      </StyledBreadcrumbs>
-    </div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', padding: 0 }}>
+      <Breadcrumbs separator={<IconChevronRight size={14} />}>
+        {currentPageType !== PageType.LeagueStandingsPage && leagueStandingLink && (
+          <Anchor component={Link} to={leagueStandingLink}>
+            League Standings
+          </Anchor>
+        )}
+        {currentPageType !== PageType.WeekStandingsPage && weekStandingLink && (
+          <Anchor component={Link} to={weekStandingLink}>
+            Week Standings
+          </Anchor>
+        )}
+        {currentPageType !== PageType.MakePicksPage && makePicksLink && (
+          <Anchor component={Link} to={makePicksLink}>
+            Make Picks
+          </Anchor>
+        )}
+      </Breadcrumbs>
+    </Box>
   );
 }

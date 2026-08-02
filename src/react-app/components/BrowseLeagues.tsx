@@ -1,71 +1,55 @@
-import { FormControl, Grid, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import React from 'react';
-import { Sports } from '../utilities/SiteUtilities';
 import { useQuery } from '@tanstack/react-query';
+import { Grid, Select, Stack, Text, Container } from '@mantine/core';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import PublicLeagueCard from './PublicLeagueCard';
+import { Sports } from '../utilities/SiteUtilities';
 
 type Props = {}
 
-function BrowseLeagues({ }: Props) {
+function BrowseLeagues({}: Props) {
     const [sport, setSport] = React.useState(1);
 
     const browseLeaguesQuery = useQuery({
         queryKey: ['browseleagues', sport],
         queryFn: async () => {
             const pickemClient = PickemApiClientFactory.createClient();
-            return pickemClient.getPublicLeagues(sport)
+            return pickemClient.getPublicLeagues(sport);
         },
     });
 
+    const sportOptions = Sports.map((option) => ({
+        value: option.value.toString(),
+        label: option.label,
+    }));
+
     return (
-        <>
-
-            <Typography variant='h2'>Public Leagues</Typography>
-
-            <FormControl
-                sx={{
-                    '& .MuiTextField-root': { m: 1 },
-                    '& .MuiInputLabel-root.MuiInputLabel-shrink': {
-                        background: 'var(--template-palette-background-default)',
-                        padding: '0 4px',
-                        zIndex: 1,
-                    },
-                }}>
-                <InputLabel id="sport-select-label">Sport</InputLabel>
+        <Container size="xl" py="md">
+            <Stack spacing="xl">
+                <Text size="xl" weight={700}>Public Leagues</Text>
                 <Select
-                    labelId="sport-select-label"
-                    id="sport-select"
-                    value={sport}
-                    label="Age"
-                    onChange={e => setSport(Number(e.target.value))}
-                >
-                    {Sports.map(s =>
-                        <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>
-                    )}
-                </Select>
-            </FormControl>
-
-            <Typography variant='subtitle2'>{browseLeaguesQuery.data?.length} League(s) Found</Typography>
-            <Grid
-                container
-                spacing={2}
-                padding={2}
-                sx={{
-                    mb: (theme) => theme.spacing(2),
-                    width: '100%',
-                }}
-            >
-                {browseLeaguesQuery.data?.map((l) => {
-                    return <React.Fragment key={l.id}>
-                        <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                            <PublicLeagueCard leagueId={l.id!} leagueName={l.leagueName!} leagueYear={l.year!} key={l.id} sport={l.sport!} numberOfMembers={l.userSeasons?.length!} />
-                        </Grid>
-                    </React.Fragment>;
-                })}
-            </Grid>
-        </>
-    )
+                    label="Sport"
+                    value={sport.toString()}
+                    data={sportOptions}
+                    onChange={(value) => value && setSport(Number(value))}
+                />
+                <Text size="sm">{browseLeaguesQuery.data?.length ?? 0} League(s) Found</Text>
+                <Grid>
+                    {browseLeaguesQuery.data?.map((l) => (
+                        <Grid.Col key={l.id} xs={12} sm={6} lg={4}>
+                            <PublicLeagueCard
+                                leagueId={l.id!}
+                                leagueName={l.leagueName!}
+                                leagueYear={l.year!}
+                                sport={l.sport!}
+                                numberOfMembers={l.userSeasons?.length ?? 0}
+                            />
+                        </Grid.Col>
+                    ))}
+                </Grid>
+            </Stack>
+        </Container>
+    );
 }
 
-export default BrowseLeagues
+export default BrowseLeagues;

@@ -1,53 +1,30 @@
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+import { Button, Card, Stack, Text, useMantineTheme } from '@mantine/core';
+import { IconChevronRight, IconStar } from '@tabler/icons-react';
+import { useMediaQuery } from '@mantine/hooks';
 
 export default function HighlightedCard() {
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const theme = useMantineTheme();
+  const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm}px)`);
 
   return (
-    <Card sx={{ height: '100%' }}>
-      <CardContent>
-        <InsightsRoundedIcon />
-        <Typography
-          component="h2"
-          variant="subtitle2"
-          gutterBottom
-          sx={{ fontWeight: '600' }}
-        >
+    <Card shadow="sm" radius="md" withBorder sx={{ height: '100%' }}>
+      <Stack spacing="xs" mb="sm" justify="center">
+        <IconStar size={24} />
+        <Text component="h2" size="lg" weight={700}>
           Play games with your friends
-        </Typography>
-        <Typography sx={{ color: 'text.secondary', mb: '8px' }}>
-          Bet against the spread, just pick who wins games or make any types of bets just like you're at a real sportsbook.
-        </Typography>
-        <Button
-          variant="contained"
-          size="small"
-          color="primary"
-          endIcon={<ChevronRightRoundedIcon />}
-          fullWidth={isSmallScreen}
-          sx={{ marginRight: 1 }}
-          href='/signin'
-        >
+        </Text>
+      </Stack>
+      <Text color="dimmed" mb="md">
+        Bet against the spread, just pick who wins games or make any types of bets just like you're at a real sportsbook.
+      </Text>
+      <Stack spacing="sm">
+        <Button component="a" href="/signin" variant="filled" rightIcon={<IconChevronRight />} fullWidth={isSmallScreen}>
           Sign In
         </Button>
-        <Button
-          variant="contained"
-          size="small"
-          color="primary"
-          endIcon={<ChevronRightRoundedIcon />}
-          fullWidth={isSmallScreen}
-          href='/signup'
-        >
+        <Button component="a" href="/signup" variant="filled" rightIcon={<IconChevronRight />} fullWidth={isSmallScreen}>
           Sign Up
         </Button>
-      </CardContent>
+      </Stack>
     </Card>
   );
 }

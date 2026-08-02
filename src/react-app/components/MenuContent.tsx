@@ -1,49 +1,72 @@
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Stack from '@mui/material/Stack';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import { Add as AddIcon } from '@mui/icons-material';
-import { Search as SearchIcon } from '@mui/icons-material';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import { Anchor, Group, Stack, Text, ThemeIcon } from '@mantine/core';
+import { IconHome, IconPlus, IconSearch, IconSettings } from '@tabler/icons-react';
 
 const mainListItems = [
-  { text: 'My Leagues', icon: <HomeRoundedIcon />, path: '/' },
-  { text: 'Create League', icon: <AddIcon />, path: '/createleague' },
-  { text: 'Browse Leagues', icon: <SearchIcon />, path: '/browseleagues' },
+  { text: 'My Leagues', icon: <IconHome size={18} />, path: '/' },
+  { text: 'Create League', icon: <IconPlus size={18} />, path: '/createleague' },
+  { text: 'Browse Leagues', icon: <IconSearch size={18} />, path: '/browseleagues' },
 ];
 
 const secondaryListItems = [
-  { text: 'Settings', icon: <SettingsRoundedIcon />, path: '/settings' },
+  { text: 'Settings', icon: <IconSettings size={18} />, path: '/settings' },
 ];
 
 export default function MenuContent() {
   return (
-    <>
-      <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
-        <List dense>
-          {mainListItems.map((item, index) => (
-            <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton selected={index === 0} component="a" href={item.path}>
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <List dense>
-          {secondaryListItems.map((item, index) => (
-            <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton component="a" href={item.path}>
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+    <Stack spacing="xs" px="xs" py="sm" justify="space-between" sx={{ flexGrow: 1 }}>
+      <Stack spacing={4}>
+        {mainListItems.map((item, index) => (
+          <Anchor
+            key={item.text}
+            href={item.path}
+            sx={(theme) => ({
+              display: 'block',
+              padding: theme.spacing.xs,
+              borderRadius: theme.radius.sm,
+              color: theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.black,
+              backgroundColor: index === 0 ? theme.colors.blue[0] : 'transparent',
+              textDecoration: 'none',
+              '&:hover': {
+                backgroundColor:
+                  theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[1],
+              },
+            })}
+          >
+            <Group spacing="sm">
+              <ThemeIcon variant="light" size="sm">
+                {item.icon}
+              </ThemeIcon>
+              <Text>{item.text}</Text>
+            </Group>
+          </Anchor>
+        ))}
       </Stack>
-    </>
+      <Stack spacing={4} mt="md">
+        {secondaryListItems.map((item) => (
+          <Anchor
+            key={item.text}
+            href={item.path}
+            sx={(theme) => ({
+              display: 'block',
+              padding: theme.spacing.xs,
+              borderRadius: theme.radius.sm,
+              color: theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.black,
+              textDecoration: 'none',
+              '&:hover': {
+                backgroundColor:
+                  theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[1],
+              },
+            })}
+          >
+            <Group spacing="sm">
+              <ThemeIcon variant="light" size="sm">
+                {item.icon}
+              </ThemeIcon>
+              <Text>{item.text}</Text>
+            </Group>
+          </Anchor>
+        ))}
+      </Stack>
+    </Stack>
   );
 }

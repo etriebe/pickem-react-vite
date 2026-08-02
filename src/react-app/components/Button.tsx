@@ -1,5 +1,5 @@
-import Button from '@mui/material/Button';
+import { Button } from '@mantine/core';
 
 export default function ButtonUsage() {
-  return <Button variant="contained">Hello world</Button>;
+  return <Button variant="filled">Hello world</Button>;
 }

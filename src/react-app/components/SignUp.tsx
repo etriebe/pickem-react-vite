@@ -1,64 +1,15 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import MuiCard from '@mui/material/Card';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import { styled } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import * as React from 'react';
+import { Anchor, Button, Container, Group, Paper, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
 import AppTheme from '../theme/AppTheme';
 import SiteLogo from './SiteLogo';
-import { HttpValidationProblemDetails } from '../services/PickemApiClient';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
+import { HttpValidationProblemDetails } from '../services/PickemApiClient';
 
-const Card = styled(MuiCard)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignSelf: 'center',
-  width: '100%',
-  padding: theme.spacing(4),
-  gap: theme.spacing(2),
-  margin: 'auto',
-  boxShadow:
-    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-  [theme.breakpoints.up('sm')]: {
-    width: '450px',
-  },
-  ...theme.applyStyles('dark', {
-    boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-  }),
-}));
+type Props = {
+  disableCustomTheme?: boolean;
+};
 
-const SignUpContainer = styled(Stack)(({ theme }) => ({
-  height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
-  minHeight: '100%',
-  padding: theme.spacing(2),
-  [theme.breakpoints.up('sm')]: {
-    padding: theme.spacing(4),
-  },
-  '&::before': {
-    content: '""',
-    display: 'block',
-    position: 'absolute',
-    zIndex: -1,
-    inset: 0,
-    backgroundImage:
-      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-    ...theme.applyStyles('dark', {
-      backgroundImage:
-        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-    }),
-  },
-}));
-
-export default function SignUp(props: { disableCustomTheme?: boolean }) {
+export default function SignUp(props: Props) {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -67,13 +18,13 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
 
   const validateInputs = () => {
-    const email = document.getElementById('email') as HTMLInputElement;
-    const password = document.getElementById('password') as HTMLInputElement;
-    const name = document.getElementById('name') as HTMLInputElement;
+    const email = document.getElementById('email') as HTMLInputElement | null;
+    const password = document.getElementById('password') as HTMLInputElement | null;
+    const name = document.getElementById('name') as HTMLInputElement | null;
 
     let isValid = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+    if (!email?.value || !/\S+@\S+\.\S+/.test(email.value)) {
       setEmailError(true);
       setEmailErrorMessage('Please enter a valid email address.');
       isValid = false;
@@ -82,7 +33,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       setEmailErrorMessage('');
     }
 
-    if (!password.value || password.value.length < 6) {
+    if (!password?.value || password.value.length < 6) {
       setPasswordError(true);
       setPasswordErrorMessage('Password must be at least 6 characters long.');
       isValid = false;
@@ -91,7 +42,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       setPasswordErrorMessage('');
     }
 
-    if (!name.value || name.value.length < 1) {
+    if (!name?.value || name.value.length < 1) {
       setNameError(true);
       setNameErrorMessage('Name is required.');
       isValid = false;
@@ -104,129 +55,89 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    if (nameError || emailError || passwordError) {
-      event.preventDefault();
+    event.preventDefault();
+
+    if (!validateInputs()) {
       return;
     }
-    event.preventDefault(); // Prevent default form submission
+
     const data = new FormData(event.currentTarget);
     const email = data.get('email') as string;
-    try {
-      const loginResult = await AuthenticationUtilities.register(email, data.get('password') as string);
 
-      if (loginResult.result) {
-        // Redirect to My Leagues page on successful login
-        console.log('Register successful:', JSON.stringify(loginResult));
+    try {
+      const registerResult = await AuthenticationUtilities.register(email, data.get('password') as string);
+
+      if (registerResult.result) {
+        window.location.href = '/';
       } else {
-        console.log('Register failed:', JSON.stringify(loginResult));
         setEmailError(true);
-        setEmailErrorMessage(`Failed to register: ${loginResult.message}`);
+        setEmailErrorMessage(`Failed to register: ${registerResult.message}`);
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error during register:', error);
 
       if (error instanceof HttpValidationProblemDetails) {
         setEmailError(true);
         setEmailErrorMessage(`Failed to register: ${JSON.stringify(error.errors)}`);
-      }
-      else {
+      } else {
         setEmailError(true);
-        setEmailErrorMessage(`Failed to register: ${JSON.stringify(error)}`);
+        setEmailErrorMessage('Failed to register at this time.');
       }
     }
   };
 
   return (
     <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
-      <SignUpContainer direction="column" justifyContent="space-between">
-        <Card variant="outlined">
-          <SiteLogo />
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-          >
-            <FormControl>
-              <FormLabel htmlFor="name">User name</FormLabel>
-              <TextField
-                autoComplete="name"
-                name="name"
-                required
-                fullWidth
-                id="name"
-                placeholder="jon_snow"
-                error={nameError}
-                helperText={nameErrorMessage}
-                color={nameError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <TextField
-                required
-                fullWidth
-                id="email"
-                placeholder="your@email.com"
-                name="email"
-                autoComplete="email"
-                variant="outlined"
-                error={emailError}
-                helperText={emailErrorMessage}
-                color={passwordError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                placeholder="••••••"
-                type="password"
-                id="password"
-                autoComplete="new-password"
-                variant="outlined"
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                color={passwordError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={validateInputs}
-            >
-              Sign up
-            </Button>
-          </Box>
-          <Divider>
-            <Typography sx={{ color: 'text.secondary' }}>or</Typography>
-          </Divider>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {/* <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign up with Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Sign up with Google
-            </Button> */}
-            <Typography sx={{ textAlign: 'center' }}>
+      <Container size="xs" py="xl">
+        <Paper shadow="md" radius="md" p="xl">
+          <Stack spacing="lg">
+            <Group position="center">
+              <SiteLogo />
+            </Group>
+            <Title order={2} align="center">
+              Create a new account
+            </Title>
+            <form onSubmit={handleSubmit} noValidate>
+              <Stack spacing="md">
+                <TextInput
+                  id="name"
+                  name="name"
+                  label="User name"
+                  placeholder="jon_snow"
+                  autoComplete="name"
+                  required
+                  error={nameError ? nameErrorMessage : undefined}
+                />
+                <TextInput
+                  id="email"
+                  name="email"
+                  label="Email"
+                  placeholder="your@email.com"
+                  autoComplete="email"
+                  required
+                  error={emailError ? emailErrorMessage : undefined}
+                />
+                <PasswordInput
+                  id="password"
+                  name="password"
+                  label="Password"
+                  placeholder="••••••"
+                  autoComplete="new-password"
+                  required
+                  error={passwordError ? passwordErrorMessage : undefined}
+                />
+                <Button type="submit" fullWidth>
+                  Sign up
+                </Button>
+              </Stack>
+            </form>
+            <Text size="sm" align="center">
               Already have an account?{' '}
-              <Link
-                href="/signin"
-                variant="body2"
-                sx={{ alignSelf: 'center' }}
-              >
-                Sign in
-              </Link>
-            </Typography>
-          </Box>
-        </Card>
-      </SignUpContainer>
+              <Anchor href="/signin">Sign in</Anchor>
+            </Text>
+          </Stack>
+        </Paper>
+      </Container>
     </AppTheme>
   );
 }

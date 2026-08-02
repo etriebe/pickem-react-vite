@@ -1,102 +1,107 @@
 import { League } from '../services/PickemApiClient';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+import { useState } from 'react';
+import {
+  Badge,
+  Button,
+  Card,
+  Group,
+  Stack,
+  Text,
+  Notification,
+} from '@mantine/core';
+import {
+  IconCalendarEvent,
+  IconListNumbers,
+  IconRefresh,
+  IconSettings,
+  IconSend,
+  IconSoccerField,
+} from '@tabler/icons-react';
 import { SiteUtilities } from '../utilities/SiteUtilities';
 import { LeagueUtilities } from '../utilities/LeagueUtilities';
 import { AuthenticationUtilities } from '../utilities/AuthenticationUtilities';
-import { Create, Settings, Autorenew, CalendarToday, FormatListNumbered, Send } from '@mui/icons-material';
-import { Snackbar, SnackbarCloseReason } from '@mui/material';
-import { useState } from 'react';
 
 export interface LeagueCardProps {
-    league: League;
-    picksSubmitted: boolean;
+  league: League;
+  picksSubmitted: boolean;
 }
 
 export default function LeagueCard({ league, picksSubmitted }: LeagueCardProps) {
-    const currentWeekNumber = LeagueUtilities.getCurrentWeekNumber(league);
-    const weekStandingLink = SiteUtilities.getWeekStandingLink(league.type, league.id!, currentWeekNumber!);
-    const leagueStandingLink = SiteUtilities.getLeagueStandingLink(league.type, league.id!);
-    const myPicksLink = SiteUtilities.getMakePicksLink(league.type, league.id!, currentWeekNumber!);
-    const editLeagueLink = SiteUtilities.getEditLeagueLink(league.id!);
-    const pickStatus = SiteUtilities.getEmojiForPickStatus(picksSubmitted);
-    const longDescription = true;
-    const weekDescription = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, currentWeekNumber!, longDescription);
-    const leagueYear = league.year?.replace("_", "-");
-    const isOffSeason = LeagueUtilities.isOffSeason(league);
-    const userInfo = AuthenticationUtilities.getUserInfoFromLocalStorage();
-    const isAdmin = league.leagueAdminIds?.find(a => a === userInfo.id);
-    const [copyInviteMessage, setCopyInviteMessage] = useState('');
-    const [open, setOpen] = useState(false);
+  const currentWeekNumber = LeagueUtilities.getCurrentWeekNumber(league);
+  const weekStandingLink = SiteUtilities.getWeekStandingLink(league.type, league.id!, currentWeekNumber!);
+  const leagueStandingLink = SiteUtilities.getLeagueStandingLink(league.type, league.id!);
+  const myPicksLink = SiteUtilities.getMakePicksLink(league.type, league.id!, currentWeekNumber!);
+  const editLeagueLink = SiteUtilities.getEditLeagueLink(league.id!);
+  const pickStatus = SiteUtilities.getEmojiForPickStatus(picksSubmitted);
+  const longDescription = true;
+  const weekDescription = SiteUtilities.getWeekDescriptionFromWeekNumber(league.seasonInformation!, currentWeekNumber!, longDescription);
+  const leagueYear = league.year?.replace('_', '-');
+  const isOffSeason = LeagueUtilities.isOffSeason(league);
+  const userInfo = AuthenticationUtilities.getUserInfoFromLocalStorage();
+  const isAdmin = league.leagueAdminIds?.find((a) => a === userInfo.id);
+  const [copyInviteMessage, setCopyInviteMessage] = useState('');
+  const [open, setOpen] = useState(false);
 
-    const copyLeagueInvite = async () => {
-        const fullCopyInviteLink = `${window.location.origin}${SiteUtilities.getInviteLink(league.id!)}`;
-        navigator.clipboard.writeText(fullCopyInviteLink);
-        setCopyInviteMessage("Copied invite link!");
-        setOpen(true);
-    };
+  const copyLeagueInvite = async () => {
+    const fullCopyInviteLink = `${window.location.origin}${SiteUtilities.getInviteLink(league.id!)}`;
+    await navigator.clipboard.writeText(fullCopyInviteLink);
+    setCopyInviteMessage('Copied invite link!');
+    setOpen(true);
+  };
 
-    const handleClose = (
-        _event: React.SyntheticEvent | Event,
-        reason?: SnackbarCloseReason,
-    ) => {
-        if (reason === 'clickaway') {
-            return;
-        }
+  return (
+    <>
+      <Card shadow="sm" radius="md" withBorder>
+        <Stack spacing="sm" p="md">
+          <Group position="apart" align="flex-start">
+            <Stack spacing={0}>
+              <Text weight={700} size="lg">
+                {league.leagueName} - {leagueYear}
+              </Text>
+              <Text size="sm" color="dimmed">
+                {weekDescription}
+              </Text>
+            </Stack>
+            <Badge color={isOffSeason ? 'yellow' : 'blue'}>{pickStatus}</Badge>
+          </Group>
+          <Text size="sm">Picks: {pickStatus}</Text>
 
-        setOpen(false);
-    };
+          {isAdmin && (
+            <Group spacing="sm" grow>
+              <Button component="a" href={editLeagueLink} leftIcon={<IconSettings size={16} />} variant="outline">
+                Edit League
+              </Button>
+              <Button onClick={copyLeagueInvite} leftIcon={<IconSend size={16} />} variant="outline">
+                Copy Invite
+              </Button>
+            </Group>
+          )}
 
-    return (
-        <>
-            <Card sx={{}}>
-                <CardContent>
-                    <Typography variant="h5" component="div">
-                        {league.leagueName} - {leagueYear}
-                    </Typography>
-                    <Typography variant="caption" gutterBottom>
-                        {weekDescription}
-                    </Typography>
-                    <Typography variant="body2">
-                        Picks: {pickStatus}
-                    </Typography>
-                </CardContent>
-                {isAdmin &&
-                    <>
-                        <CardActions>
-                            <Button size="small" href={editLeagueLink} startIcon={<Settings />}>
-                                Edit League
-                            </Button>
-                        </CardActions>
-                        <CardActions>
-                            <Button size="small" onClick={() => { copyLeagueInvite() }} startIcon={<Send />}>
-                                Copy Invite
-                            </Button>
-                        </CardActions>
-                    </>
-                }
-                <CardActions>
-                    <Button size="small" startIcon={<FormatListNumbered />} href={leagueStandingLink}>League Standings</Button>
-                </CardActions>
-                <CardActions>
-                    <Button size="small" startIcon={<CalendarToday />} href={weekStandingLink}>Week Standings</Button>
-                </CardActions>
-                <CardActions>
-                    {isOffSeason ?
-                        <Button size="large" startIcon={<Autorenew />}>Renew League{!isAdmin && " - Notify League Admin"} </Button> :
-                        <Button size="large" href={myPicksLink} startIcon={<Create />}>Make Picks</Button>
-                    }
-                </CardActions>
-            </Card>
-            <Snackbar
-                open={open}
-                autoHideDuration={5000}
-                onClose={handleClose}
-                message={copyInviteMessage}
-            />
-        </>
-    );
+          <Group spacing="sm" grow>
+            <Button component="a" href={leagueStandingLink} leftIcon={<IconListNumbers size={16} />} variant="outline">
+              League Standings
+            </Button>
+            <Button component="a" href={weekStandingLink} leftIcon={<IconCalendarEvent size={16} />} variant="outline">
+              Week Standings
+            </Button>
+          </Group>
+
+          <Button
+            component="a"
+            href={isOffSeason ? undefined : myPicksLink}
+            leftIcon={isOffSeason ? <IconRefresh size={16} /> : <IconSoccerField size={16} />}
+            variant="filled"
+          >
+            {isOffSeason ? 'Renew League' : 'Make Picks'}
+            {isOffSeason && !isAdmin ? ' - Notify League Admin' : ''}
+          </Button>
+        </Stack>
+      </Card>
+      {open && (
+        <Notification onClose={() => setOpen(false)} color="teal" mt="sm">
+          {copyInviteMessage}
+        </Notification>
+      )}
+    </>
+  );
 }

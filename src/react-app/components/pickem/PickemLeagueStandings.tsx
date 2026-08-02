@@ -1,62 +1,22 @@
-import * as React from 'react';
 import { useParams } from 'react-router';
-import { UserInfo, SpreadWeekResultDTO } from '../../services/PickemApiClient';
-import PickemApiClientFactory from "../../services/PickemApiClientFactory";
-import { DataGrid, GridColDef, GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import Loading from '../Loading';
-import { Typography } from '@mui/material';
-import { GRID_DEFAULT_SORT_ORDER, SiteUtilities } from '../../utilities/SiteUtilities';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Container, Paper, ScrollArea, Table, Text, Title, Stack } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { UserInfo } from '../../services/PickemApiClient';
+import PickemApiClientFactory from '../../services/PickemApiClientFactory';
+import { SiteUtilities } from '../../utilities/SiteUtilities';
 import Header from '../Header';
+
+type StandingsColumn = {
+    field: string;
+    header: React.ReactNode;
+    renderCell: (row: UserInfo) => React.ReactNode;
+};
 
 export default function PickemLeagueStandings() {
     const { leagueId } = useParams();
-    const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
-    const userColumnWidth = 100;
-    const weekColumnWidth = isSmallScreen ? 75 : 75;
-
-    const renderUserCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
-        userMapping: UserInfo[]): React.ReactNode => {
-        const userId = params.row.id;
-        let userName = SiteUtilities.getShortenedUserNameFromId(userMapping, userId, params.row.email);
-        return <div className='centerDivContainer standingsUserName'><span>{userName}</span></div>;
-    }
-
-    const renderWeekResultCell = (params: GridRenderCellParams<UserInfo, any, any, GridTreeNodeWithRender>,
-        weekResults: SpreadWeekResultDTO[],
-        weekNumber: number): React.ReactNode => {
-        const userId = params.row.id;
-        const userWeekResult = weekResults.find(wr => wr.userId === userId && wr.weekNumber === weekNumber);
-        let trophies: string[] = [];
-        if (userWeekResult?.trophies) {
-            userWeekResult?.trophies.map(t => trophies.push(SiteUtilities.ConvertTrophyToEmoji(t)));
-        }
-        const trophyString = trophies.join('');
-
-        if (!userWeekResult) {
-            return <>-</>;
-        }
-        return <div className='centerDivContainer'>
-            {userWeekResult.totalPoints}{trophyString}
-        </div>;
-    }
-
-    const renderSeasonResultsCell = (
-        weekResults: SpreadWeekResultDTO[],
-        userId: string): React.ReactNode => {
-        if (!weekResults) {
-            return <>0</>;
-        }
-
-        const userWeekResults = weekResults.filter(wr => wr.userId === userId);
-        let totalPoints = getTotalPointsForSeason(userWeekResults);
-        return <>
-            <div>
-                {totalPoints}
-            </div>
-        </>;
-    };
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
     const leagueStandingsQuery = useQuery({
         queryKey: ['leaguestandings', leagueId],
@@ -66,168 +26,148 @@ export default function PickemLeagueStandings() {
         },
     });
 
-    const columnList: GridColDef<(UserInfo[])[number]>[] = [
+    const league = leagueStandingsQuery.data?.league;
+    const users = leagueStandingsQuery.data?.users ?? [];
+    const results = leagueStandingsQuery.data?.results ?? [];
+    const startingWeekNumber = league?.startingWeekNumber ?? 1;
+    const endingWeekNumber = league?.endingWeekNumber ?? 1;
+
+    const getSeasonPoints = (userId: string | undefined) => {
+        if (!userId) {
+            return 0;
+        }
+        const userSeason = league?.userSeasons?.find((us) => us.userId === userId);
+        const userWeekResult = results.find((wr) => wr.userId === userId);
+        let seasonPoints = userSeason?.totalPoints ?? 0;
+        if (!userSeason?.processedWeekResults?.find((wr) => wr === userWeekResult?.id)) {
+            seasonPoints += userWeekResult?.totalPoints ?? 0;
+        }
+        return seasonPoints;
+    };
+
+    const getTrophyString = (userId: string | undefined) => {
+        if (!userId) {
+            return '';
+        }
+        const userWeekResult = results.find((wr) => wr.userId === userId);
+        const trophies: string[] = [];
+        if (userWeekResult?.trophies) {
+            userWeekResult.trophies.map((t) => trophies.push(SiteUtilities.ConvertTrophyToEmoji(t)));
+        }
+        return trophies.join('');
+    };
+
+    const renderUserCell = (user: UserInfo) => {
+        const userName = SiteUtilities.getShortenedUserNameFromId(users, user.id, user.email);
+        return (
+            <div className="centerDivContainer standingsUserName">
+                <span>{userName}</span>
+            </div>
+        );
+    };
+
+    const renderSeasonResultsCell = (user: UserInfo) => {
+        return (
+            <div className="centerDivContainer">
+                {getSeasonPoints(user.id)}
+            </div>
+        );
+    };
+
+    const renderWeekResultCell = (user: UserInfo, weekNumber: number) => {
+        const userWeekResult = results.find((wr) => wr.userId === user.id && wr.weekNumber === weekNumber);
+        const trophies: string[] = [];
+        if (userWeekResult?.trophies) {
+            userWeekResult.trophies.map((t) => trophies.push(SiteUtilities.ConvertTrophyToEmoji(t)));
+        }
+        const trophyString = trophies.join('');
+
+        if (!userWeekResult) {
+            return <div className="centerDivContainer">-</div>;
+        }
+
+        return (
+            <div className="centerDivContainer">
+                {userWeekResult.totalPoints}
+                {trophyString}
+            </div>
+        );
+    };
+
+    const sortedUsers = React.useMemo(() => {
+        return [...users].sort((a, b) => getSeasonPoints(b.id) - getSeasonPoints(a.id));
+    }, [users, leagueStandingsQuery.data]);
+
+    const columnList: StandingsColumn[] = [
         {
             field: 'user',
-            renderHeader: () => {
-                return <div className='standingsHeader'>User</div>;
-            },
-            width: userColumnWidth,
-            minWidth: userColumnWidth,
-            cellClassName: "centerDivContainer",
-            renderCell: (params) => {
-                return renderUserCell(params, leagueStandingsQuery.data?.users || []);
-            },
-            valueGetter: (_, row) => {
-                if (!row) {
-                    return "";
-                }
-
-                return row.userName ?? row.email;
-            },
-            disableColumnMenu: true,
-            sortable: true,
-            pinnable: true,
+            header: <div className="standingsHeader">User</div>,
+            renderCell: renderUserCell,
         },
         {
             field: 'seasonPoints',
-            renderHeader: () => {
-                return <div className='standingsHeader'>Season<br />Points</div>;
-            },
-            width: userColumnWidth,
-            minWidth: userColumnWidth,
-            cellClassName: "centerDivContainer",
-            renderCell: (params) => {
-                const userId = params.row.id;
-                if (!userId) {
-                    return <>0</>;
-                }
-                return renderSeasonResultsCell(leagueStandingsQuery.data?.results!, userId);
-            },
-            valueGetter: (_, row) => {
-                if (!row) {
-                    return 0;
-                }
-
-                const userId = row.id;
-                const userWeekResults = leagueStandingsQuery.data?.results!.filter(wr => wr.userId === userId);
-                return getTotalPointsForSeason(userWeekResults || []);
-            },
-            sortable: true,
-            sortingOrder: GRID_DEFAULT_SORT_ORDER,
-            disableColumnMenu: true,
+            header: <div className="standingsHeader">Season<br />Points</div>,
+            renderCell: renderSeasonResultsCell,
         },
     ];
 
-    const startingWeekNumber = leagueStandingsQuery.data?.league!.startingWeekNumber!;
-    const endingWeekNumber = leagueStandingsQuery.data?.league!.endingWeekNumber!;
     for (let weekNumber = startingWeekNumber; weekNumber <= endingWeekNumber; weekNumber++) {
-        const weekColumn: GridColDef<(UserInfo[])[number]> = {
+        columnList.push({
             field: `week_${weekNumber}`,
-            renderHeader: () => {
-                return <div className='standingsHeader'>Week {weekNumber}</div>;
-            },
-            width: weekColumnWidth,
-            minWidth: weekColumnWidth,
-            cellClassName: "centerDivContainer",
-            renderCell: (params) => {
-                return renderWeekResultCell(params, leagueStandingsQuery.data?.results!, weekNumber);
-            },
-            valueGetter: (_, row) => {
-                if (!row) {
-                    return 0;
-                }
-
-                const userId = row.id;
-                const userWeekResult = leagueStandingsQuery.data?.results!.find(wr => wr.userId === userId && wr.weekNumber === weekNumber);
-                return userWeekResult?.totalPoints ?? 0;
-            },
-            disableColumnMenu: true,
-            sortable: true,
-            sortingOrder: GRID_DEFAULT_SORT_ORDER,
-        };
-        columnList.push(weekColumn);
+            header: <div className="standingsHeader">Week {weekNumber}</div>,
+            renderCell: (user: UserInfo) => renderWeekResultCell(user, weekNumber),
+        });
     }
-    const weekNumberConverted = leagueStandingsQuery.data?.league?.currentWeekNumber;
-    const gridHeight = "90vh";
+
+    columnList.push({
+        field: 'trophies',
+        header: <div className="standingsHeader">Trophies</div>,
+        renderCell: (user: UserInfo) => (
+            <div className="centerDivContainer">{getTrophyString(user.id)}</div>
+        ),
+    });
+
+    const getRowClassName = (isSmall: boolean) => {
+        return isSmall ? 'makePickContainerSmall' : 'makePickContainer';
+    };
 
     return (
-        <>
-            <div style={{ height: '100%', width: '100%' }}>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        maxHeight: gridHeight
-                    }}
-                >
-                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} isSmallScreen={isSmallScreen}/>
-                    <div className='centerDivContainerHorizontally'>
-                        <Typography variant='h4'>{leagueStandingsQuery.data?.league?.leagueName}</Typography>
-                    </div>
-                    <div className='centerDivContainerHorizontally'>
-                        <Typography variant='h5'>Season Standings</Typography>
-                    </div>
-                    {leagueStandingsQuery.isPending ?
-                        <Loading /> :
-                        <DataGrid
-                            sx={{
-                                border: '1px solid #7e7e7eff', // Darker gray border
-                                '& .MuiDataGrid-row': {
-                                    borderBottom: '1px solid #7e7e7eff', // Darker row border
-                                },
-                                '& .MuiDataGrid-iconSeparator': {
-                                    color: '#7e7e7eff', // Darker row border
-                                },
-                                '& .MuiDataGrid-columnHeaders': {
-                                    borderBottom: '1px solid #7e7e7eff', // Darker row border
-                                },
-                                '& .MuiDataGrid-columnHeader': {
-                                    padding: 0,
-                                },
-                                "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                                    outline: "none !important",
-                                },
-                                '& .MuiIconButton-root': {
-                                    fontSize: '0.8rem',
-                                    padding: '2px',
-                                    width: '24px',
-                                    height: '24px',
-                                },
-                                '& .MuiSvgIcon-root': {
-                                    fontSize: '1rem',
-                                },
-                            }}
-                            rows={leagueStandingsQuery.data?.users || []}
-                            columns={columnList}
-                            rowSelection={false}
-                            columnHeaderHeight={50}
-                            scrollbarSize={10}
-                            getRowClassName={isSmallScreen ? () => 'makePickContainerSmall' : () => 'makePickContainer'}
-                            initialState={{
-                                sorting: {
-                                    sortModel: [{ field: 'seasonPoints', sort: 'desc' }],
-                                },
-                            }}
-                        />
-                    }
-                </div>
-                {/** Visualize max and min container height */}
-            </div>
-
-        </>
+        <Container fluid px="md" py="md">
+            <Paper shadow="md" p="md" radius="md">
+                <Stack spacing="md">
+                    <Header leagueId={leagueId} weekNumber={league?.currentWeekNumber} isSmallScreen={isSmallScreen} />
+                    <Title order={3} align="center">
+                        {league?.leagueName}
+                    </Title>
+                    <Title order={4} align="center">
+                        Season Standings
+                    </Title>
+                    {leagueStandingsQuery.isPending ? (
+                        <Text>Loading...</Text>
+                    ) : (
+                        <ScrollArea style={{ height: '75vh' }}>
+                            <Table striped highlightOnHover verticalSpacing="xs" fontSize="sm">
+                                <thead>
+                                    <tr>
+                                        {columnList.map((column) => (
+                                            <th key={column.field}>{column.header}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {sortedUsers.map((user) => (
+                                        <tr key={user.id} className={getRowClassName(isSmallScreen)}>
+                                            {columnList.map((column) => (
+                                                <td key={column.field}>{column.renderCell(user)}</td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </ScrollArea>
+                    )}
+                </Stack>
+            </Paper>
+        </Container>
     );
-
-    function getTotalPointsForSeason(weekResults: SpreadWeekResultDTO[]) {
-        let totalPoints = 0;
-        for (const week of weekResults) {
-            if (!week.totalPoints) {
-                continue;
-            }
-
-            totalPoints += week.totalPoints;
-        }
-        return totalPoints;
-    }
 }
-

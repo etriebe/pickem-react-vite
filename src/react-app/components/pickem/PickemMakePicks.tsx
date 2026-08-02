@@ -1,18 +1,16 @@
 import * as React from 'react';
-import { useState } from "react";
+import { useState } from 'react';
 import { useParams } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
+import { useMediaQuery } from '@mantine/hooks';
+import { Alert, Button, Container, Group, Paper, ScrollArea, Stack, Table, Text, Title } from '@mantine/core';
 import { SpreadWeekPickDTO, GameDTO, SpreadGamePickDTO, TeamDTO, ApiException } from '../../services/PickemApiClient';
-import PickemApiClientFactory from "../../services/PickemApiClientFactory";
-import { DataGrid, GridCellParams, GridColDef, GridEventListener, GridRenderCellParams, GridTreeNode, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
+import PickemApiClientFactory from '../../services/PickemApiClientFactory';
 import { PageType, SiteUtilities } from '../../utilities/SiteUtilities';
-import { Typography, Snackbar, SnackbarCloseReason, Button } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import MakePicksTeamCell from '../MakePicksTeamCell';
 import LeagueNavigationBreadcrumbs from '../LeagueNavigationBreadcrumbs';
 import Loading from '../Loading';
-import { useQuery } from '@tanstack/react-query';
 import Header from '../Header';
-
 
 enum MakePicksColumnType {
     AwayTeam = 1,
@@ -24,16 +22,11 @@ enum MakePicksColumnType {
 export default function PickemMakePicks() {
     const [selectedPicksCount, setSelectedPicksCount] = useState(-1);
     const [selectedKeyPicksCount, setSelectedKeyPicksCount] = useState(-1);
-    const { leagueId, weekNumber } = useParams();
     const [open, setOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const { leagueId, weekNumber } = useParams();
     const weekNumberConverted = parseInt(weekNumber!);
-    const apiRef = useGridApiRef();
-    const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
-    const awayTeamColumnWidth = isSmallScreen ? 85 : 200;
-    const homeTeamColumnWidth = isSmallScreen ? 110 : 220;
-    const gameStartColumnWidth = isSmallScreen ? 110 : 200;
-    const keyPickColumnWidth = isSmallScreen ? 75 : 125;
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
     const makePicksQuery = useQuery({
         queryKey: ['makepicks', leagueId, weekNumberConverted],
@@ -43,327 +36,155 @@ export default function PickemMakePicks() {
         },
     });
 
-    const longDescription = true;
-    const weekDescription = `${SiteUtilities.getWeekDescriptionFromWeekNumber(makePicksQuery.data?.league!.seasonInformation!, weekNumberConverted, longDescription)} Picks`;
-    let currentPicks = makePicksQuery.data?.picks!;
-    let selectedPicksOriginal = currentPicks?.gamePicks?.length ?? 0;
-    let selectedKeyPicksOriginal = currentPicks?.gamePicks?.filter(p => p.isKeyPicked).length ?? 0;
-    const weekInformation = makePicksQuery.data?.league?.seasonInformation?.weekStartTimes?.find(w => w.weekNumber == weekNumber);
+    const currentPicks = makePicksQuery.data?.picks;
+    const selectedPicksOriginal = currentPicks?.gamePicks?.length ?? 0;
+    const selectedKeyPicksOriginal = currentPicks?.gamePicks?.filter((p) => p.isKeyPicked).length ?? 0;
+    const weekInformation = makePicksQuery.data?.league?.seasonInformation?.weekStartTimes?.find(
+        (w) => w.weekNumber === weekNumberConverted,
+    );
+    const weekDescription = makePicksQuery.data
+        ? `${SiteUtilities.getWeekDescriptionFromWeekNumber(
+              makePicksQuery.data.league!.seasonInformation!,
+              weekNumberConverted,
+              true,
+          )} Picks`
+        : '';
 
-    const formatCell = (params: GridRenderCellParams<GameDTO, any, any, GridTreeNodeWithRender>, cellType: MakePicksColumnType): React.ReactNode => {
-        const teamChosen = (params.value as TeamDTO);
-        if (cellType === MakePicksColumnType.AwayTeam ||
-            cellType === MakePicksColumnType.HomeTeam) {
-            let cellText = isSmallScreen ? `${teamChosen.abbreviation}` : `${teamChosen.name}`;
-
-            const gameSpread = makePicksQuery.data?.league?.settings?.lockSpreadsDuringWeek ? params.row.spreadAtLockTime : params.row.currentSpread;
-            // console.log(`Game ID: ${params.row.id}, game: ${JSON.stringify(params.row)}`);
-            if (cellType === MakePicksColumnType.HomeTeam) {
-                cellText += ` (${SiteUtilities.getFormattedSpreadAmount(gameSpread!)})`
-            }
-
-            // Uncomment if you want to go back to checkbox for picks
-            // if (currentPicks && currentPicks.gamePicks) {
-            //     const selectedGameId = params.row.id;
-            //     const gamePick = currentPicks.gamePicks.find(g => g.gameID === selectedGameId);
-            //     if (gamePick) {
-            //         const isTeamSelected = (gamePick.sidePicked === 0 && cellType === MakePicksColumnType.HomeTeam) ||
-            //             (gamePick.sidePicked === 1 && cellType === MakePicksColumnType.AwayTeam);
-            //         if (isTeamSelected) {
-            //             cellText += ` ☑️`;
-            //         }
-            //     }
-            // }
-            const imagePath = SiteUtilities.getTeamIconPathFromTeam(teamChosen, makePicksQuery.data?.league!.sport!);
-            const altText = SiteUtilities.getAltTextFromTeam(teamChosen);
-            return (
-                <>
-                    <MakePicksTeamCell imagePath={imagePath} altText={altText} isSmallScreen={isSmallScreen} cellText={cellText} />
-                </>);
-        }
-        else if (cellType === MakePicksColumnType.GameStartTime) {
-            const gameStartTime = params.value;
-            let lockSymbol = "";
-            if (gameStartTime <= new Date()) {
-                lockSymbol = "🔒";
-            }
-            return <>{lockSymbol}{SiteUtilities.getFormattedGameTime(params.value, isSmallScreen)}</>;
-        }
-        else if (cellType === MakePicksColumnType.KeyPick) {
-            if (currentPicks && currentPicks.gamePicks) {
-                const selectedGameId = params.row.id;
-                const gamePick = currentPicks.gamePicks.find(g => g.gameID === selectedGameId);
-                if (gamePick?.isKeyPicked) {
-                    return <>🔑</>
-                }
-            }
-            return <></>;
-        }
-        else {
-            return <></>;
-        }
-    }
-
-    const columns: GridColDef<(GameDTO[])[number]>[] = [
-        {
-            field: 'awayTeam',
-            headerName: 'Away',
-            width: awayTeamColumnWidth,
-            minWidth: awayTeamColumnWidth,
-            cellClassName: "centerDivContainer",
-            renderCell: (params) => {
-                return formatCell(params, MakePicksColumnType.AwayTeam);
-            },
-            disableColumnMenu: true,
-        },
-        {
-            field: 'homeTeam',
-            headerName: 'Home',
-            width: homeTeamColumnWidth,
-            minWidth: homeTeamColumnWidth,
-            cellClassName: "centerDivContainer",
-            renderCell: (params) => {
-                return formatCell(params, MakePicksColumnType.HomeTeam);
-            },
-            disableColumnMenu: true,
-        },
-        {
-            field: 'gameStartTime',
-            headerName: 'Game Time',
-            minWidth: gameStartColumnWidth,
-            flex: 1,
-            renderCell: (params) => {
-                return formatCell(params, MakePicksColumnType.GameStartTime);
-            },
-            disableColumnMenu: true,
-        },
-        {
-            field: 'keyPick',
-            headerName: 'Key',
-            minWidth: keyPickColumnWidth,
-            flex: 0.75,
-            renderCell: (params) => {
-                return formatCell(params, MakePicksColumnType.KeyPick);
-            },
-            disableColumnMenu: true,
-        },
-    ];
-
-    const handleClose = (
-        _event: React.SyntheticEvent | Event,
-        reason?: SnackbarCloseReason,
-    ) => {
-        if (reason === 'clickaway') {
-            return;
+    const formatCell = (game: GameDTO, cellType: MakePicksColumnType): React.ReactNode => {
+        if (cellType === MakePicksColumnType.GameStartTime) {
+            const gameStartTime = game.gameStartTime;
+            const lockSymbol = gameStartTime ? (new Date(gameStartTime) <= new Date() ? '🔒' : '') : '';
+            const gameStartDate = gameStartTime ? new Date(gameStartTime) : new Date();
+            return <>{lockSymbol}{SiteUtilities.getFormattedGameTime(gameStartDate, isSmallScreen)}</>;
         }
 
+        const teamChosen = cellType === MakePicksColumnType.AwayTeam ? game.awayTeam : game.homeTeam;
+        if (!teamChosen) {
+            return null;
+        }
+
+        const cellText = isSmallScreen ? `${teamChosen.abbreviation}` : `${teamChosen.name}`;
+        const gameSpread = makePicksQuery.data?.league?.settings?.lockSpreadsDuringWeek
+            ? game.spreadAtLockTime
+            : game.currentSpread;
+        const teamDisplayText = cellType === MakePicksColumnType.HomeTeam
+            ? `${cellText} (${SiteUtilities.getFormattedSpreadAmount(gameSpread!)})`
+            : cellText;
+
+        if (cellType === MakePicksColumnType.KeyPick) {
+            const gamePick = currentPicks?.gamePicks?.find((g) => g.gameID === game.id);
+            return gamePick?.isKeyPicked ? <>🔑</> : <></>;
+        }
+
+        const imagePath = SiteUtilities.getTeamIconPathFromTeam(teamChosen, makePicksQuery.data?.league!.sport!);
+        const altText = SiteUtilities.getAltTextFromTeam(teamChosen);
+        return (
+            <MakePicksTeamCell
+                imagePath={imagePath}
+                altText={altText}
+                isSmallScreen={isSmallScreen}
+                cellText={teamDisplayText}
+            />
+        );
+    };
+
+    const handleClose = () => {
         setOpen(false);
     };
 
-    const handleCellClick: GridEventListener<"cellClick"> = (params) => {
-        let picksAllowed = makePicksQuery.data?.league?.settings?.totalPicks!;
-        let keyPicksAllowed = makePicksQuery.data?.league?.settings?.keyPicks!;
-        if (weekInformation && weekInformation.allowAllPicks) {
+    const handleCellClick = (game: GameDTO, cellType: MakePicksColumnType, chosenTeam?: TeamDTO) => {
+        if (!currentPicks || !currentPicks.gamePicks) {
+            return;
+        }
+
+        let picksAllowed = makePicksQuery.data?.league?.settings?.totalPicks ?? 0;
+        let keyPicksAllowed = makePicksQuery.data?.league?.settings?.keyPicks ?? 0;
+        if (weekInformation?.allowAllPicks) {
             picksAllowed = -1;
             keyPicksAllowed = 0;
         }
-        console.log("Cell clicked:", params);
-        if (!currentPicks) {
-            throw new Error("currentPicks should not be able to be null here.");
-        }
-        if (!currentPicks.gamePicks) {
-            throw new Error("currentPicks.gamePicks should not be able to be null here.");
-        }
-        let currentGame = makePicksQuery.data?.games!.find(g => g.id === params.row.id);
+
+        const currentGame = makePicksQuery.data?.games?.find((g) => g.id === game.id);
         if (!currentGame) {
-            throw new Error("Couldn't find the correct game");
+            return;
         }
 
-        if (currentGame.gameStartTime && currentGame.gameStartTime <= new Date()) {
-            setSnackbarMessage("You cannot change your pick for a game that has already started.");
+        if (currentGame.gameStartTime && new Date(currentGame.gameStartTime) <= new Date()) {
+            setSnackbarMessage('You cannot change your pick for a game that has already started.');
             setOpen(true);
             return;
         }
 
-        let currentPick = currentPicks.gamePicks.find(g => g.gameID === params.row.id);
+        let currentPick = currentPicks.gamePicks.find((g) => g.gameID === game.id);
 
-        if (params.field === "gameStartTime") {
+        if (cellType === MakePicksColumnType.GameStartTime) {
             return;
         }
-        if (params.field === "keyPick") {
-            if (currentPick === undefined) {
-                setSnackbarMessage("You cannot select a key pick unless you have selected the game first.")
+
+        if (cellType === MakePicksColumnType.KeyPick) {
+            if (!currentPick) {
+                setSnackbarMessage('You cannot select a key pick unless you have selected the game first.');
                 setOpen(true);
                 return;
             }
-
             if (currentPick.isKeyPicked) {
                 currentPick.isKeyPicked = false;
-            }
-            else {
-                let currentKeyPickCount = currentPicks.gamePicks.filter(g => g.isKeyPicked).length;
+            } else {
+                const currentKeyPickCount = currentPicks.gamePicks.filter((g) => g.isKeyPicked).length;
                 if (currentKeyPickCount >= keyPicksAllowed) {
-                    setSnackbarMessage("You have selected too many picks. Please unselect one before selecting again.")
+                    setSnackbarMessage('You have selected too many picks. Please unselect one before selecting again.');
                     setOpen(true);
                     return;
                 }
-                currentPick.isKeyPicked = !currentPick.isKeyPicked;
+                currentPick.isKeyPicked = true;
             }
             setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
             return;
         }
 
+        if (!chosenTeam) {
+            return;
+        }
+
         if (!currentPick) {
-            // Picking a brand new game
-            if (picksAllowed != -1 && currentPicks.gamePicks.length >= picksAllowed) {
-                setSnackbarMessage("You have selected too many picks. Please unselect one before selecting again.")
+            if (picksAllowed !== -1 && currentPicks.gamePicks.length >= picksAllowed) {
+                setSnackbarMessage('You have selected too many picks. Please unselect one before selecting again.');
                 setOpen(true);
                 return;
             }
-            currentPick = createPickObject(currentGame, params.value as TeamDTO);
+            currentPick = createPickObject(currentGame, chosenTeam);
             currentPicks.gamePicks.push(currentPick);
-        }
-        else {
-            console.log(`Side picked: ${currentPick.sidePicked}`);
-
-            // If they picked home or away and are clicking this again, we should remove
-            if ((currentPick.sidePicked === 0 && currentGame?.homeTeam === params.value) ||
-                (currentPick.sidePicked === 1 && currentGame?.awayTeam === params.value)) {
-                console.log(`Removing pick for game: ${currentGame.id}`);
+        } else {
+            if ((currentPick.sidePicked === 0 && currentGame.homeTeam === chosenTeam) ||
+                (currentPick.sidePicked === 1 && currentGame.awayTeam === chosenTeam)) {
+                const indexOfPick = currentPicks.gamePicks.indexOf(currentPick);
+                currentPicks.gamePicks.splice(indexOfPick, 1);
+            } else if ((currentPick.sidePicked === 0 && currentGame.awayTeam === chosenTeam) ||
+                (currentPick.sidePicked === 1 && currentGame.homeTeam === chosenTeam)) {
                 const indexOfPick = currentPicks.gamePicks.indexOf(currentPick);
                 currentPicks.gamePicks.splice(indexOfPick, 1);
             }
-            // If they are picking the opposite side now. TODO: THIS CASE ISN'T WORKING
-            else if ((currentPick.sidePicked === 0 && currentGame?.awayTeam === params.value) ||
-                (currentPick.sidePicked === 1 && currentGame?.homeTeam === params.value)) {
-                const indexOfPick = currentPicks.gamePicks.indexOf(currentPick);
-                console.log(`Removing pick: ${currentPick.gameID}. New side picked: ${currentPick.sidePicked}`);
-                currentPicks.gamePicks.splice(indexOfPick, 1);
-                // TODO: Fix this logic to actually switch the pick. This wasn't working correctly anymore so just removing picks.
-                // console.log(`Removing existing pick for game to add new pick later: ${currentGame.id}`);
-                // currentPick = createPickObject(currentGame, params.value as TeamDTO);
-                // console.log(`Adding pick for game: ${currentGame.id} as team ${params.value}: Pick Object: ${currentPick.gameID}, ${currentPick.sidePicked}`);
-                // currentPicks.gamePicks.push(currentPick);
-                // console.log("Picks after...");
-                // console.log(JSON.stringify(currentPicks));
-
-            }
         }
-
 
         setSelectedPicksCount(getSelectedPicksCount(currentPicks));
         setSelectedKeyPicksCount(getSelectedKeyPicksCount(currentPicks));
-
-        apiRef.current?.selectRow(params.id);
-        // apiRef.current?.autosizeColumns();
     };
 
     const handleSubmitPicks = async () => {
         if (!currentPicks) {
-            throw new Error("currentPicks should not be able to be null here.");
+            return;
         }
 
         const pickemClient = PickemApiClientFactory.createClient();
         try {
             await pickemClient.upsertSpreadWeekPick(currentPicks);
-            setSnackbarMessage("Your picks have been submitted successfully!");
+            setSnackbarMessage('Your picks have been submitted successfully!');
             setOpen(true);
-        }
-        catch (error: ApiException | any) {
+        } catch (error: ApiException | any) {
             setSnackbarMessage(`There was an error submitting your picks. ${error.response}`);
             setOpen(true);
         }
-    }
-
-    React.useEffect(() => {
-        const handleResizeWindow = () => {
-            // setWidth(window.innerWidth);
-            // apiRef.current?.autosizeColumns();
-        };
-        // subscribe to window resize event "onComponentDidMount"
-        window.addEventListener("resize", handleResizeWindow);
-        return () => {
-            // unsubscribe "onComponentDestroy"
-            window.removeEventListener("resize", handleResizeWindow);
-        };
-    }, []);
-    const gridHeight = "100vh";
-    const rowHeight = isSmallScreen ? 30 : 40;
-    const typoGraphyLeagueTitle = isSmallScreen ? 'h5' : 'h4';
-    const typoGraphyLeaguePicks = isSmallScreen ? 'body1' : 'h6';
-
-    return (
-        <>
-            <div style={{ height: '100%', width: '100%' }}>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        maxHeight: gridHeight
-                    }}>
-                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} isSmallScreen={isSmallScreen} />
-                    <div className='centerDivContainerHorizontally'>
-                        <Typography variant={typoGraphyLeagueTitle}>{makePicksQuery.data?.league?.leagueName}</Typography>
-                    </div>
-                    <div className='centerDivContainerHorizontally'>
-                        <LeagueNavigationBreadcrumbs
-                            league={makePicksQuery.data?.league!}
-                            currentWeekNumber={weekNumberConverted}
-                            navigationTitle={weekDescription}
-                            pageType={PageType.MakePicksPage}
-                            isSmallScreen={isSmallScreen}
-                        />
-                    </div>
-                    <Snackbar
-                        open={open}
-                        autoHideDuration={5000}
-                        onClose={handleClose}
-                        message={snackbarMessage}
-                    />
-                    {weekInformation?.allowAllPicks ?
-                        <Typography variant={typoGraphyLeaguePicks}>Pick all games. No Key Picks</Typography>
-                        :
-                        <Typography variant={typoGraphyLeaguePicks}>{selectedPicksCount == -1 ? selectedPicksOriginal : selectedPicksCount} / {makePicksQuery.data?.league?.settings?.totalPicks} Picks, {selectedKeyPicksCount == -1 ? selectedKeyPicksOriginal : selectedKeyPicksCount} / {makePicksQuery.data?.league?.settings?.keyPicks} Key Picks</Typography>
-                    }
-                    {makePicksQuery.isPending ?
-                        <Loading /> :
-                        <>
-                            <DataGrid
-                                sx={{
-                                    border: '1px solid #7e7e7eff', // Darker gray border
-                                    '& .MuiDataGrid-row': {
-                                        borderBottom: '1px solid #7e7e7eff', // Darker row border
-                                    },
-                                    '& .MuiDataGrid-iconSeparator': {
-                                        color: '#7e7e7eff', // Darker row border
-                                    },
-                                    '& .MuiDataGrid-columnHeaders': {
-                                        borderBottom: '1px solid #7e7e7eff', // Darker row border
-                                    },
-                                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                                        outline: "none !important",
-                                    },
-                                }}
-                                rows={makePicksQuery.data?.games!}
-                                columns={columns}
-                                onCellClick={handleCellClick}
-                                apiRef={apiRef}
-                                rowSelection={false}
-                                rowHeight={rowHeight}
-                                hideFooter={true}
-                                getCellClassName={(params) => getCellClassName(params, currentPicks)}
-                                getRowClassName={() => getRowClassName(isSmallScreen)}
-                            />
-                            <div className='makePicksButtonsDiv'>
-                                <Button className='submitPicksButton' variant='contained' color='primary' onClick={handleSubmitPicks}>Submit Picks</Button>
-                                <Button className='cancelPicksButton' variant='outlined' href='/'>Cancel</Button>
-                            </div>
-                        </>
-                    }
-                </div>
-            </div>
-        </>
-    );
+    };
 
     function createPickObject(currentGame: GameDTO, chosenTeam: TeamDTO) {
         const currentPick = new SpreadGamePickDTO();
@@ -378,6 +199,101 @@ export default function PickemMakePicks() {
         currentPick.pickType = makePicksQuery.data?.league?.type;
         return currentPick;
     }
+
+    const rowClassName = isSmallScreen ? 'makePickContainerSmall' : 'makePickContainer';
+
+    const getCellClassName = (game: GameDTO, cellType: MakePicksColumnType) => {
+        const gamePicked = currentPicks?.gamePicks?.find((p) => p.gameID === game.id);
+        if (!gamePicked) {
+            return '';
+        }
+        if (cellType === MakePicksColumnType.AwayTeam && gamePicked.sidePicked === 1) {
+            return 'teamPicked';
+        }
+        if (cellType === MakePicksColumnType.HomeTeam && gamePicked.sidePicked === 0) {
+            return 'teamPicked';
+        }
+        return '';
+    };
+
+    return (
+        <Container fluid px="md" py="md">
+            <Paper shadow="md" p="md" radius="md">
+                <Stack spacing="md">
+                    <Header leagueId={leagueId} weekNumber={weekNumberConverted} isSmallScreen={isSmallScreen} />
+                    <Title order={isSmallScreen ? 4 : 3} align="center">
+                        {makePicksQuery.data?.league?.leagueName}
+                    </Title>
+                    <LeagueNavigationBreadcrumbs
+                        league={makePicksQuery.data?.league!}
+                        currentWeekNumber={weekNumberConverted}
+                        navigationTitle={weekDescription}
+                        pageType={PageType.MakePicksPage}
+                        isSmallScreen={isSmallScreen}
+                    />
+                    {open && (
+                        <Alert title="Notice" color="blue" variant="light" onClose={handleClose}>
+                            {snackbarMessage}
+                        </Alert>
+                    )}
+                    <Text align="center">
+                        {weekInformation?.allowAllPicks
+                            ? 'Pick all games. No Key Picks'
+                            : `${selectedPicksCount === -1 ? selectedPicksOriginal : selectedPicksCount} / ${makePicksQuery.data?.league?.settings?.totalPicks} Picks, ${selectedKeyPicksCount === -1 ? selectedKeyPicksOriginal : selectedKeyPicksCount} / ${makePicksQuery.data?.league?.settings?.keyPicks} Key Picks`}
+                    </Text>
+                    {makePicksQuery.isPending ? (
+                        <Loading />
+                    ) : (
+                        <ScrollArea style={{ height: '60vh' }}>
+                            <Table striped highlightOnHover verticalSpacing="xs" fontSize="sm">
+                                <thead>
+                                    <tr>
+                                        <th>Away</th>
+                                        <th>Home</th>
+                                        <th>Game Time</th>
+                                        <th>Key</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {makePicksQuery.data?.games?.map((game) => (
+                                        <tr key={game.id} className={rowClassName}>
+                                            <td
+                                                className={getCellClassName(game, MakePicksColumnType.AwayTeam)}
+                                                onClick={() => handleCellClick(game, MakePicksColumnType.AwayTeam, game.awayTeam!)}
+                                            >
+                                                {formatCell(game, MakePicksColumnType.AwayTeam)}
+                                            </td>
+                                            <td
+                                                className={getCellClassName(game, MakePicksColumnType.HomeTeam)}
+                                                onClick={() => handleCellClick(game, MakePicksColumnType.HomeTeam, game.homeTeam!)}
+                                            >
+                                                {formatCell(game, MakePicksColumnType.HomeTeam)}
+                                            </td>
+                                            <td onClick={() => handleCellClick(game, MakePicksColumnType.GameStartTime)}>
+                                                {formatCell(game, MakePicksColumnType.GameStartTime)}
+                                            </td>
+                                            <td
+                                                className={getCellClassName(game, MakePicksColumnType.KeyPick)}
+                                                onClick={() => handleCellClick(game, MakePicksColumnType.KeyPick)}
+                                            >
+                                                {formatCell(game, MakePicksColumnType.KeyPick)}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </ScrollArea>
+                    )}
+                    <Group position="right" spacing="md">
+                        <Button onClick={handleSubmitPicks}>Submit Picks</Button>
+                        <Button component="a" href="/" variant="outline">
+                            Cancel
+                        </Button>
+                    </Group>
+                </Stack>
+            </Paper>
+        </Container>
+    );
 }
 
 function getSelectedPicksCount(picks: SpreadWeekPickDTO): React.SetStateAction<number> {
@@ -388,29 +304,5 @@ function getSelectedKeyPicksCount(currentPicks: SpreadWeekPickDTO): React.SetSta
     if (!currentPicks || !currentPicks.gamePicks) {
         return 0;
     }
-    return currentPicks.gamePicks.filter(p => p.isKeyPicked).length;
-}
-
-function getCellClassName(params: GridCellParams<any, GameDTO, GameDTO, GridTreeNode>, currentPicks: SpreadWeekPickDTO): string {
-    const game: GameDTO = params.row;
-    const clickedTeam: TeamDTO | undefined = params.value;
-    const gamePicked = currentPicks.gamePicks?.find(p => p.gameID === params.id);
-
-    if (gamePicked) {
-        if (gamePicked.sidePicked === 1 && game.awayTeam?.id === clickedTeam?.id) {
-            // console.log(`Picked away team: ${clickedTeam?.abbreviation}`);
-            return "teamPicked";
-        }
-        if (gamePicked.sidePicked === 0 && game.homeTeam?.id === clickedTeam?.id) {
-            // console.log(`Picked home team: ${clickedTeam?.abbreviation}`);
-            return "teamPicked";
-        }
-    }
-    return "";
-}
-
-function getRowClassName(isSmallScreen: boolean): string {
-    let cssClasses = [];
-    cssClasses.push(isSmallScreen ? 'makePickContainerSmall' : 'makePickContainer');
-    return cssClasses.join(' ');
+    return currentPicks.gamePicks.filter((p) => p.isKeyPicked).length;
 }
