@@ -43,6 +43,8 @@ export class SiteUtilities {
                 return `/allbets/standings/${leagueId}`;
             case 5:
                 return `/squares/standings/${leagueId}`;
+            case 6:
+                return `/bracket/standings/${leagueId}`;
             default:
                 throw new Error("Unknown league type");
         }
@@ -57,6 +59,10 @@ export class SiteUtilities {
             default:
                 return SiteUtilities.getLeagueStandingLink(leagueType, leagueId);
         }
+    }
+
+    static getBracketMakePicksLink(leagueId: string): string {
+        return `/bracket/makepicks/${leagueId}`;
     }
 
     static getMakePicksLink(leagueType: number, leagueId: string, weekNumber: number): string {

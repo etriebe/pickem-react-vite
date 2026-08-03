@@ -2756,13 +2756,15 @@ export interface IAllLeagueSquaresBoardsResponse {
 }
 
 export class Bracket implements IBracket {
-    bracketName!: string;
-    seedsAreHidden!: boolean;
-    id?: string | undefined;
-    type!: number;
-    sport!: number;
-    initialTeams?: BracketTeam[] | undefined;
-    rounds?: Round[] | undefined;
+    id?: string;
+    partitionKey?: string;
+    bracketDataRawContent?: string;
+    bracketName?: string;
+    seedsAreHidden?: boolean;
+    type?: number;
+    sport?: number;
+    initialTeams?: BracketTeam[];
+    rounds?: Round[];
     currentRoundIndex?: number;
     currentRound?: Round;
     isFinished?: boolean;
@@ -2785,9 +2787,11 @@ export class Bracket implements IBracket {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
+            this.id = _data["id"];
+            this.partitionKey = _data["partitionKey"];
+            this.bracketDataRawContent = _data["bracketDataRawContent"];
             this.bracketName = _data["bracketName"];
             this.seedsAreHidden = _data["seedsAreHidden"];
-            this.id = _data["id"];
             this.type = _data["type"];
             this.sport = _data["sport"];
             if (Array.isArray(_data["initialTeams"])) {
@@ -2820,9 +2824,11 @@ export class Bracket implements IBracket {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
+        data["id"] = this.id;
+        data["partitionKey"] = this.partitionKey;
+        data["bracketDataRawContent"] = this.bracketDataRawContent;
         data["bracketName"] = this.bracketName;
         data["seedsAreHidden"] = this.seedsAreHidden;
-        data["id"] = this.id;
         data["type"] = this.type;
         data["sport"] = this.sport;
         if (Array.isArray(this.initialTeams)) {
@@ -2844,13 +2850,15 @@ export class Bracket implements IBracket {
 }
 
 export interface IBracket {
-    bracketName: string;
-    seedsAreHidden: boolean;
-    id?: string | undefined;
-    type: number;
-    sport: number;
-    initialTeams?: BracketTeam[] | undefined;
-    rounds?: Round[] | undefined;
+    id?: string;
+    partitionKey?: string;
+    bracketDataRawContent?: string;
+    bracketName?: string;
+    seedsAreHidden?: boolean;
+    type?: number;
+    sport?: number;
+    initialTeams?: BracketTeam[];
+    rounds?: Round[];
     currentRoundIndex?: number;
     currentRound?: Round;
     isFinished?: boolean;
@@ -3333,6 +3341,7 @@ export class CreateLeagueRequest implements ICreateLeagueRequest {
     keyPickBonus!: number;
     pointsForCorrectPickPerRoundCSV?: string | undefined;
     numberOfBracketsPerPerson?: number | undefined;
+    bracketId?: string | undefined;
 
     [key: string]: any;
 
@@ -3361,6 +3370,7 @@ export class CreateLeagueRequest implements ICreateLeagueRequest {
             this.keyPickBonus = _data["keyPickBonus"];
             this.pointsForCorrectPickPerRoundCSV = _data["pointsForCorrectPickPerRoundCSV"];
             this.numberOfBracketsPerPerson = _data["numberOfBracketsPerPerson"];
+            this.bracketId = _data["bracketId"];
         }
     }
 
@@ -3387,6 +3397,7 @@ export class CreateLeagueRequest implements ICreateLeagueRequest {
         data["keyPickBonus"] = this.keyPickBonus;
         data["pointsForCorrectPickPerRoundCSV"] = this.pointsForCorrectPickPerRoundCSV;
         data["numberOfBracketsPerPerson"] = this.numberOfBracketsPerPerson;
+        data["bracketId"] = this.bracketId;
         return data;
     }
 }
@@ -3402,6 +3413,7 @@ export interface ICreateLeagueRequest {
     keyPickBonus: number;
     pointsForCorrectPickPerRoundCSV?: string | undefined;
     numberOfBracketsPerPerson?: number | undefined;
+    bracketId?: string | undefined;
 
     [key: string]: any;
 }

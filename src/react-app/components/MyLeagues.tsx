@@ -6,10 +6,11 @@ import Loading from "./Loading";
 import React from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import SquaresLeagueCard from './squares/SquaresLeagueCard';
+import BracketLeagueCard from './bracket/BracketLeagueCard';
 
 export default function MyLeagues() {
     const leaguesQuery = useQuery({
-        queryKey: ['leagues'], queryFn: async () => {
+        queryKey: ['leagues2'], queryFn: async () => {
             const leagues = LeagueUtilities.getLeaguesForCurrentUser(false);
             return leagues;
         },
@@ -66,6 +67,13 @@ export default function MyLeagues() {
                             return <React.Fragment key={l.id}>
                                 <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
                                     <SquaresLeagueCard key={l.id} league={l} />
+                                </Grid>
+                            </React.Fragment>
+                        }
+                        else if (leagueType === 6) { // Bracket league
+                            return <React.Fragment key={l.id}>
+                                <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+                                    <BracketLeagueCard key={l.id} league={l} />
                                 </Grid>
                             </React.Fragment>
                         }
