@@ -1943,6 +1943,45 @@ export class Client {
     /**
      * @return OK
      */
+    createUserBracket(body: UserBracketCreateRequest): Promise<void> {
+        let url_ = this.baseUrl + "/api/bracket/CreateUserBracketAsync";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateUserBracket(_response);
+        });
+    }
+
+    protected processCreateUserBracket(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
     upsertBracketPick(body: BracketPickRequest): Promise<void> {
         let url_ = this.baseUrl + "/api/bracket/UpsertBracketPickAsync";
         url_ = url_.replace(/[?&]$/, "");
@@ -7386,6 +7425,58 @@ export interface IUserBracket {
     userId?: string | undefined;
     bracketName?: string | undefined;
     leagueId?: string | undefined;
+
+    [key: string]: any;
+}
+
+export class UserBracketCreateRequest implements IUserBracketCreateRequest {
+    bracketName?: string;
+    leagueId?: string;
+
+    [key: string]: any;
+
+    constructor(data?: IUserBracketCreateRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.bracketName = _data["bracketName"];
+            this.leagueId = _data["leagueId"];
+        }
+    }
+
+    static fromJS(data: any): UserBracketCreateRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserBracketCreateRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["bracketName"] = this.bracketName;
+        data["leagueId"] = this.leagueId;
+        return data;
+    }
+}
+
+export interface IUserBracketCreateRequest {
+    bracketName?: string;
+    leagueId?: string;
 
     [key: string]: any;
 }
