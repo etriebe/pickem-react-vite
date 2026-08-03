@@ -65,6 +65,10 @@ export class SiteUtilities {
         return `/bracket/makepicks/${leagueId}`;
     }
 
+    static getBracketCreateUserBracketLink(leagueId: string): string {
+        return `/bracket/create/${leagueId}`;
+    }
+
     static getMakePicksLink(leagueType: number, leagueId: string, weekNumber: number): string {
         switch (leagueType) {
             // both 1 and 2 are pickem against the spread and pickem straight up and have the same pick pages

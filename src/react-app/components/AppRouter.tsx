@@ -27,6 +27,7 @@ import SquaresBrowseBoards from './squares/SquaresBrowseBoards';
 import SquaresBoard from './squares/SquaresBoard';
 import BracketLeagueStandings from './bracket/BracketLeagueStandings';
 import BracketMakePicks from './bracket/BracketMakePicks';
+import BracketCreateUserBracket from './bracket/BracketCreateUserBracket';
 
 type Props = {}
 
@@ -89,6 +90,7 @@ function AppRouter({ }: Props) {
                                 <Route path="/squares/createboard/:leagueId" element={<SquaresCreateBoard />} />
                                 <Route path="/squares/boards/:leagueId" element={<SquaresBrowseBoards />} />
                                 <Route path="/squares/boards/:leagueId/:boardId" element={<SquaresBoard />} />
+                                <Route path="/bracket/create/:leagueId" element={<BracketCreateUserBracket />} />
                                 <Route path="/bracket/standings/:leagueId" element={<BracketLeagueStandings />} />
                                 <Route path="/bracket/makepicks/:leagueId" element={<BracketMakePicks />} />
                                 <Route path="/settings" element={<EditUserSettings />} />
