@@ -234,8 +234,8 @@ export default function BracketMakePicks() {
                 <SingleEliminationBracket
                     matches={matches}
                     matchComponent={Match}
-                    svgWrapper={({ children, ...props }) => (
-                        <SVGViewer width={500} height={500} {...props}>
+                    svgWrapper={({ children, ...props }: { children: React.ReactNode; props: any }) => (
+                        <SVGViewer width={1000} height={1000} {...props}>
                             {children}
                         </SVGViewer>
                     )}

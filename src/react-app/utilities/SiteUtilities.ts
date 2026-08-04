@@ -274,6 +274,9 @@ export class SiteUtilities {
     static getFormattedSpreadAmount(currentSpread: Spread): string {
         //string prefix = currentSpread >= 0 ? "+" : "";
         // return $"{prefix}{currentSpread}";
+        if (currentSpread === undefined) {
+            return "";
+        }
         const prefix = currentSpread.spreadAmount! >= 0 ? "+" : "";
         return `${prefix}${currentSpread.spreadAmount?.toFixed(1)}`
     }
