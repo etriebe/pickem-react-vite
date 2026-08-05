@@ -3083,13 +3083,14 @@ export interface IBracketMatchPickDTO {
 }
 
 export class BracketMatchup implements IBracketMatchup {
-    id?: string | undefined;
+    id?: string;
     matchId!: string;
-    team1!: BracketTeam;
-    team2!: BracketTeam;
+    team1!: BracketTeam | undefined;
+    team2!: BracketTeam | undefined;
     gamesPlayed?: number | undefined;
     label!: string;
-    gameIds?: string[] | undefined;
+    gameIds?: string[];
+    firstGameStart?: Date;
     isBye?: boolean;
     winner?: BracketTeam;
 
@@ -3102,10 +3103,6 @@ export class BracketMatchup implements IBracketMatchup {
                     (this as any)[property] = (data as any)[property];
             }
         }
-        if (!data) {
-            this.team1 = new BracketTeam();
-            this.team2 = new BracketTeam();
-        }
     }
 
     init(_data?: any) {
@@ -3116,8 +3113,8 @@ export class BracketMatchup implements IBracketMatchup {
             }
             this.id = _data["id"];
             this.matchId = _data["matchId"];
-            this.team1 = _data["team1"] ? BracketTeam.fromJS(_data["team1"]) : new BracketTeam();
-            this.team2 = _data["team2"] ? BracketTeam.fromJS(_data["team2"]) : new BracketTeam();
+            this.team1 = _data["team1"] ? BracketTeam.fromJS(_data["team1"]) : undefined as any;
+            this.team2 = _data["team2"] ? BracketTeam.fromJS(_data["team2"]) : undefined as any;
             this.gamesPlayed = _data["gamesPlayed"];
             this.label = _data["label"];
             if (Array.isArray(_data["gameIds"])) {
@@ -3125,6 +3122,7 @@ export class BracketMatchup implements IBracketMatchup {
                 for (let item of _data["gameIds"])
                     this.gameIds!.push(item);
             }
+            this.firstGameStart = _data["firstGameStart"] ? new Date(_data["firstGameStart"].toString()) : undefined as any;
             this.isBye = _data["isBye"];
             this.winner = _data["winner"] ? BracketTeam.fromJS(_data["winner"]) : undefined as any;
         }
@@ -3154,6 +3152,7 @@ export class BracketMatchup implements IBracketMatchup {
             for (let item of this.gameIds)
                 data["gameIds"].push(item);
         }
+        data["firstGameStart"] = this.firstGameStart ? this.firstGameStart.toISOString() : undefined as any;
         data["isBye"] = this.isBye;
         data["winner"] = this.winner ? this.winner.toJSON() : undefined as any;
         return data;
@@ -3161,13 +3160,14 @@ export class BracketMatchup implements IBracketMatchup {
 }
 
 export interface IBracketMatchup {
-    id?: string | undefined;
+    id?: string;
     matchId: string;
-    team1: BracketTeam;
-    team2: BracketTeam;
+    team1: BracketTeam | undefined;
+    team2: BracketTeam | undefined;
     gamesPlayed?: number | undefined;
     label: string;
-    gameIds?: string[] | undefined;
+    gameIds?: string[];
+    firstGameStart?: Date;
     isBye?: boolean;
     winner?: BracketTeam;
 
@@ -3179,6 +3179,7 @@ export class BracketPageResponse implements IBracketPageResponse {
     bracket?: Bracket | undefined;
     userBrackets?: FullUserBracket[] | undefined;
     bracketGames?: Game[] | undefined;
+    reactBracketMatches?: ReactBracketMatch[] | undefined;
 
     [key: string]: any;
 
@@ -3209,6 +3210,11 @@ export class BracketPageResponse implements IBracketPageResponse {
                 for (let item of _data["bracketGames"])
                     this.bracketGames!.push(Game.fromJS(item));
             }
+            if (Array.isArray(_data["reactBracketMatches"])) {
+                this.reactBracketMatches = [] as any;
+                for (let item of _data["reactBracketMatches"])
+                    this.reactBracketMatches!.push(ReactBracketMatch.fromJS(item));
+            }
         }
     }
 
@@ -3237,6 +3243,11 @@ export class BracketPageResponse implements IBracketPageResponse {
             for (let item of this.bracketGames)
                 data["bracketGames"].push(item ? item.toJSON() : undefined as any);
         }
+        if (Array.isArray(this.reactBracketMatches)) {
+            data["reactBracketMatches"] = [];
+            for (let item of this.reactBracketMatches)
+                data["reactBracketMatches"].push(item ? item.toJSON() : undefined as any);
+        }
         return data;
     }
 }
@@ -3246,6 +3257,7 @@ export interface IBracketPageResponse {
     bracket?: Bracket | undefined;
     userBrackets?: FullUserBracket[] | undefined;
     bracketGames?: Game[] | undefined;
+    reactBracketMatches?: ReactBracketMatch[] | undefined;
 
     [key: string]: any;
 }
@@ -5428,6 +5440,150 @@ export interface IPickResult {
     [key: string]: any;
 }
 
+export class ReactBracketMatch implements IReactBracketMatch {
+    id?: string;
+    name?: string;
+    nextMatchId?: string | undefined;
+    tournamentRoundText?: string;
+    startTime?: string;
+    state?: string;
+    participants?: ReactBracketParticipant[];
+
+    [key: string]: any;
+
+    constructor(data?: IReactBracketMatch) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.nextMatchId = _data["nextMatchId"];
+            this.tournamentRoundText = _data["tournamentRoundText"];
+            this.startTime = _data["startTime"];
+            this.state = _data["state"];
+            if (Array.isArray(_data["participants"])) {
+                this.participants = [] as any;
+                for (let item of _data["participants"])
+                    this.participants!.push(ReactBracketParticipant.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ReactBracketMatch {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReactBracketMatch();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["nextMatchId"] = this.nextMatchId;
+        data["tournamentRoundText"] = this.tournamentRoundText;
+        data["startTime"] = this.startTime;
+        data["state"] = this.state;
+        if (Array.isArray(this.participants)) {
+            data["participants"] = [];
+            for (let item of this.participants)
+                data["participants"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IReactBracketMatch {
+    id?: string;
+    name?: string;
+    nextMatchId?: string | undefined;
+    tournamentRoundText?: string;
+    startTime?: string;
+    state?: string;
+    participants?: ReactBracketParticipant[];
+
+    [key: string]: any;
+}
+
+export class ReactBracketParticipant implements IReactBracketParticipant {
+    id?: string;
+    resultText?: string;
+    isWinner?: boolean;
+    status?: string | undefined;
+    name?: string;
+
+    [key: string]: any;
+
+    constructor(data?: IReactBracketParticipant) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.resultText = _data["resultText"];
+            this.isWinner = _data["isWinner"];
+            this.status = _data["status"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): ReactBracketParticipant {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReactBracketParticipant();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["resultText"] = this.resultText;
+        data["isWinner"] = this.isWinner;
+        data["status"] = this.status;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface IReactBracketParticipant {
+    id?: string;
+    resultText?: string;
+    isWinner?: boolean;
+    status?: string | undefined;
+    name?: string;
+
+    [key: string]: any;
+}
+
 export class RefreshRequest implements IRefreshRequest {
     refreshToken!: string;
 
@@ -5634,6 +5790,7 @@ export interface IResetPasswordRequest {
 
 export class Round implements IRound {
     index!: number;
+    tentativeMatches?: TentativeBracketMatchup[];
     matches?: BracketMatchup[] | undefined;
     scoringSettings?: RoundScoringSettings;
 
@@ -5655,6 +5812,11 @@ export class Round implements IRound {
                     this[property] = _data[property];
             }
             this.index = _data["index"];
+            if (Array.isArray(_data["tentativeMatches"])) {
+                this.tentativeMatches = [] as any;
+                for (let item of _data["tentativeMatches"])
+                    this.tentativeMatches!.push(TentativeBracketMatchup.fromJS(item));
+            }
             if (Array.isArray(_data["matches"])) {
                 this.matches = [] as any;
                 for (let item of _data["matches"])
@@ -5678,6 +5840,11 @@ export class Round implements IRound {
                 data[property] = this[property];
         }
         data["index"] = this.index;
+        if (Array.isArray(this.tentativeMatches)) {
+            data["tentativeMatches"] = [];
+            for (let item of this.tentativeMatches)
+                data["tentativeMatches"].push(item ? item.toJSON() : undefined as any);
+        }
         if (Array.isArray(this.matches)) {
             data["matches"] = [];
             for (let item of this.matches)
@@ -5690,6 +5857,7 @@ export class Round implements IRound {
 
 export interface IRound {
     index: number;
+    tentativeMatches?: TentativeBracketMatchup[];
     matches?: BracketMatchup[] | undefined;
     scoringSettings?: RoundScoringSettings;
 
@@ -6941,6 +7109,118 @@ export interface ITeamDTO {
     conference?: string | undefined;
     division?: string | undefined;
     emoji?: string;
+
+    [key: string]: any;
+}
+
+export class TentativeBracketMatchup implements ITentativeBracketMatchup {
+    id?: string;
+    slotA?: TentativeBracketTeam | undefined;
+    slotB?: TentativeBracketTeam | undefined;
+    label?: string;
+
+    [key: string]: any;
+
+    constructor(data?: ITentativeBracketMatchup) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.slotA = _data["slotA"] ? TentativeBracketTeam.fromJS(_data["slotA"]) : undefined as any;
+            this.slotB = _data["slotB"] ? TentativeBracketTeam.fromJS(_data["slotB"]) : undefined as any;
+            this.label = _data["label"];
+        }
+    }
+
+    static fromJS(data: any): TentativeBracketMatchup {
+        data = typeof data === 'object' ? data : {};
+        let result = new TentativeBracketMatchup();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["slotA"] = this.slotA ? this.slotA.toJSON() : undefined as any;
+        data["slotB"] = this.slotB ? this.slotB.toJSON() : undefined as any;
+        data["label"] = this.label;
+        return data;
+    }
+}
+
+export interface ITentativeBracketMatchup {
+    id?: string;
+    slotA?: TentativeBracketTeam | undefined;
+    slotB?: TentativeBracketTeam | undefined;
+    label?: string;
+
+    [key: string]: any;
+}
+
+export class TentativeBracketTeam implements ITentativeBracketTeam {
+    type?: string;
+    teamOrMatchId?: string;
+
+    [key: string]: any;
+
+    constructor(data?: ITentativeBracketTeam) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.type = _data["type"];
+            this.teamOrMatchId = _data["teamOrMatchId"];
+        }
+    }
+
+    static fromJS(data: any): TentativeBracketTeam {
+        data = typeof data === 'object' ? data : {};
+        let result = new TentativeBracketTeam();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["type"] = this.type;
+        data["teamOrMatchId"] = this.teamOrMatchId;
+        return data;
+    }
+}
+
+export interface ITentativeBracketTeam {
+    type?: string;
+    teamOrMatchId?: string;
 
     [key: string]: any;
 }
