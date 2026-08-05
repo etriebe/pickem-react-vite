@@ -36,7 +36,7 @@ function EditLeague({ }: Props) {
     const [maxWeeks, setMaxWeeks] = useState(-1);
     const [dataLoaded, setDataLoaded] = useState(false);
     const { leagueId } = useParams();
-    const [endingWeekNumberLabel, setEndingWeekNumberLabel] = useState('');
+    // const [endingWeekNumberLabel, setEndingWeekNumberLabel] = useState('');
     const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
     const userColumnWidth = 200;
 
@@ -142,7 +142,7 @@ function EditLeague({ }: Props) {
             setUsers(data.users);
             setEndWeek(max);
             setMaxWeeks(max);
-            setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(max));
+            // setEndingWeekNumberLabel(LeagueUtilities.getEndingWeekLabel(max));
             setLeagueName(data.league?.leagueName!);
             setStartWeek(data.league?.startingWeekNumber!);
             setEndWeek(data.league?.endingWeekNumber!);

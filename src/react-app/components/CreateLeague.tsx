@@ -10,7 +10,7 @@ import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import { Sports, LeagueTypes } from '../utilities/SiteUtilities';
 import { LeagueUtilities } from '../utilities/LeagueUtilities';
 import { queryClient } from '../main';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 export default function CreateLeague() {
     const [leagueName, setLeagueName] = useState('');
