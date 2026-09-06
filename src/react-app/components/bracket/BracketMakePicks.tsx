@@ -68,9 +68,11 @@ export default function BracketMakePicks() {
                     matches={bracketMatchTypeArray}
                     matchComponent={Match}
                     svgWrapper={({ children, ...props }: { children: React.ReactNode; props: any }) => (
+                        <>
                         <SVGViewer width={width * 0.8} height={height * 0.8} {...props}>
                             {children}
                         </SVGViewer>
+                        </>
                     )}
                 />
             </>

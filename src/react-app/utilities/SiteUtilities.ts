@@ -284,7 +284,13 @@ export class SiteUtilities {
     static getTeamIconPathFromTeam(team: TeamDTO, sport: number): string {
         const city = team.city?.replace(" ", "_").replace(".", "");
         const name = team.name?.replace(" ", "_").replace(".", "");
-        const imagePath = `/TeamIcons/${SiteUtilities.getSportFolderNameFromSportNumber(sport)}/${city}_${name}.svg`;
+        const sportsFolder = SiteUtilities.getSportFolderNameFromSportNumber(sport);
+
+        if (!sportsFolder) {
+            return "";
+        }
+
+        const imagePath = `/TeamIcons/${sportsFolder}/${city}_${name}.svg`;
         return imagePath;
     }
 
@@ -294,7 +300,7 @@ export class SiteUtilities {
         return `${city} ${name} team logo`;
     }
 
-    static getSportFolderNameFromSportNumber(sportNumber: number): string {
+    static getSportFolderNameFromSportNumber(sportNumber: number): string | undefined {
         switch (sportNumber) {
             // both 1 and 2 are pickem against the spread and pickem straight up and have the same pick pages
             case 1:
@@ -309,7 +315,7 @@ export class SiteUtilities {
             case 6:
                 return `NCAA`;
             default:
-                throw new Error("Unknown league type");
+                return undefined;
         }
     }
 
