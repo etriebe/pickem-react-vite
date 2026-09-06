@@ -10,7 +10,7 @@ import BracketLeagueCard from './bracket/BracketLeagueCard';
 
 export default function MyLeagues() {
     const leaguesQuery = useQuery({
-        queryKey: ['leagues2'], queryFn: async () => {
+        queryKey: ['leagues'], queryFn: async () => {
             const leagues = LeagueUtilities.getLeaguesForCurrentUser(false);
             return leagues;
         },
