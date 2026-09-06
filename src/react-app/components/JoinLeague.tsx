@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button, Snackbar, SnackbarCloseReason, Typography } from '@mui/material';
 import Loading from './Loading';
 import { SiteUtilities } from '../utilities/SiteUtilities';
+import { queryClient } from '../main';
 
 type Props = {}
 
@@ -17,6 +18,7 @@ function JoinLeague({ }: Props) {
         queryKey: ['joinleague', leagueId],
         queryFn: async () => {
             const pickemClient = PickemApiClientFactory.createClient();
+            queryClient.invalidateQueries({ queryKey: ['leagues'] });
             return pickemClient.getLeagueById(leagueId!);
         },
     });
