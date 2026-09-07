@@ -91,6 +91,8 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
       window.location.href = '/';
     }
     catch (error) {
+      setPasswordError(true);
+      setPasswordErrorMessage(`Failed to reset password. ${error instanceof Error ? error.message : 'An unknown error occurred'}`);
       console.error('Error while resetting password:', error);
     }
   };
