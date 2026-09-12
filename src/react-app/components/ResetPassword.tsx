@@ -12,7 +12,7 @@ import AppTheme from '../theme/AppTheme';
 import SiteLogo from './SiteLogo';
 import PickemApiClientFactory from '../services/PickemApiClientFactory';
 import { useParams } from 'react-router';
-import { ResetPasswordRequest } from '../services/PickemApiClient';
+import { ApiException, ResetPasswordRequest } from '../services/PickemApiClient';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -61,7 +61,7 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const {resetCode} = useParams();
+  const { resetCode } = useParams();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     if (emailError || passwordError) {
@@ -92,10 +92,25 @@ export default function ResetPassword(props: { disableCustomTheme?: boolean }) {
     }
     catch (error) {
       setPasswordError(true);
-      setPasswordErrorMessage(`Failed to reset password. ${error instanceof Error ? error.message : 'An unknown error occurred'}`);
+      setPasswordErrorMessage(`Failed to reset password. ${getErrorMessage(error)}`);
       console.error('Error while resetting password:', error);
     }
   };
+
+  function getErrorMessage(error: unknown): string {
+    if (error instanceof ApiException) {
+      return `API Error: ${error.status} - ${error.message} - ${error.response} - ${error.stack} - ${error.name} - ${error.headers}`;
+    }
+    if (error instanceof Error) {
+      return error.message;
+    }
+    if (error && typeof error === 'object' && 'message' in error) {
+      return String(error.message);
+    }
+    if (typeof error === 'string') return error;
+
+    return "Unknown error occurred";
+  }
 
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
